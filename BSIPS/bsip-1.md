@@ -182,12 +182,6 @@ spelling, and grammar; assigns a BSIP number; and merges it once it is ready. Ed
 judgment on the merits of a proposal; they ensure it is well-formed. The current editors are listed
 in [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
-## History
-
-This document draws, in structure and process, on Ethereum's
-[EIP-1](https://eips.ethereum.org/EIPS/eip-1), which is itself derived from Python's PEP-1. Some of
-the process wording is adapted from those public-domain documents.
-
 ## Copyright
 
 Copyright and related rights waived via [CC0](../LICENSE.md).

@@ -11,8 +11,7 @@ company or codebase.
 If you are new here, **start with [BSIP-1](./BSIPS/bsip-1.md)**, which defines what a BSIP is
 and how the process works.
 
-> A website at `bsips.bitsocial.net` (mirroring [eips.ethereum.org](https://eips.ethereum.org/))
-> is planned. Until then, this repository is the canonical source.
+> A companion website is planned. Until then, this repository is the canonical source for all BSIPs.
 
 ## Scope: what belongs in a BSIP
 
