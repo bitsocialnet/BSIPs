@@ -7,43 +7,34 @@ const bsips = entries
   .map((e) => ({ id: e.id, ...e.data }))
   .sort((a, b) => Number(a.bsip) - Number(b.bsip));
 
-const statusClass = (s) => `badge status-${String(s).replace(/\s+/g, '-')}`;
+const badgeClass = (s) => `badge s-${String(s).replace(/\s+/g, '-')}`;
+const meta = (b) => [b.type, b.category].filter(Boolean).join(' · ');
 ---
 
 <Base title="Bitsocial Improvement Proposals">
-  <h1>Bitsocial Improvement Proposals</h1>
+  <p class="eyebrow">The Bitsocial protocol</p>
+  <h1 class="page-title">Improvement Proposals</h1>
   <p class="lede">
-    BSIPs specify the decentralized Bitsocial protocol — the peer-to-peer social core, networking,
-    interfaces, the Bitsocial Network appchain, and application standards. Start with
-    <a href="/bsip-1">BSIP-1</a>.
+    BSIPs are the design documents that specify the decentralized Bitsocial protocol: the
+    peer-to-peer social core, networking, interfaces, the Bitsocial Network appchain, and the
+    standards independent clients share. Start with <a href="/bsip-1">BSIP-1</a>.
   </p>
 
-  <table class="index">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>Type</th>
-        <th>Category</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        bsips.map((b) => (
-          <tr>
-            <td class="num">{b.bsip}</td>
-            <td class="title">
-              <a href={`/${b.id}`}>{b.title}</a>
-            </td>
-            <td>{b.type}</td>
-            <td>{b.category ?? '—'}</td>
-            <td>
-              <span class={statusClass(b.status)}>{b.status}</span>
-            </td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
+  <div class="index">
+    {
+      bsips.map((b) => (
+        <a class="index-row" href={`/${b.id}`}>
+          <span class="index-num">{b.bsip}</span>
+          <span class="index-main">
+            <span class="index-title">{b.title}</span>
+            <span class="index-desc">{b.description}</span>
+            <span class="index-meta">{meta(b)}</span>
+          </span>
+          <span class="index-status">
+            <span class={badgeClass(b.status)}>{b.status}</span>
+          </span>
+        </a>
+      ))
+    }
+  </div>
 </Base>

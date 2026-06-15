@@ -8,7 +8,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const fm = entry.data;
 
 const fmtDate = (d) => {
@@ -16,7 +16,6 @@ const fmtDate = (d) => {
   const s = typeof d === 'string' ? d : new Date(d).toISOString();
   return s.slice(0, 10);
 };
-
 const requires =
   fm.requires == null
     ? []
@@ -25,45 +24,68 @@ const requires =
         .map((s) => s.trim())
         .filter(Boolean);
 
-const statusClass = `badge status-${String(fm.status).replace(/\s+/g, '-')}`;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const badgeClass = `badge s-${String(fm.status).replace(/\s+/g, '-')}`;
+const kind = [fm.type, fm.category].filter(Boolean).join(' · ');
 const ghUrl = `https://github.com/bitsocialnet/BSIPs/blob/master/BSIPS/${entry.id}.md`;
 ---
 
 <Base title={`BSIP-${fm.bsip}: ${fm.title}`} description={fm.description}>
   <a class="back" href="/">← All BSIPs</a>
-  <h1>BSIP-{fm.bsip}: {fm.title}</h1>
 
-  <div class="preamble">
-    <dl>
-      <dt>Status</dt>
-      <dd><span class={statusClass}>{fm.status}</span></dd>
-      <dt>Type</dt>
-      <dd>{fm.type}{fm.category ? ` · ${fm.category}` : ''}</dd>
-      <dt>Author</dt>
-      <dd>{fm.author}</dd>
-      <dt>Created</dt>
-      <dd>{fmtDate(fm.created)}</dd>
-      {
-        requires.length > 0 && (
-          <>
-            <dt>Requires</dt>
-            <dd>
-              {requires.map((r, i) => (
-                <span>
-                  {i > 0 ? ', ' : ''}
-                  <a href={`/bsip-${r}`}>BSIP-{r}</a>
-                </span>
-              ))}
-            </dd>
-          </>
-        )
-      }
-    </dl>
+  <div class="doc-grid">
+    <div>
+      <div class="doc-eyebrow">
+        <span class={badgeClass}>{fm.status}</span>
+        <span class="doc-kind">{kind}</span>
+      </div>
+
+      <h1 class="page-title">BSIP-{fm.bsip}: {fm.title}</h1>
+
+      <div class="preamble">
+        <dl>
+          <dt>Author</dt>
+          <dd>{fm.author}</dd>
+          <dt>Created</dt>
+          <dd>{fmtDate(fm.created)}</dd>
+          {
+            requires.length > 0 && (
+              <>
+                <dt>Requires</dt>
+                <dd>
+                  {requires.map((r, i) => (
+                    <span>
+                      {i > 0 ? ', ' : ''}
+                      <a href={`/bsip-${r}`}>BSIP-{r}</a>
+                    </span>
+                  ))}
+                </dd>
+              </>
+            )
+          }
+        </dl>
+      </div>
+
+      <article class="prose">
+        <Content />
+      </article>
+
+      <p class="edit-link"><a href={ghUrl}>Edit this BSIP on GitHub →</a></p>
+    </div>
+
+    {
+      toc.length > 0 && (
+        <aside class="toc" aria-label="Table of contents">
+          <p class="toc-label">On this page</p>
+          <ul>
+            {toc.map((h) => (
+              <li class={`lvl-${h.depth}`}>
+                <a href={`#${h.slug}`}>{h.text.replace(/\s*#+\s*$/, '')}</a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
   </div>
-
-  <article>
-    <Content />
-  </article>
-
-  <p class="edit-link"><a href={ghUrl}>Edit this BSIP on GitHub →</a></p>
 </Base>

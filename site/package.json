@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^6.4.7"
+    "@fontsource-variable/exo": "^5.2.8",
+    "@fontsource-variable/manrope": "^5.2.8",
+    "astro": "^6.4.7",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0"
   }
 }
