@@ -1,0 +1,69 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('bsips');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const fm = entry.data;
+
+const fmtDate = (d) => {
+  if (!d) return '';
+  const s = typeof d === 'string' ? d : new Date(d).toISOString();
+  return s.slice(0, 10);
+};
+
+const requires =
+  fm.requires == null
+    ? []
+    : String(fm.requires)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+const statusClass = `badge status-${String(fm.status).replace(/\s+/g, '-')}`;
+const ghUrl = `https://github.com/bitsocialnet/BSIPs/blob/master/BSIPS/${entry.id}.md`;
+---
+
+<Base title={`BSIP-${fm.bsip}: ${fm.title}`} description={fm.description}>
+  <a class="back" href="/">← All BSIPs</a>
+  <h1>BSIP-{fm.bsip}: {fm.title}</h1>
+
+  <div class="preamble">
+    <dl>
+      <dt>Status</dt>
+      <dd><span class={statusClass}>{fm.status}</span></dd>
+      <dt>Type</dt>
+      <dd>{fm.type}{fm.category ? ` · ${fm.category}` : ''}</dd>
+      <dt>Author</dt>
+      <dd>{fm.author}</dd>
+      <dt>Created</dt>
+      <dd>{fmtDate(fm.created)}</dd>
+      {
+        requires.length > 0 && (
+          <>
+            <dt>Requires</dt>
+            <dd>
+              {requires.map((r, i) => (
+                <span>
+                  {i > 0 ? ', ' : ''}
+                  <a href={`/bsip-${r}`}>BSIP-{r}</a>
+                </span>
+              ))}
+            </dd>
+          </>
+        )
+      }
+    </dl>
+  </div>
+
+  <article>
+    <Content />
+  </article>
+
+  <p class="edit-link"><a href={ghUrl}>Edit this BSIP on GitHub →</a></p>
+</Base>

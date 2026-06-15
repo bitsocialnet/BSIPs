@@ -1,0 +1,90 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #1f6feb;
+  --code-bg: #f6f8fa;
+  --max: 880px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9098a1;
+    --border: #21262d;
+    --accent: #4493f8;
+    --code-bg: #161b22;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+header.site { border-bottom: 1px solid var(--border); }
+header.site .container {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 18px 20px; gap: 16px; flex-wrap: wrap;
+}
+header.site a.brand { color: var(--fg); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+header.site nav a { margin-left: 18px; color: var(--muted); font-size: 0.9rem; }
+
+main { padding: 36px 0 64px; }
+
+footer.site { border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
+footer.site .container { padding-top: 22px; padding-bottom: 40px; }
+
+h1 { font-size: 1.95rem; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 10px; }
+.lede { color: var(--muted); margin: 0 0 30px; font-size: 1.05rem; }
+
+table.index { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+table.index th, table.index td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.index th { color: var(--muted); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; }
+table.index td.num { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+table.index td.title a { font-weight: 600; }
+
+.badge {
+  display: inline-block; font-size: 0.74rem; font-weight: 600;
+  padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border);
+  color: var(--muted); white-space: nowrap; line-height: 1.5;
+}
+.badge.status-Draft { color: #9a6700; border-color: #d4a72c66; background: #d4a72c1f; }
+.badge.status-Review { color: #0969da; border-color: #0969da66; background: #0969da1f; }
+.badge.status-Last-Call { color: #8250df; border-color: #8250df66; background: #8250df1f; }
+.badge.status-Final { color: #1a7f37; border-color: #1a7f3766; background: #1a7f371f; }
+.badge.status-Living { color: var(--accent); border-color: #1f6feb66; background: #1f6feb1f; }
+@media (prefers-color-scheme: dark) {
+  .badge.status-Draft { color: #d4a72c; }
+  .badge.status-Final { color: #3fb950; }
+  .badge.status-Living { color: #4493f8; }
+}
+
+.preamble { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin: 0 0 30px; background: var(--code-bg); }
+.preamble dl { display: grid; grid-template-columns: max-content 1fr; gap: 7px 18px; margin: 0; font-size: 0.9rem; }
+.preamble dt { color: var(--muted); }
+.preamble dd { margin: 0; }
+
+.back { display: inline-block; margin-bottom: 18px; color: var(--muted); font-size: 0.9rem; }
+
+article :where(h2, h3, h4) { line-height: 1.25; margin-top: 1.9em; }
+article h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25em; }
+article h3 { font-size: 1.15rem; }
+article pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow: auto; font-size: 0.85rem; line-height: 1.5; }
+article :not(pre) > code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em; }
+article table { border-collapse: collapse; width: 100%; font-size: 0.9rem; display: block; overflow-x: auto; }
+article th, article td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+article blockquote { border-left: 3px solid var(--border); margin: 1em 0; padding: 0.1em 1em; color: var(--muted); }
+article img { max-width: 100%; }
+article a { overflow-wrap: anywhere; }
+
+.edit-link { margin-top: 44px; font-size: 0.9rem; }

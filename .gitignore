@@ -6,5 +6,10 @@
 .vscode/
 *.swp
 
-# Node (only relevant once a website/tooling is added under bsips.bitsocial.net)
+# Node / Astro website build
 node_modules/
+dist/
+.astro/
+
+# Vercel
+.vercel/

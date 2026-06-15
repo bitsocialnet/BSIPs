@@ -1,0 +1,51 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Specifications for the decentralized Bitsocial protocol.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <header class="site">
+      <div class="container">
+        <a class="brand" href="/">Bitsocial Improvement Proposals</a>
+        <nav>
+          <a href="/">All BSIPs</a>
+          <a href="https://bitsocial.net">Bitsocial</a>
+          <a href="https://github.com/bitsocialnet/BSIPs">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <footer class="site">
+      <div class="container">
+        BSIPs are released into the public domain via
+        <a href="https://github.com/bitsocialnet/BSIPs/blob/master/LICENSE.md">CC0 1.0</a>.
+      </div>
+    </footer>
+  </body>
+</html>

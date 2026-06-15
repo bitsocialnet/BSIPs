@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const entries = await getCollection('bsips');
+const bsips = entries
+  .map((e) => ({ id: e.id, ...e.data }))
+  .sort((a, b) => Number(a.bsip) - Number(b.bsip));
+
+const statusClass = (s) => `badge status-${String(s).replace(/\s+/g, '-')}`;
+---
+
+<Base title="Bitsocial Improvement Proposals">
+  <h1>Bitsocial Improvement Proposals</h1>
+  <p class="lede">
+    BSIPs specify the decentralized Bitsocial protocol — the peer-to-peer social core, networking,
+    interfaces, the Bitsocial Network appchain, and application standards. Start with
+    <a href="/bsip-1">BSIP-1</a>.
+  </p>
+
+  <table class="index">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        bsips.map((b) => (
+          <tr>
+            <td class="num">{b.bsip}</td>
+            <td class="title">
+              <a href={`/${b.id}`}>{b.title}</a>
+            </td>
+            <td>{b.type}</td>
+            <td>{b.category ?? '—'}</td>
+            <td>
+              <span class={statusClass(b.status)}>{b.status}</span>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</Base>
