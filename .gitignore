@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor / tooling
+.idea/
+.vscode/
+*.swp
+
+# Node (only relevant once a website/tooling is added under bsips.bitsocial.net)
+node_modules/

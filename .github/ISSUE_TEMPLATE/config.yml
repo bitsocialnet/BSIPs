@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Bitsocial documentation
+    url: https://bitsocial.net/docs/
+    about: Background on the Bitsocial protocol, apps, and the master plan.
+  - name: Read BSIP-1 (process)
+    url: https://github.com/bitsocialnet/BSIPs/blob/master/BSIPS/bsip-1.md
+    about: What a BSIP is and how the process works — read this before proposing.
