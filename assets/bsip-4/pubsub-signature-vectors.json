@@ -1,0 +1,157 @@
+{
+  "description": "CHALLENGEREQUEST envelope signature, challengeRequestId and CBOR wire bytes. TEST KEYS ONLY: never use them outside tests.",
+  "generatedWith": {
+    "package": "@pkcprotocol/pkc-js",
+    "version": "0.0.124",
+    "commit": "571044ba078e8b6b3ab41b1917a8ea3030523e9f",
+    "node": "v22.22.3",
+    "method": "signed with the pkc-js sign* functions, checked with its verify*/decrypt functions, by a standalone Node script (not committed)",
+    "dependencies": {
+      "cborg": "4.5.8",
+      "@noble/curves": "2.2.0",
+      "node-forge": "1.4.0",
+      "safe-stable-stringify": "2.4.3",
+      "ipfs-only-hash": "4.0.0",
+      "ipfs-only-hash/node_modules/ipfs-unixfs-importer": "7.0.3"
+    }
+  },
+  "testOnlyKeys": [
+    {
+      "label": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "privateKeyBase64": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "publicKeyHex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "address": "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5"
+    },
+    {
+      "label": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "privateKeyBase64": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+      "publicKeyHex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "address": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq"
+    },
+    {
+      "label": "challenge-request keypair",
+      "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+      "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+      "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+    },
+    {
+      "label": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "privateKeyBase64": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+      "publicKeyHex": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "address": "12D3KooWPT98FXMfDQYavZm66EeVjTqP9Nnehn1gyaydqV8L8BQw"
+    }
+  ],
+  "vectors": [
+    {
+      "name": "challengerequest",
+      "signerKey": {
+        "label": "challenge-request keypair",
+        "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+        "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+        "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+        "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+      },
+      "message": {
+        "type": "CHALLENGEREQUEST",
+        "encrypted": {
+          "ciphertext": {
+            "bytesHex": "211b661c602692e9be11e5c06e67e6088450d0d49b1fcda23321bc02265e9b3fdced03fba42b66c1fec0d78e28991c961b9b6a0ff786136ef1f4746fb0bf4c62568e863e8e860402746ee8050a3d442f5037c86555bf9d1387ae737f7da0c41d44d8aaac64399ab7ce28261acbfe62ee74cd6883320e9cb777a1bbf80c53372884654a94b10433aa23b823243c58b5088deffbed6d1c755e2ec340a19e45670d69cf78e15a55fabacb2551497d265d156bedd87c443bbf7e7ca91971055f631585a2027148b4ecae8b9d33372a67eca55f72ac612a6c6ea3f1268ad92c0c50eefb8dcab5fea22de7d1548c57dd8cda53c69e47d92df00b2a484f320874e5a7ecf176ff799eff47aebe1ff6c1d2b885d458e17ff98330c6780c9790481045b9808fe1dbee1b3be37995ac7576cc97501013b8bbdcbf46bc7069d233041d2017356f9d7e01ce0425b88d62b6d1dfe800cf117f8f401e9b726d51f426a96099a2448087eac7fb8fb192d5f22e8b6ce09250f1a0f3da35d57cba6142c0e382f8b7068bdee3499557ef97e373e0086bf83f64b0d0ee5184134584aa5ad00228ffc4748a6e480c242524b2b51f78b509594cd6bbf6a917f57e0b9f09239ace6c540a2e3ca97320dd5df45c971b9ebfaa818571e54bd4c90380730a5745841b13a3a8af9533994d738dcca982cbadd8dbe02c6168d51ed00fadc236dda8613aad5aeb2e7a5c89638407eaafb1c4eb6954b0e8653955e6174cd03759815706890bc2cd90ca8bf24bb2ef573aa40c123411223cc0a64075cf9774c8d40815c950786bf2e0c818cb89efb62a3aed040932e948884c1f4961651084c434589e6f36d6bca5f5b12de51a72da3ac27a13c0b605b12be1f161af968b358d04d326ccb2bb74d76b340bd24794c8856244fb9ee4cbd21aa58a8b73d9eca1744a947ad0e6c11c5aed8163e2d1b48245bcab4f9bafae54e241de7597e6c64d798acdaeaa26df9744e5dce5a963eb459cb3f72ad9e27e8f1716af73fcc57ef1c62451c79775c375cc1a87e12c6c7a07e84bd6434eab4e98895166846a655626eb7aa647877e8c8afd38d34667f1c8b0e78b794d4faad368f02faed470e934be606879da33ed0459656dd3a34379e5babb3599cc101630"
+          },
+          "iv": {
+            "bytesHex": "000102030405060708090a0b"
+          },
+          "tag": {
+            "bytesHex": "91c7d512c15719acadfb6e4f95ba49c6"
+          },
+          "type": "ed25519-aes-gcm"
+        },
+        "challengeRequestId": {
+          "bytesHex": "002408011220ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1"
+        },
+        "acceptedChallengeTypes": [
+          "text/plain"
+        ],
+        "userAgent": "/pkc-js:0.0.124/",
+        "protocolVersion": "1.0.0",
+        "timestamp": 1767225601,
+        "signature": {
+          "signature": {
+            "bytesHex": "3301edbca875a9b1be0da9b3f21a58a7b7e5de2ea179399adf6961e1cd3e03c05f5e79ee14c41d9c8971ace8df5e94f88bae4e394e80e1062b5d7fa4c61e470c"
+          },
+          "publicKey": {
+            "bytesHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1"
+          },
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "challengeRequestId",
+            "protocolVersion",
+            "userAgent",
+            "timestamp",
+            "type",
+            "encrypted",
+            "acceptedChallengeTypes"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "challengeRequestId",
+        "protocolVersion",
+        "userAgent",
+        "timestamp",
+        "type",
+        "encrypted",
+        "acceptedChallengeTypes"
+      ],
+      "signedCborHex": "a76474797065704348414c4c454e47455245515545535469656e63727970746564a46269764c000102030405060708090a0b637461675091c7d512c15719acadfb6e4f95ba49c664747970656f656432353531392d6165732d67636d6a6369706865727465787459032d211b661c602692e9be11e5c06e67e6088450d0d49b1fcda23321bc02265e9b3fdced03fba42b66c1fec0d78e28991c961b9b6a0ff786136ef1f4746fb0bf4c62568e863e8e860402746ee8050a3d442f5037c86555bf9d1387ae737f7da0c41d44d8aaac64399ab7ce28261acbfe62ee74cd6883320e9cb777a1bbf80c53372884654a94b10433aa23b823243c58b5088deffbed6d1c755e2ec340a19e45670d69cf78e15a55fabacb2551497d265d156bedd87c443bbf7e7ca91971055f631585a2027148b4ecae8b9d33372a67eca55f72ac612a6c6ea3f1268ad92c0c50eefb8dcab5fea22de7d1548c57dd8cda53c69e47d92df00b2a484f320874e5a7ecf176ff799eff47aebe1ff6c1d2b885d458e17ff98330c6780c9790481045b9808fe1dbee1b3be37995ac7576cc97501013b8bbdcbf46bc7069d233041d2017356f9d7e01ce0425b88d62b6d1dfe800cf117f8f401e9b726d51f426a96099a2448087eac7fb8fb192d5f22e8b6ce09250f1a0f3da35d57cba6142c0e382f8b7068bdee3499557ef97e373e0086bf83f64b0d0ee5184134584aa5ad00228ffc4748a6e480c242524b2b51f78b509594cd6bbf6a917f57e0b9f09239ace6c540a2e3ca97320dd5df45c971b9ebfaa818571e54bd4c90380730a5745841b13a3a8af9533994d738dcca982cbadd8dbe02c6168d51ed00fadc236dda8613aad5aeb2e7a5c89638407eaafb1c4eb6954b0e8653955e6174cd03759815706890bc2cd90ca8bf24bb2ef573aa40c123411223cc0a64075cf9774c8d40815c950786bf2e0c818cb89efb62a3aed040932e948884c1f4961651084c434589e6f36d6bca5f5b12de51a72da3ac27a13c0b605b12be1f161af968b358d04d326ccb2bb74d76b340bd24794c8856244fb9ee4cbd21aa58a8b73d9eca1744a947ad0e6c11c5aed8163e2d1b48245bcab4f9bafae54e241de7597e6c64d798acdaeaa26df9744e5dce5a963eb459cb3f72ad9e27e8f1716af73fcc57ef1c62451c79775c375cc1a87e12c6c7a07e84bd6434eab4e98895166846a655626eb7aa647877e8c8afd38d34667f1c8b0e78b794d4faad368f02faed470e934be606879da33ed0459656dd3a34379e5babb3599cc1016306974696d657374616d701a6955b90169757365724167656e74702f706b632d6a733a302e302e3132342f6f70726f746f636f6c56657273696f6e65312e302e30726368616c6c656e67655265717565737449645826002408011220ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d17661636365707465644368616c6c656e67655479706573816a746578742f706c61696e",
+      "signatureHex": "3301edbca875a9b1be0da9b3f21a58a7b7e5de2ea179399adf6961e1cd3e03c05f5e79ee14c41d9c8971ace8df5e94f88bae4e394e80e1062b5d7fa4c61e470c",
+      "signaturePublicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "challengeRequestId": {
+        "hex": "002408011220ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "base58btc": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba",
+        "layout": "0x00 0x24 (identity multihash, 36 bytes) || 0x08 0x01 0x12 0x20 (libp2p PublicKey protobuf, Ed25519, 32 bytes) || public key"
+      },
+      "wireMessageCborHex": "a86474797065704348414c4c454e47455245515545535469656e63727970746564a46269764c000102030405060708090a0b637461675091c7d512c15719acadfb6e4f95ba49c664747970656f656432353531392d6165732d67636d6a6369706865727465787459032d211b661c602692e9be11e5c06e67e6088450d0d49b1fcda23321bc02265e9b3fdced03fba42b66c1fec0d78e28991c961b9b6a0ff786136ef1f4746fb0bf4c62568e863e8e860402746ee8050a3d442f5037c86555bf9d1387ae737f7da0c41d44d8aaac64399ab7ce28261acbfe62ee74cd6883320e9cb777a1bbf80c53372884654a94b10433aa23b823243c58b5088deffbed6d1c755e2ec340a19e45670d69cf78e15a55fabacb2551497d265d156bedd87c443bbf7e7ca91971055f631585a2027148b4ecae8b9d33372a67eca55f72ac612a6c6ea3f1268ad92c0c50eefb8dcab5fea22de7d1548c57dd8cda53c69e47d92df00b2a484f320874e5a7ecf176ff799eff47aebe1ff6c1d2b885d458e17ff98330c6780c9790481045b9808fe1dbee1b3be37995ac7576cc97501013b8bbdcbf46bc7069d233041d2017356f9d7e01ce0425b88d62b6d1dfe800cf117f8f401e9b726d51f426a96099a2448087eac7fb8fb192d5f22e8b6ce09250f1a0f3da35d57cba6142c0e382f8b7068bdee3499557ef97e373e0086bf83f64b0d0ee5184134584aa5ad00228ffc4748a6e480c242524b2b51f78b509594cd6bbf6a917f57e0b9f09239ace6c540a2e3ca97320dd5df45c971b9ebfaa818571e54bd4c90380730a5745841b13a3a8af9533994d738dcca982cbadd8dbe02c6168d51ed00fadc236dda8613aad5aeb2e7a5c89638407eaafb1c4eb6954b0e8653955e6174cd03759815706890bc2cd90ca8bf24bb2ef573aa40c123411223cc0a64075cf9774c8d40815c950786bf2e0c818cb89efb62a3aed040932e948884c1f4961651084c434589e6f36d6bca5f5b12de51a72da3ac27a13c0b605b12be1f161af968b358d04d326ccb2bb74d76b340bd24794c8856244fb9ee4cbd21aa58a8b73d9eca1744a947ad0e6c11c5aed8163e2d1b48245bcab4f9bafae54e241de7597e6c64d798acdaeaa26df9744e5dce5a963eb459cb3f72ad9e27e8f1716af73fcc57ef1c62451c79775c375cc1a87e12c6c7a07e84bd6434eab4e98895166846a655626eb7aa647877e8c8afd38d34667f1c8b0e78b794d4faad368f02faed470e934be606879da33ed0459656dd3a34379e5babb3599cc101630697369676e6174757265a464747970656765643235353139697075626c69634b65795820ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1697369676e617475726558403301edbca875a9b1be0da9b3f21a58a7b7e5de2ea179399adf6961e1cd3e03c05f5e79ee14c41d9c8971ace8df5e94f88bae4e394e80e1062b5d7fa4c61e470c737369676e656450726f70657274794e616d657387726368616c6c656e67655265717565737449646f70726f746f636f6c56657273696f6e69757365724167656e746974696d657374616d70647479706569656e637279707465647661636365707465644368616c6c656e676554797065736974696d657374616d701a6955b90169757365724167656e74702f706b632d6a733a302e302e3132342f6f70726f746f636f6c56657273696f6e65312e302e30726368616c6c656e67655265717565737449645826002408011220ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d17661636365707465644368616c6c656e67655479706573816a746578742f706c61696e",
+      "encryptedFrom": "../bsip-4/encryption-vectors.json#challengerequest-payload",
+      "pkcJs": {
+        "verifyChallengeRequest": {
+          "valid": true
+        },
+        "schema": "valid",
+        "decryptedCommentVerifies": {
+          "valid": true
+        }
+      }
+    },
+    {
+      "name": "challengerequest-id-from-other-key",
+      "negative": true,
+      "challengeRequestIdHex": "002408011220ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "pkcJs": {
+        "verifyChallengeRequest": {
+          "valid": false,
+          "reason": "Challenge request id is not derived from signature.publicKey"
+        }
+      }
+    },
+    {
+      "name": "challengerequest-timestamp-altered",
+      "negative": true,
+      "timestamp": 1767225602,
+      "pkcJs": {
+        "verifyChallengeRequest": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        }
+      }
+    }
+  ]
+}

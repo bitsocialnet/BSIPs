@@ -1,0 +1,115 @@
+{
+  "description": "ed25519-aes-gcm encryption of a CHALLENGEREQUEST payload. TEST KEYS ONLY: never use them outside tests.",
+  "generatedWith": {
+    "package": "@pkcprotocol/pkc-js",
+    "version": "0.0.124",
+    "commit": "571044ba078e8b6b3ab41b1917a8ea3030523e9f",
+    "node": "v22.22.3",
+    "method": "signed with the pkc-js sign* functions, checked with its verify*/decrypt functions, by a standalone Node script (not committed)",
+    "dependencies": {
+      "cborg": "4.5.8",
+      "@noble/curves": "2.2.0",
+      "node-forge": "1.4.0",
+      "safe-stable-stringify": "2.4.3",
+      "ipfs-only-hash": "4.0.0",
+      "ipfs-only-hash/node_modules/ipfs-unixfs-importer": "7.0.3"
+    }
+  },
+  "testOnlyKeys": [
+    {
+      "label": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "privateKeyBase64": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "publicKeyHex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "address": "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5"
+    },
+    {
+      "label": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "privateKeyBase64": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+      "publicKeyHex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "address": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq"
+    },
+    {
+      "label": "challenge-request keypair",
+      "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+      "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+      "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+    },
+    {
+      "label": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "privateKeyBase64": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+      "publicKeyHex": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "address": "12D3KooWPT98FXMfDQYavZm66EeVjTqP9Nnehn1gyaydqV8L8BQw"
+    }
+  ],
+  "vectors": [
+    {
+      "name": "challengerequest-payload",
+      "sender": {
+        "label": "challenge-request keypair",
+        "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+        "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+        "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+        "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+      },
+      "recipient": {
+        "label": "community",
+        "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+        "privateKeyBase64": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+        "publicKeyHex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+        "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+        "address": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq"
+      },
+      "senderX25519PrivateKeyHex": "98aebbb178a551876bfaf8e1e530dac6aaf6c2ea1c8f8406a3ab37dfb40fbc65",
+      "senderX25519PublicKeyHex": "75e270df2952c57ba8367ba8618c178f9fe50db2799d304e74e918d985686146",
+      "recipientX25519PrivateKeyHex": "a83c626bc9c38c8c201878ebb1d5b0b50ac40e8986c78793db1d4ef369fca14e",
+      "recipientX25519PublicKeyHex": "60346e7c911a5f6ba154129174cafe75b294ac3bbd5549632f48cec6266f8410",
+      "sharedSecretHex": "4d5f27f64f1c94fcca0e645500ec6a382b2ff9b83db4d341a4a0d3abf5461277",
+      "aesKeyHex": "4d5f27f64f1c94fcca0e645500ec6a38",
+      "aesKeyDerivation": "first 16 bytes of the 32-byte X25519 output, no KDF",
+      "ivHex": "000102030405060708090a0b",
+      "plaintextJson": "{\"comment\":{\"communityPublicKey\":\"12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq\",\"communityName\":\"example.bso\",\"protocolVersion\":\"1.0.0\",\"title\":\"Test vector post\",\"content\":\"Hello, Bitsocial! café ☕ 😀\",\"link\":\"https://example.com/cat.png\",\"linkWidth\":1024,\"linkHeight\":768.25,\"spoiler\":false,\"flairs\":[{\"text\":\"meta\",\"backgroundColor\":\"#336699\"}],\"author\":{\"displayName\":\"Alice ☕\"},\"timestamp\":1767225600,\"signature\":{\"signature\":\"q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg\",\"publicKey\":\"iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w\",\"type\":\"ed25519\",\"signedPropertyNames\":[\"flairs\",\"spoiler\",\"content\",\"title\",\"link\",\"linkWidth\",\"linkHeight\",\"author\",\"communityPublicKey\",\"communityName\",\"protocolVersion\",\"timestamp\"]}},\"challengeAnswers\":[\"4\"]}",
+      "paddingLength": 7,
+      "plaintextWithPaddingHex": "7b22636f6d6d656e74223a7b22636f6d6d756e6974795075626c69634b6579223a22313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571222c22636f6d6d756e6974794e616d65223a226578616d706c652e62736f222c2270726f746f636f6c56657273696f6e223a22312e302e30222c227469746c65223a225465737420766563746f7220706f7374222c22636f6e74656e74223a2248656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f9880222c226c696e6b223a2268747470733a2f2f6578616d706c652e636f6d2f6361742e706e67222c226c696e6b5769647468223a313032342c226c696e6b486569676874223a3736382e32352c2273706f696c6572223a66616c73652c22666c61697273223a5b7b2274657874223a226d657461222c226261636b67726f756e64436f6c6f72223a2223333336363939227d5d2c22617574686f72223a7b22646973706c61794e616d65223a22416c69636520e29895227d2c2274696d657374616d70223a313736373232353630302c227369676e6174757265223a7b227369676e6174757265223a227131614a5956354152592b6e6a43462f6254536f716e68726b674933343575624d626139773738633855423078526e4f65544d6e413145486d63716d6d746442796e64536f38576a6458326f4d70736e6f7467454467222c227075626c69634b6579223a22696f6a6a3358514a385a583955747374504c70646373706e436238646c4249623833534941625150623177222c2274797065223a2265643235353139222c227369676e656450726f70657274794e616d6573223a5b22666c61697273222c2273706f696c6572222c22636f6e74656e74222c227469746c65222c226c696e6b222c226c696e6b5769647468222c226c696e6b486569676874222c22617574686f72222c22636f6d6d756e6974795075626c69634b6579222c22636f6d6d756e6974794e616d65222c2270726f746f636f6c56657273696f6e222c2274696d657374616d70225d7d7d2c226368616c6c656e6765416e7377657273223a5b2234225d7d20202020202020",
+      "ciphertextHex": "211b661c602692e9be11e5c06e67e6088450d0d49b1fcda23321bc02265e9b3fdced03fba42b66c1fec0d78e28991c961b9b6a0ff786136ef1f4746fb0bf4c62568e863e8e860402746ee8050a3d442f5037c86555bf9d1387ae737f7da0c41d44d8aaac64399ab7ce28261acbfe62ee74cd6883320e9cb777a1bbf80c53372884654a94b10433aa23b823243c58b5088deffbed6d1c755e2ec340a19e45670d69cf78e15a55fabacb2551497d265d156bedd87c443bbf7e7ca91971055f631585a2027148b4ecae8b9d33372a67eca55f72ac612a6c6ea3f1268ad92c0c50eefb8dcab5fea22de7d1548c57dd8cda53c69e47d92df00b2a484f320874e5a7ecf176ff799eff47aebe1ff6c1d2b885d458e17ff98330c6780c9790481045b9808fe1dbee1b3be37995ac7576cc97501013b8bbdcbf46bc7069d233041d2017356f9d7e01ce0425b88d62b6d1dfe800cf117f8f401e9b726d51f426a96099a2448087eac7fb8fb192d5f22e8b6ce09250f1a0f3da35d57cba6142c0e382f8b7068bdee3499557ef97e373e0086bf83f64b0d0ee5184134584aa5ad00228ffc4748a6e480c242524b2b51f78b509594cd6bbf6a917f57e0b9f09239ace6c540a2e3ca97320dd5df45c971b9ebfaa818571e54bd4c90380730a5745841b13a3a8af9533994d738dcca982cbadd8dbe02c6168d51ed00fadc236dda8613aad5aeb2e7a5c89638407eaafb1c4eb6954b0e8653955e6174cd03759815706890bc2cd90ca8bf24bb2ef573aa40c123411223cc0a64075cf9774c8d40815c950786bf2e0c818cb89efb62a3aed040932e948884c1f4961651084c434589e6f36d6bca5f5b12de51a72da3ac27a13c0b605b12be1f161af968b358d04d326ccb2bb74d76b340bd24794c8856244fb9ee4cbd21aa58a8b73d9eca1744a947ad0e6c11c5aed8163e2d1b48245bcab4f9bafae54e241de7597e6c64d798acdaeaa26df9744e5dce5a963eb459cb3f72ad9e27e8f1716af73fcc57ef1c62451c79775c375cc1a87e12c6c7a07e84bd6434eab4e98895166846a655626eb7aa647877e8c8afd38d34667f1c8b0e78b794d4faad368f02faed470e934be606879da33ed0459656dd3a34379e5babb3599cc101630",
+      "tagHex": "91c7d512c15719acadfb6e4f95ba49c6",
+      "pkcJs": {
+        "encryptEd25519AesGcmWithPinnedRandomness": "byte-identical",
+        "decryptEd25519AesGcm": {
+          "accepted": true,
+          "plaintextMatches": true
+        }
+      }
+    },
+    {
+      "name": "flipped-tag-byte",
+      "negative": true,
+      "tagHex": "90c7d512c15719acadfb6e4f95ba49c6",
+      "pkcJs": {
+        "decryptEd25519AesGcm": {
+          "accepted": false,
+          "error": "decryptStringAesGcm failed to decrypt, the AES-GCM authentication tag does not match the ciphertext, key and iv"
+        }
+      }
+    },
+    {
+      "name": "flipped-ciphertext-byte",
+      "negative": true,
+      "ciphertextHex": "201b661c602692e9be11e5c06e67e6088450d0d49b1fcda23321bc02265e9b3fdced03fba42b66c1fec0d78e28991c961b9b6a0ff786136ef1f4746fb0bf4c62568e863e8e860402746ee8050a3d442f5037c86555bf9d1387ae737f7da0c41d44d8aaac64399ab7ce28261acbfe62ee74cd6883320e9cb777a1bbf80c53372884654a94b10433aa23b823243c58b5088deffbed6d1c755e2ec340a19e45670d69cf78e15a55fabacb2551497d265d156bedd87c443bbf7e7ca91971055f631585a2027148b4ecae8b9d33372a67eca55f72ac612a6c6ea3f1268ad92c0c50eefb8dcab5fea22de7d1548c57dd8cda53c69e47d92df00b2a484f320874e5a7ecf176ff799eff47aebe1ff6c1d2b885d458e17ff98330c6780c9790481045b9808fe1dbee1b3be37995ac7576cc97501013b8bbdcbf46bc7069d233041d2017356f9d7e01ce0425b88d62b6d1dfe800cf117f8f401e9b726d51f426a96099a2448087eac7fb8fb192d5f22e8b6ce09250f1a0f3da35d57cba6142c0e382f8b7068bdee3499557ef97e373e0086bf83f64b0d0ee5184134584aa5ad00228ffc4748a6e480c242524b2b51f78b509594cd6bbf6a917f57e0b9f09239ace6c540a2e3ca97320dd5df45c971b9ebfaa818571e54bd4c90380730a5745841b13a3a8af9533994d738dcca982cbadd8dbe02c6168d51ed00fadc236dda8613aad5aeb2e7a5c89638407eaafb1c4eb6954b0e8653955e6174cd03759815706890bc2cd90ca8bf24bb2ef573aa40c123411223cc0a64075cf9774c8d40815c950786bf2e0c818cb89efb62a3aed040932e948884c1f4961651084c434589e6f36d6bca5f5b12de51a72da3ac27a13c0b605b12be1f161af968b358d04d326ccb2bb74d76b340bd24794c8856244fb9ee4cbd21aa58a8b73d9eca1744a947ad0e6c11c5aed8163e2d1b48245bcab4f9bafae54e241de7597e6c64d798acdaeaa26df9744e5dce5a963eb459cb3f72ad9e27e8f1716af73fcc57ef1c62451c79775c375cc1a87e12c6c7a07e84bd6434eab4e98895166846a655626eb7aa647877e8c8afd38d34667f1c8b0e78b794d4faad368f02faed470e934be606879da33ed0459656dd3a34379e5babb3599cc101630",
+      "pkcJs": {
+        "decryptEd25519AesGcm": {
+          "accepted": false,
+          "error": "decryptStringAesGcm failed to decrypt, the AES-GCM authentication tag does not match the ciphertext, key and iv"
+        }
+      }
+    }
+  ]
+}

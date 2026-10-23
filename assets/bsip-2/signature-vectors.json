@@ -1,0 +1,1232 @@
+{
+  "description": "Ed25519 signatures over CBOR (BSIP-2 comments, BSIP-3 community record, BSIP-5 comment update, BSIP-6 vote). signedCborHex = cborg.encode of the record restricted to signature.signedPropertyNames, null/undefined values dropped (the bytes pkc-js verifies). pkcJs = results of pkc-js functions; signatureOnly is _validateSignatureOfPKCRecord (signature check alone). TEST KEYS ONLY: never use them outside tests.",
+  "generatedWith": {
+    "package": "@pkcprotocol/pkc-js",
+    "version": "0.0.124",
+    "commit": "571044ba078e8b6b3ab41b1917a8ea3030523e9f",
+    "node": "v22.22.3",
+    "method": "signed with the pkc-js sign* functions, checked with its verify*/decrypt functions, by a standalone Node script (not committed)",
+    "dependencies": {
+      "cborg": "4.5.8",
+      "@noble/curves": "2.2.0",
+      "node-forge": "1.4.0",
+      "safe-stable-stringify": "2.4.3",
+      "ipfs-only-hash": "4.0.0",
+      "ipfs-only-hash/node_modules/ipfs-unixfs-importer": "7.0.3"
+    }
+  },
+  "testOnlyKeys": [
+    {
+      "label": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "privateKeyBase64": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "publicKeyHex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "address": "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5"
+    },
+    {
+      "label": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "privateKeyBase64": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+      "publicKeyHex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "address": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq"
+    },
+    {
+      "label": "challenge-request keypair",
+      "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+      "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+      "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+    },
+    {
+      "label": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "privateKeyBase64": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+      "publicKeyHex": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "address": "12D3KooWPT98FXMfDQYavZm66EeVjTqP9Nnehn1gyaydqV8L8BQw"
+    }
+  ],
+  "vectors": [
+    {
+      "name": "post-comment",
+      "bsip": 2,
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentPubsubMessage": {
+          "valid": true
+        },
+        "signedWith": "signComment",
+        "schema": "valid"
+      }
+    },
+    {
+      "name": "reply-comment",
+      "bsip": 2,
+      "signerKey": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "content": "A reply to the post.",
+        "parentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "postCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "author": {
+          "name": "bob.bso",
+          "displayName": "Bob"
+        },
+        "timestamp": 1767225660,
+        "signature": {
+          "signature": "85jaH/BXKr++ULQdcxgqZZCqUCAESyy/OfTjAilGvlQjpVqbcz/rZ13qnTLNBGyqW9v2KCl7HIzFj6CcIlrNCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "content",
+            "parentCid",
+            "postCid",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "content",
+        "parentCid",
+        "postCid",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "a866617574686f72a2646e616d6567626f622e62736f6b646973706c61794e616d6563426f6267636f6e74656e747441207265706c7920746f2074686520706f73742e67706f7374436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d69706172656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6974696d657374616d701a6955b93c6d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "85jaH/BXKr++ULQdcxgqZZCqUCAESyy/OfTjAilGvlQjpVqbcz/rZ13qnTLNBGyqW9v2KCl7HIzFj6CcIlrNCA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentPubsubMessage": {
+          "valid": true
+        },
+        "signedWith": "signComment",
+        "schema": "valid"
+      }
+    },
+    {
+      "name": "vote",
+      "bsip": 6,
+      "signerKey": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "commentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "vote": -1,
+        "author": {
+          "name": "bob.bso"
+        },
+        "timestamp": 1767225720,
+        "signature": {
+          "signature": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp",
+            "commentCid",
+            "vote"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp",
+        "commentCid",
+        "vote"
+      ],
+      "signedCborHex": "a764766f74652066617574686f72a1646e616d6567626f622e62736f6974696d657374616d701a6955b9786a636f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyVote": {
+          "valid": true
+        },
+        "signedWith": "signVote",
+        "schema": "valid"
+      }
+    },
+    {
+      "name": "comment-update",
+      "bsip": 5,
+      "signerKey": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "object": {
+        "cid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "upvoteCount": 0,
+        "downvoteCount": 1,
+        "replyCount": 1,
+        "childCount": 1,
+        "number": 1,
+        "postNumber": 1,
+        "lastChildCid": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+        "lastReplyTimestamp": 1767225660,
+        "updatedAt": 1767225780,
+        "protocolVersion": "1.0.0",
+        "author": {
+          "community": {
+            "postScore": -1,
+            "replyScore": 0,
+            "firstCommentTimestamp": 1767225600,
+            "lastCommentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm"
+          }
+        },
+        "signature": {
+          "signature": "UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "cid",
+            "upvoteCount",
+            "downvoteCount",
+            "replyCount",
+            "childCount",
+            "number",
+            "postNumber",
+            "updatedAt",
+            "author",
+            "lastChildCid",
+            "lastReplyTimestamp",
+            "protocolVersion"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "cid",
+        "upvoteCount",
+        "downvoteCount",
+        "replyCount",
+        "childCount",
+        "number",
+        "postNumber",
+        "updatedAt",
+        "author",
+        "lastChildCid",
+        "lastReplyTimestamp",
+        "protocolVersion"
+      ],
+      "signedCborHex": "ac63636964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d66617574686f72a169636f6d6d756e697479a469706f737453636f7265206a7265706c7953636f7265006e6c617374436f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d756669727374436f6d6d656e7454696d657374616d701a6955b900666e756d62657201697570646174656441741a6955b9b46a6368696c64436f756e74016a706f73744e756d626572016a7265706c79436f756e74016b7570766f7465436f756e74006c6c6173744368696c64436964782e516d5062737136677767474b593756325058654459676e54374a654d4b36514b70334b6b734b704b3576704479576d646f776e766f7465436f756e74016f70726f746f636f6c56657273696f6e65312e302e30726c6173745265706c7954696d657374616d701a6955b93c",
+      "signatureBase64": "UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentUpdate": {
+          "valid": true
+        },
+        "signedWith": "signCommentUpdate",
+        "schema": "valid"
+      }
+    },
+    {
+      "name": "community-record",
+      "bsip": 3,
+      "signerKey": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "object": {
+        "name": "example.bso",
+        "title": "Example community",
+        "description": "Test vectors only.",
+        "rules": [
+          "Be nice."
+        ],
+        "roles": {
+          "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5": {
+            "role": "owner"
+          }
+        },
+        "challenges": [
+          {
+            "type": "text/plain",
+            "description": "Answer it."
+          }
+        ],
+        "encryption": {
+          "type": "ed25519-aes-gcm",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q"
+        },
+        "pubsubTopic": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "statsCid": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5",
+        "lastPostCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "lastCommentCid": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+        "createdAt": 1764633600,
+        "updatedAt": 1767225780,
+        "protocolVersion": "1.0.0",
+        "signature": {
+          "signature": "xWo0lyhbovOeFf31hLBzMt8Z3KyWcOELcAfuILQbehtY4o0L5X3KZ14LmgXwC77jsay/fiaPTwTp0Wvkf9b6BA",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "challenges",
+            "encryption",
+            "name",
+            "createdAt",
+            "updatedAt",
+            "pubsubTopic",
+            "statsCid",
+            "protocolVersion",
+            "title",
+            "description",
+            "roles",
+            "rules",
+            "lastPostCid",
+            "lastCommentCid"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "challenges",
+        "encryption",
+        "name",
+        "createdAt",
+        "updatedAt",
+        "pubsubTopic",
+        "statsCid",
+        "protocolVersion",
+        "title",
+        "description",
+        "roles",
+        "rules",
+        "lastPostCid",
+        "lastCommentCid"
+      ],
+      "signedCborHex": "ae646e616d656b6578616d706c652e62736f65726f6c6573a17834313244334b6f6f574b3939566f56784e4537587a79427758457a573778684b37477076383572394633563366794b53554b504835a164726f6c65656f776e65726572756c657381684265206e6963652e657469746c65714578616d706c6520636f6d6d756e697479687374617473436964782e516d536b43614e4e4b53425272655a5053557432794c3866526b66444c704b546656486364664744517751427435696372656174656441741a692e2c00697570646174656441741a6955b9b46a6368616c6c656e67657381a264747970656a746578742f706c61696e6b6465736372697074696f6e6a416e737765722069742e6a656e6372797074696f6ea264747970656f656432353531392d6165732d67636d697075626c69634b6579782b67546c3344716839463139576f31526d7730782b7a4d754e69704730376a65695866595057342f4a7335516b6465736372697074696f6e725465737420766563746f7273206f6e6c792e6b6c617374506f7374436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6b707562737562546f7069637834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e415375716e6c617374436f6d6d656e74436964782e516d5062737136677767474b593756325058654459676e54374a654d4b36514b70334b6b734b704b3576704479576f70726f746f636f6c56657273696f6e65312e302e30",
+      "signatureBase64": "xWo0lyhbovOeFf31hLBzMt8Z3KyWcOELcAfuILQbehtY4o0L5X3KZ14LmgXwC77jsay/fiaPTwTp0Wvkf9b6BA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommunity": {
+          "valid": true
+        },
+        "signedWith": "signCommunity",
+        "schema": "valid"
+      }
+    },
+    {
+      "name": "vote-with-unsigned-extra-field",
+      "bsip": 6,
+      "negative": true,
+      "description": "An unlisted field leaves the signed bytes unchanged, so the signature verifies, but verifyVote rejects any field not in signedPropertyNames.",
+      "signerKey": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "commentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "vote": -1,
+        "author": {
+          "name": "bob.bso"
+        },
+        "timestamp": 1767225720,
+        "signature": {
+          "signature": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp",
+            "commentCid",
+            "vote"
+          ]
+        },
+        "extraField": "added in transit"
+      },
+      "signedPropertyNames": [
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp",
+        "commentCid",
+        "vote"
+      ],
+      "signedCborHex": "a764766f74652066617574686f72a1646e616d6567626f622e62736f6974696d657374616d701a6955b9786a636f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyVote": {
+          "valid": false,
+          "reason": "VotePubsubMessagePublication record includes a field that's not included in signature.signedPropertyNames"
+        }
+      }
+    },
+    {
+      "name": "post-comment-ipfs-with-unknown-unsigned-field",
+      "bsip": 2,
+      "negative": true,
+      "description": "A fetched CommentIpfs may carry unsigned fields that are not comment fields (depth, previousCid, unknown fields): verifyCommentIpfs accepts.",
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        },
+        "depth": 0,
+        "previousCid": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5",
+        "extraField": "unknown"
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentIpfs": {
+          "valid": true
+        }
+      }
+    },
+    {
+      "name": "post-comment-ipfs-with-unsigned-signable-field",
+      "bsip": 2,
+      "negative": true,
+      "description": "A comment field (nsfw) present but not in signedPropertyNames: the signature verifies, verifyCommentIpfs rejects (pkc-js issue #249).",
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        },
+        "depth": 0,
+        "previousCid": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5",
+        "nsfw": true
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentIpfs": {
+          "valid": false,
+          "reason": "CommentIpfs record includes an author-signable field that's not included in signature.signedPropertyNames"
+        }
+      }
+    },
+    {
+      "name": "community-record-with-unsigned-posts",
+      "bsip": 3,
+      "negative": true,
+      "description": "posts added without being signed: the signature verifies, verifyCommunity rejects.",
+      "signerKey": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "object": {
+        "name": "example.bso",
+        "title": "Example community",
+        "description": "Test vectors only.",
+        "rules": [
+          "Be nice."
+        ],
+        "roles": {
+          "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5": {
+            "role": "owner"
+          }
+        },
+        "challenges": [
+          {
+            "type": "text/plain",
+            "description": "Answer it."
+          }
+        ],
+        "encryption": {
+          "type": "ed25519-aes-gcm",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q"
+        },
+        "pubsubTopic": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "statsCid": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5",
+        "lastPostCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "lastCommentCid": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+        "createdAt": 1764633600,
+        "updatedAt": 1767225780,
+        "protocolVersion": "1.0.0",
+        "signature": {
+          "signature": "xWo0lyhbovOeFf31hLBzMt8Z3KyWcOELcAfuILQbehtY4o0L5X3KZ14LmgXwC77jsay/fiaPTwTp0Wvkf9b6BA",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "challenges",
+            "encryption",
+            "name",
+            "createdAt",
+            "updatedAt",
+            "pubsubTopic",
+            "statsCid",
+            "protocolVersion",
+            "title",
+            "description",
+            "roles",
+            "rules",
+            "lastPostCid",
+            "lastCommentCid"
+          ]
+        },
+        "posts": {
+          "pageCids": {
+            "new": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5"
+          }
+        }
+      },
+      "signedPropertyNames": [
+        "challenges",
+        "encryption",
+        "name",
+        "createdAt",
+        "updatedAt",
+        "pubsubTopic",
+        "statsCid",
+        "protocolVersion",
+        "title",
+        "description",
+        "roles",
+        "rules",
+        "lastPostCid",
+        "lastCommentCid"
+      ],
+      "signedCborHex": "ae646e616d656b6578616d706c652e62736f65726f6c6573a17834313244334b6f6f574b3939566f56784e4537587a79427758457a573778684b37477076383572394633563366794b53554b504835a164726f6c65656f776e65726572756c657381684265206e6963652e657469746c65714578616d706c6520636f6d6d756e697479687374617473436964782e516d536b43614e4e4b53425272655a5053557432794c3866526b66444c704b546656486364664744517751427435696372656174656441741a692e2c00697570646174656441741a6955b9b46a6368616c6c656e67657381a264747970656a746578742f706c61696e6b6465736372697074696f6e6a416e737765722069742e6a656e6372797074696f6ea264747970656f656432353531392d6165732d67636d697075626c69634b6579782b67546c3344716839463139576f31526d7730782b7a4d754e69704730376a65695866595057342f4a7335516b6465736372697074696f6e725465737420766563746f7273206f6e6c792e6b6c617374506f7374436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6b707562737562546f7069637834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e415375716e6c617374436f6d6d656e74436964782e516d5062737136677767474b593756325058654459676e54374a654d4b36514b70334b6b734b704b3576704479576f70726f746f636f6c56657273696f6e65312e302e30",
+      "signatureBase64": "xWo0lyhbovOeFf31hLBzMt8Z3KyWcOELcAfuILQbehtY4o0L5X3KZ14LmgXwC77jsay/fiaPTwTp0Wvkf9b6BA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommunity": {
+          "valid": false,
+          "reason": "CommunityIpfs record includes a field not included in signature.signedPropertyNames"
+        }
+      }
+    },
+    {
+      "name": "vote-signed-field-altered",
+      "bsip": 6,
+      "negative": true,
+      "description": "vote changed from -1 to 1 after signing: the signature fails.",
+      "signerKey": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "commentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "vote": 1,
+        "author": {
+          "name": "bob.bso"
+        },
+        "timestamp": 1767225720,
+        "signature": {
+          "signature": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp",
+            "commentCid",
+            "vote"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp",
+        "commentCid",
+        "vote"
+      ],
+      "signedCborHex": "a764766f74650166617574686f72a1646e616d6567626f622e62736f6974696d657374616d701a6955b9786a636f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        },
+        "verifyVote": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        }
+      }
+    },
+    {
+      "name": "post-signed-field-altered",
+      "bsip": 2,
+      "negative": true,
+      "description": "content changed after signing.",
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "edited",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74666564697465646773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        },
+        "verifyCommentPubsubMessage": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        }
+      }
+    },
+    {
+      "name": "null-in-signed-property-treated-as-absent",
+      "bsip": 2,
+      "negative": true,
+      "description": "nsfw: null is listed but verifiers skip null values, so the original signature (made without nsfw) verifies. The wire schema rejects null.",
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp",
+            "nsfw"
+          ]
+        },
+        "nsfw": null
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp",
+        "nsfw"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentPubsubMessage": {
+          "valid": true
+        },
+        "schema": "invalid: nsfw: Invalid input: expected boolean, received null"
+      }
+    },
+    {
+      "name": "null-in-signed-property-signed-as-cbor-null",
+      "bsip": 2,
+      "negative": true,
+      "description": "Signed over nsfw: null as CBOR null (signedByPkcJsHex). The verifier drops the null (signedCborHex) and rejects.",
+      "signerKey": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "pTMlNnb6iUfHiWX8XlBptb7g4H6/TGMOeaDBWOsKRgPgIZPmhNEposxs41xGUL8Dggv+HPW7fFBwxcnDe51TAw",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "nsfw",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        },
+        "nsfw": null
+      },
+      "signedPropertyNames": [
+        "flairs",
+        "spoiler",
+        "nsfw",
+        "content",
+        "title",
+        "link",
+        "linkWidth",
+        "linkHeight",
+        "author",
+        "communityPublicKey",
+        "communityName",
+        "protocolVersion",
+        "timestamp"
+      ],
+      "signedCborHex": "ac646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "pTMlNnb6iUfHiWX8XlBptb7g4H6/TGMOeaDBWOsKRgPgIZPmhNEposxs41xGUL8Dggv+HPW7fFBwxcnDe51TAw",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        },
+        "verifyCommentPubsubMessage": {
+          "valid": false,
+          "reason": "Signature of publication is invalid"
+        },
+        "signedWith": "_signJson without cleanUpBeforePublishing",
+        "signedByPkcJsHex": "ad646c696e6b781b68747470733a2f2f6578616d706c652e636f6d2f6361742e706e67646e736677f6657469746c65705465737420766563746f7220706f737466617574686f72a16b646973706c61794e616d6569416c69636520e2989566666c6169727381a26474657874646d6574616f6261636b67726f756e64436f6c6f72672333333636393967636f6e74656e74782048656c6c6f2c20426974736f6369616c2120636166c3a920e2989520f09f98806773706f696c6572f4696c696e6b57696474681904006974696d657374616d701a6955b9006a6c696e6b486569676874fa444010006d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571"
+      }
+    },
+    {
+      "name": "signedPropertyNames-reordered-with-absent-name",
+      "bsip": 6,
+      "negative": true,
+      "description": "The order of signedPropertyNames is irrelevant (CBOR maps are sorted) and a listed name missing from the record is skipped.",
+      "signerKey": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "object": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "commentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "vote": -1,
+        "author": {
+          "name": "bob.bso"
+        },
+        "timestamp": 1767225720,
+        "signature": {
+          "signature": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "vote",
+            "commentCid",
+            "timestamp",
+            "protocolVersion",
+            "communityName",
+            "communityPublicKey",
+            "author",
+            "absent"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "vote",
+        "commentCid",
+        "timestamp",
+        "protocolVersion",
+        "communityName",
+        "communityPublicKey",
+        "author",
+        "absent"
+      ],
+      "signedCborHex": "a764766f74652066617574686f72a1646e616d6567626f622e62736f6974696d657374616d701a6955b9786a636f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d6d636f6d6d756e6974794e616d656b6578616d706c652e62736f6f70726f746f636f6c56657273696f6e65312e302e3072636f6d6d756e6974795075626c69634b65797834313244334b6f6f574a576f61715a6844616f454673684637526831627059396f68696846687a6357366436394c72324e41537571",
+      "signatureBase64": "lbbxWjrffBM9oN4hkHa7d6a/e/rV9XiIZ+irs8Lu9fmHP4109zxGYO90WywBKpUTkxsrZC0NTC4O+hzB9xBPCA",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyVote": {
+          "valid": true
+        }
+      }
+    },
+    {
+      "name": "comment-update-with-padded-base64",
+      "bsip": 5,
+      "negative": true,
+      "description": "signature/publicKey with '=' padding: the decoder accepts them, but verifyCommentUpdate compares publicKey strings and rejects.",
+      "signerKey": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "object": {
+        "cid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "upvoteCount": 0,
+        "downvoteCount": 1,
+        "replyCount": 1,
+        "childCount": 1,
+        "number": 1,
+        "postNumber": 1,
+        "lastChildCid": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+        "lastReplyTimestamp": 1767225660,
+        "updatedAt": 1767225780,
+        "protocolVersion": "1.0.0",
+        "author": {
+          "community": {
+            "postScore": -1,
+            "replyScore": 0,
+            "firstCommentTimestamp": 1767225600,
+            "lastCommentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm"
+          }
+        },
+        "signature": {
+          "signature": "UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg==",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q=",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "cid",
+            "upvoteCount",
+            "downvoteCount",
+            "replyCount",
+            "childCount",
+            "number",
+            "postNumber",
+            "updatedAt",
+            "author",
+            "lastChildCid",
+            "lastReplyTimestamp",
+            "protocolVersion"
+          ]
+        }
+      },
+      "signedPropertyNames": [
+        "cid",
+        "upvoteCount",
+        "downvoteCount",
+        "replyCount",
+        "childCount",
+        "number",
+        "postNumber",
+        "updatedAt",
+        "author",
+        "lastChildCid",
+        "lastReplyTimestamp",
+        "protocolVersion"
+      ],
+      "signedCborHex": "ac63636964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d66617574686f72a169636f6d6d756e697479a469706f737453636f7265206a7265706c7953636f7265006e6c617374436f6d6d656e74436964782e516d5177696e34583156416d454c45354b73444842667a335a68614c694e384e63483636336e76424a4e4d71556d756669727374436f6d6d656e7454696d657374616d701a6955b900666e756d62657201697570646174656441741a6955b9b46a6368696c64436f756e74016a706f73744e756d626572016a7265706c79436f756e74016b7570766f7465436f756e74006c6c6173744368696c64436964782e516d5062737136677767474b593756325058654459676e54374a654d4b36514b70334b6b734b704b3576704479576d646f776e766f7465436f756e74016f70726f746f636f6c56657273696f6e65312e302e30726c6173745265706c7954696d657374616d701a6955b93c",
+      "signatureBase64": "UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg==",
+      "pkcJs": {
+        "signatureOnly": {
+          "valid": true
+        },
+        "verifyCommentUpdate": {
+          "valid": false,
+          "reason": "Comment update is not signed by the community"
+        }
+      }
+    },
+    {
+      "name": "cbor-encoding-examples",
+      "description": "cborg.encode(value, pkc-js options). -0 encodes as 0; non-integers and unsafe integers use the shortest exact float; undefined throws.",
+      "examples": [
+        {
+          "value": {
+            "b": 1,
+            "aa": 2,
+            "a": 3
+          },
+          "note": "map keys: shorter first, then bytewise",
+          "cborHex": "a361610361620162616102"
+        },
+        {
+          "value": {
+            "z": {
+              "b": true,
+              "a": null
+            }
+          },
+          "note": "nested null is kept",
+          "cborHex": "a1617aa26161f66162f5"
+        },
+        {
+          "value": 0,
+          "cborHex": "00"
+        },
+        {
+          "value": 23,
+          "cborHex": "17"
+        },
+        {
+          "value": 24,
+          "cborHex": "1818"
+        },
+        {
+          "value": 255,
+          "cborHex": "18ff"
+        },
+        {
+          "value": 256,
+          "cborHex": "190100"
+        },
+        {
+          "value": 65536,
+          "cborHex": "1a00010000"
+        },
+        {
+          "value": 4294967296,
+          "cborHex": "1b0000000100000000"
+        },
+        {
+          "value": -1,
+          "cborHex": "20"
+        },
+        {
+          "value": 0,
+          "note": "JavaScript -0 (prints as 0 in JSON)",
+          "cborHex": "00"
+        },
+        {
+          "value": 1.5,
+          "note": "float16",
+          "cborHex": "f93e00"
+        },
+        {
+          "value": 768.25,
+          "note": "float32",
+          "cborHex": "fa44401000"
+        },
+        {
+          "value": 0.1,
+          "note": "float64",
+          "cborHex": "fb3fb999999999999a"
+        },
+        {
+          "value": 9007199254740992,
+          "note": "integer above 2^53-1: encoded as the shortest exact float",
+          "cborHex": "fa5a000000"
+        },
+        {
+          "value": "é",
+          "cborHex": "62c3a9"
+        },
+        {
+          "value": "😀",
+          "cborHex": "64f09f9880"
+        },
+        {
+          "value": true,
+          "cborHex": "f5"
+        },
+        {
+          "value": false,
+          "cborHex": "f4"
+        },
+        {
+          "value": null,
+          "cborHex": "f6"
+        },
+        {
+          "value": [
+            1,
+            "a"
+          ],
+          "cborHex": "82016161"
+        },
+        {
+          "value": {},
+          "cborHex": "a0"
+        },
+        {
+          "value": {
+            "bytesHex": "010203"
+          },
+          "note": "byte string",
+          "cborHex": "43010203"
+        }
+      ]
+    }
+  ]
+}

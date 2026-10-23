@@ -1,0 +1,209 @@
+{
+  "description": "CIDv0 of IPFS records: ipfs-only-hash of the UTF-8 bytes of safe-stable-stringify(record). TEST KEYS ONLY: never use them outside tests.",
+  "generatedWith": {
+    "package": "@pkcprotocol/pkc-js",
+    "version": "0.0.124",
+    "commit": "571044ba078e8b6b3ab41b1917a8ea3030523e9f",
+    "node": "v22.22.3",
+    "method": "signed with the pkc-js sign* functions, checked with its verify*/decrypt functions, by a standalone Node script (not committed)",
+    "dependencies": {
+      "cborg": "4.5.8",
+      "@noble/curves": "2.2.0",
+      "node-forge": "1.4.0",
+      "safe-stable-stringify": "2.4.3",
+      "ipfs-only-hash": "4.0.0",
+      "ipfs-only-hash/node_modules/ipfs-unixfs-importer": "7.0.3"
+    }
+  },
+  "testOnlyKeys": [
+    {
+      "label": "alice",
+      "privateKeyHex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "privateKeyBase64": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "publicKeyHex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "publicKeyBase64": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "address": "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5"
+    },
+    {
+      "label": "community",
+      "privateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "privateKeyBase64": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+      "publicKeyHex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+      "publicKeyBase64": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+      "address": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq"
+    },
+    {
+      "label": "challenge-request keypair",
+      "privateKeyHex": "0303030303030303030303030303030303030303030303030303030303030303",
+      "privateKeyBase64": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "publicKeyHex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "publicKeyBase64": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+      "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+    },
+    {
+      "label": "bob",
+      "privateKeyHex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "privateKeyBase64": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+      "publicKeyHex": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "publicKeyBase64": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+      "address": "12D3KooWPT98FXMfDQYavZm66EeVjTqP9Nnehn1gyaydqV8L8BQw"
+    }
+  ],
+  "vectors": [
+    {
+      "name": "post-comment-ipfs",
+      "bsip": 2,
+      "record": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "title": "Test vector post",
+        "content": "Hello, Bitsocial! café ☕ 😀",
+        "link": "https://example.com/cat.png",
+        "linkWidth": 1024,
+        "linkHeight": 768.25,
+        "spoiler": false,
+        "flairs": [
+          {
+            "text": "meta",
+            "backgroundColor": "#336699"
+          }
+        ],
+        "author": {
+          "displayName": "Alice ☕"
+        },
+        "timestamp": 1767225600,
+        "signature": {
+          "signature": "q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg",
+          "publicKey": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "flairs",
+            "spoiler",
+            "content",
+            "title",
+            "link",
+            "linkWidth",
+            "linkHeight",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        },
+        "depth": 0,
+        "previousCid": "QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5"
+      },
+      "deterministicJson": "{\"author\":{\"displayName\":\"Alice ☕\"},\"communityName\":\"example.bso\",\"communityPublicKey\":\"12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq\",\"content\":\"Hello, Bitsocial! café ☕ 😀\",\"depth\":0,\"flairs\":[{\"backgroundColor\":\"#336699\",\"text\":\"meta\"}],\"link\":\"https://example.com/cat.png\",\"linkHeight\":768.25,\"linkWidth\":1024,\"previousCid\":\"QmSkCaNNKSBRreZPSUt2yL8fRkfDLpKTfVHcdfGDQwQBt5\",\"protocolVersion\":\"1.0.0\",\"signature\":{\"publicKey\":\"iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w\",\"signature\":\"q1aJYV5ARY+njCF/bTSoqnhrkgI345ubMba9w78c8UB0xRnOeTMnA1EHmcqmmtdByndSo8WjdX2oMpsnotgEDg\",\"signedPropertyNames\":[\"flairs\",\"spoiler\",\"content\",\"title\",\"link\",\"linkWidth\",\"linkHeight\",\"author\",\"communityPublicKey\",\"communityName\",\"protocolVersion\",\"timestamp\"],\"type\":\"ed25519\"},\"spoiler\":false,\"timestamp\":1767225600,\"title\":\"Test vector post\"}",
+      "utf8ByteLength": 842,
+      "blockPrefixHex": "0ad206080212ca06",
+      "blockSuffixHex": "18ca06",
+      "blockSha256Hex": "26b34d5558dac6d1bc583ff7b56846c070b7bda1859afb235b9f6bc2a786721a",
+      "cidV0": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+      "pkcJs": {
+        "verifyCommentIpfs": {
+          "valid": true
+        },
+        "verifyPage": {
+          "valid": true
+        }
+      }
+    },
+    {
+      "name": "reply-comment-ipfs",
+      "bsip": 2,
+      "record": {
+        "communityPublicKey": "12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq",
+        "communityName": "example.bso",
+        "protocolVersion": "1.0.0",
+        "content": "A reply to the post.",
+        "parentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "postCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "author": {
+          "name": "bob.bso",
+          "displayName": "Bob"
+        },
+        "timestamp": 1767225660,
+        "signature": {
+          "signature": "85jaH/BXKr++ULQdcxgqZZCqUCAESyy/OfTjAilGvlQjpVqbcz/rZ13qnTLNBGyqW9v2KCl7HIzFj6CcIlrNCA",
+          "publicKey": "ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "content",
+            "parentCid",
+            "postCid",
+            "author",
+            "communityPublicKey",
+            "communityName",
+            "protocolVersion",
+            "timestamp"
+          ]
+        },
+        "depth": 1,
+        "previousCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm"
+      },
+      "deterministicJson": "{\"author\":{\"displayName\":\"Bob\",\"name\":\"bob.bso\"},\"communityName\":\"example.bso\",\"communityPublicKey\":\"12D3KooWJWoaqZhDaoEFshF7Rh1bpY9ohihFhzcW6d69Lr2NASuq\",\"content\":\"A reply to the post.\",\"depth\":1,\"parentCid\":\"QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm\",\"postCid\":\"QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm\",\"previousCid\":\"QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm\",\"protocolVersion\":\"1.0.0\",\"signature\":{\"publicKey\":\"ypOsFwUYcHHWe4PH/w7+gQjo7EUwV113JoeTM9vavnw\",\"signature\":\"85jaH/BXKr++ULQdcxgqZZCqUCAESyy/OfTjAilGvlQjpVqbcz/rZ13qnTLNBGyqW9v2KCl7HIzFj6CcIlrNCA\",\"signedPropertyNames\":[\"content\",\"parentCid\",\"postCid\",\"author\",\"communityPublicKey\",\"communityName\",\"protocolVersion\",\"timestamp\"],\"type\":\"ed25519\"},\"timestamp\":1767225660}",
+      "utf8ByteLength": 752,
+      "blockPrefixHex": "0af805080212f005",
+      "blockSuffixHex": "18f005",
+      "blockSha256Hex": "12c23c09ac7e113c3342421f070fdbdee9b01fd34003e5f351e6c92109f542a5",
+      "cidV0": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+      "pkcJs": {
+        "verifyCommentIpfs": {
+          "valid": true
+        }
+      }
+    },
+    {
+      "name": "comment-update",
+      "bsip": 5,
+      "record": {
+        "cid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm",
+        "upvoteCount": 0,
+        "downvoteCount": 1,
+        "replyCount": 1,
+        "childCount": 1,
+        "number": 1,
+        "postNumber": 1,
+        "lastChildCid": "QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW",
+        "lastReplyTimestamp": 1767225660,
+        "updatedAt": 1767225780,
+        "protocolVersion": "1.0.0",
+        "author": {
+          "community": {
+            "postScore": -1,
+            "replyScore": 0,
+            "firstCommentTimestamp": 1767225600,
+            "lastCommentCid": "QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm"
+          }
+        },
+        "signature": {
+          "signature": "UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg",
+          "publicKey": "gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q",
+          "type": "ed25519",
+          "signedPropertyNames": [
+            "cid",
+            "upvoteCount",
+            "downvoteCount",
+            "replyCount",
+            "childCount",
+            "number",
+            "postNumber",
+            "updatedAt",
+            "author",
+            "lastChildCid",
+            "lastReplyTimestamp",
+            "protocolVersion"
+          ]
+        }
+      },
+      "deterministicJson": "{\"author\":{\"community\":{\"firstCommentTimestamp\":1767225600,\"lastCommentCid\":\"QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm\",\"postScore\":-1,\"replyScore\":0}},\"childCount\":1,\"cid\":\"QmQwin4X1VAmELE5KsDHBfz3ZhaLiN8NcH663nvBJNMqUm\",\"downvoteCount\":1,\"lastChildCid\":\"QmPbsq6gwgGKY7V2PXeDYgnT7JeMK6QKp3KksKpK5vpDyW\",\"lastReplyTimestamp\":1767225660,\"number\":1,\"postNumber\":1,\"protocolVersion\":\"1.0.0\",\"replyCount\":1,\"signature\":{\"publicKey\":\"gTl3Dqh9F19Wo1Rmw0x+zMuNipG07jeiXfYPW4/Js5Q\",\"signature\":\"UqSV19LZcoVLFpyToBhnMS0U0AHc0/cw3WIfbuYtgS22Kn3NNdQj9xdEIJyeVF0ap4bJDbO3WSQQZKMatoTvBg\",\"signedPropertyNames\":[\"cid\",\"upvoteCount\",\"downvoteCount\",\"replyCount\",\"childCount\",\"number\",\"postNumber\",\"updatedAt\",\"author\",\"lastChildCid\",\"lastReplyTimestamp\",\"protocolVersion\"],\"type\":\"ed25519\"},\"updatedAt\":1767225780,\"upvoteCount\":0}",
+      "utf8ByteLength": 820,
+      "blockPrefixHex": "0abc06080212b406",
+      "blockSuffixHex": "18b406",
+      "blockSha256Hex": "9fa407623064a217b6e019bf638afdcbf4cae1699cc3ab70ec96ed2bdb51cbd8",
+      "cidV0": "QmZ5pbqS9iRCp4SFrSCfyxi3jUZZiZb5kDQjqCE6ciCZeF"
+    }
+  ]
+}
