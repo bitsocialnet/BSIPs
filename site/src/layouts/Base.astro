@@ -13,6 +13,9 @@ const {
   title,
   description = 'Specifications for the decentralized Bitsocial protocol.',
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/logo-on-black-512.png', Astro.site);
 ---
 
 <!doctype html>
@@ -24,10 +27,18 @@ const {
     <link rel="icon" type="image/png" sizes="512x512" href="/logo-transparent-512.png" />
     <link rel="apple-touch-icon" href="/logo-transparent-180.png" />
     <title>{title}</title>
+    <link rel="canonical" href={canonical} />
     <meta name="description" content={description} />
+    <meta property="og:site_name" content="Bitsocial Improvement Proposals" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Bitsocial logo" />
+    <meta name="twitter:card" content="summary" />
     <meta name="generator" content={Astro.generator} />
     {/* Set the stored theme before paint to avoid a flash */}
     <script is:inline>
@@ -43,7 +54,7 @@ const {
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href="/">
-          <img src="/logo-transparent-512.png" alt="Bitsocial" width="26" height="26" />
+          <img src="/logo-transparent-64.png" alt="Bitsocial" width="26" height="26" />
           <span class="brand-full">Bitsocial <span class="brand-sub">Improvement Proposals</span></span>
           <span class="brand-short">BSIPs</span>
         </a>

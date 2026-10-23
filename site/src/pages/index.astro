@@ -3,12 +3,11 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
 const entries = await getCollection('bsips');
-const bsips = entries
-  .map((e) => ({ id: e.id, ...e.data }))
-  .sort((a, b) => Number(a.bsip) - Number(b.bsip));
+const bsips = entries.map((e) => ({ id: e.id, ...e.data })).sort((a, b) => a.bsip - b.bsip);
 
-const badgeClass = (s) => `badge s-${String(s).replace(/\s+/g, '-')}`;
-const meta = (b) => [b.type, b.category].filter(Boolean).join(' · ');
+type Bsip = (typeof bsips)[number];
+const badgeClass = (s: Bsip['status']) => `badge s-${s.replace(/\s+/g, '-')}`;
+const meta = (b: Bsip) => [b.type, b.category].filter(Boolean).join(' · ');
 ---
 
 <Base title="Bitsocial Improvement Proposals">
