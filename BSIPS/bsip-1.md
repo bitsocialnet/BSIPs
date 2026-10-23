@@ -1,7 +1,7 @@
 ---
 bsip: 1
 title: BSIP Purpose and Guidelines
-description: Defines what a Bitsocial Improvement Proposal is, the proposal types and categories, and the process by which BSIPs are proposed, reviewed, and finalized.
+description: Defines what a BSIP is, its types and categories, and how BSIPs are proposed, reviewed, and finalized.
 author: Tommaso Casaburi (@tomcasaburi)
 discussions-to: https://github.com/bitsocialnet/BSIPs/issues
 status: Living
@@ -30,10 +30,15 @@ Network appchain and its economic primitives, and the conventions applications a
 Today, much of the protocol is realized on top of
 [PKC (Public Key Communities)](https://github.com/pkcprotocol/pkc-js), a deliberately barebones
 peer-to-peer building block. PKC is an internal layer the protocol currently builds on; it is **not**
-itself the Bitsocial protocol. BSIPs already describe behavior beyond PKC — for example `.bso` name
-resolution, tipping, and pubsub voting — and the protocol is expected to grow well past PKC. When a
+itself the Bitsocial protocol. The protocol already includes behavior beyond PKC — for example `.bso`
+name resolution, tipping, and pubsub voting — and is expected to grow well past PKC. When a
 BSIP specifies behavior currently implemented through PKC, it should say so, but it specifies the
 Bitsocial protocol, not PKC.
+
+BSIPs are the normative description of the protocol; implementation documentation, such as
+pkc-js's protocol notes, should link to the BSIP it implements rather than restate it. While a BSIP
+is a Draft, a disagreement between it and the reference implementation is a defect in one of the two.
+It is resolved explicitly, by changing the BSIP or the implementation, and never left standing.
 
 Centralized products built *on top of* Bitsocial are out of scope. A hosted RPC provider, a managed
 build service such as Bitsocial Forge, or any swappable operator product is not the subject of a
