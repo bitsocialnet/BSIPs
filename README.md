@@ -11,7 +11,8 @@ company or codebase.
 If you are new here, **start with [BSIP-1](./BSIPS/bsip-1.md)**, which defines what a BSIP is
 and how the process works.
 
-> A companion website is planned. Until then, this repository is the canonical source for all BSIPs.
+The BSIPs are published at [bsips.bitsocial.net](https://bsips.bitsocial.net). This repository is the
+canonical source; the website is built from it.
 
 ## Scope: what belongs in a BSIP
 
@@ -73,6 +74,12 @@ as additional states.
 | [BSIP-4](./BSIPS/bsip-4.md) | Publishing and Challenges | Standards Track | Core | Draft |
 | [BSIP-5](./BSIPS/bsip-5.md) | Comment Updates | Standards Track | Core | Draft |
 | [BSIP-6](./BSIPS/bsip-6.md) | Votes | Standards Track | Core | Draft |
+| [BSIP-7](./BSIPS/bsip-7.md) | Comment Edits | Standards Track | Core | Draft |
+| [BSIP-8](./BSIPS/bsip-8.md) | Comment Moderation | Standards Track | Core | Draft |
+| [BSIP-9](./BSIPS/bsip-9.md) | Community Edits | Standards Track | Core | Draft |
+| [BSIP-10](./BSIPS/bsip-10.md) | Names and Addresses | Standards Track | Core | Draft |
+| [BSIP-11](./BSIPS/bsip-11.md) | Delegated Communities | Standards Track | Core | Draft |
+| [BSIP-12](./BSIPS/bsip-12.md) | Crossposts | Standards Track | Core | Draft |
 
 ## Contributing
 
