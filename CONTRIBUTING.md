@@ -30,7 +30,8 @@ full process. This file is the short, practical version.
 
 1. Open a pull request adding your file. CI builds the website, which validates every numbered BSIP's
    preamble and fails on broken relative links or anchors; run `npm install && npm run build` in
-   [`site/`](./site) to check locally.
+   [`site/`](./site) to check locally. CI also re-checks the test vectors in [`assets/`](./assets);
+   run `node assets/verify-vectors.mjs` after changing them.
 2. Make sure your GitHub username or public email appears in the `author` header, in parentheses or
    angle brackets, so authorship can be verified.
 3. An editor will review for soundness, completeness, and formatting, assign a number, and merge the

@@ -27,7 +27,7 @@ npm run build    # static build -> dist/, then the internal link check
 npm run preview  # serve the built output
 ```
 
-CI runs `npm run build` on every pull request (`.github/workflows/site.yml`).
+CI runs `npm run build` on every pull request (`.github/workflows/checks.yml`).
 
 ## Deploy
 

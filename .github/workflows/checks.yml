@@ -1,6 +1,7 @@
-# Build the website on every pull request and push to master. The build validates each BSIP's
-# preamble against BSIP-1, renders mermaid diagrams, and fails on broken links or anchors.
-name: Site
+# Run on every pull request and push to master. The site build validates each BSIP's preamble against
+# BSIP-1, renders mermaid diagrams, and fails on broken links or anchors. The vectors job re-checks the
+# test vectors in assets/ with Node built-ins.
+name: Checks
 
 on:
   pull_request:
@@ -11,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  site:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -26,3 +27,13 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  vectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node assets/verify-vectors.mjs

@@ -5,7 +5,7 @@
     "version": "0.0.124",
     "commit": "571044ba078e8b6b3ab41b1917a8ea3030523e9f",
     "node": "v22.22.3",
-    "method": "signed with the pkc-js sign* functions, checked with its verify*/decrypt functions, by a standalone Node script (not committed)",
+    "method": "signed with the pkc-js sign* functions and checked with its verify*/decrypt functions by a one-off script that was not kept; assets/verify-vectors.mjs re-checks every value with Node built-ins",
     "dependencies": {
       "cborg": "4.5.8",
       "@noble/curves": "2.2.0",
