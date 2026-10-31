@@ -193,18 +193,20 @@ equivalent to the publication's `author.name` that resolves to that same key
 ### Features
 
 `features` is a record of toggles that change what the community accepts. Each is OPTIONAL; boolean
-toggles default to off, and `maxCrosspostDepth` defaults to the protocol cap. A community enforces its own toggles when accepting publications; clients SHOULD
-read them to avoid publications that will be rejected, and MUST NOT treat them as guarantees about
-content they display. Unknown toggles MUST be ignored.
+toggles default to off, `maxCrosspostDepth` defaults to the protocol cap, and the gallery limits
+default to 0 (no galleries). A community enforces its own toggles when accepting publications;
+clients SHOULD read them to avoid publications that will be rejected, and MUST NOT treat them as
+guarantees about content they display. Unknown toggles MUST be ignored.
 
 | Toggle | Effect |
 | --- | --- |
-| `noImages`, `noVideos`, `noAudio` | Reject comments whose `link` is an image, a video (animated images included), or audio. |
-| `noImageReplies`, `noVideoReplies`, `noAudioReplies`, `noReplyLinks` | The same, for replies only; `noReplyLinks` rejects any reply `link`. |
+| `noImages`, `noVideos`, `noAudio` | Reject comments whose `link` or any `gallery` item is an image, a video (animated images included), or audio. |
+| `noImageReplies`, `noVideoReplies`, `noAudioReplies`, `noReplyLinks` | The same, for replies only; `noReplyLinks` rejects any reply `link` but not a reply `gallery`. |
+| `maxPostGalleryItems`, `maxReplyGalleryItems` | Non-negative integers: the most items a post's or a reply's `gallery` may have ([BSIP-2](./bsip-2.md#author-set-comment-fields)). Absent or 0 rejects any gallery. There is no default, so clients read them to decide whether to offer one. |
 | `noMarkdownImages`, `noMarkdownVideos`, `noMarkdownAudio` | Reject content (and content edits) that embeds that media in Markdown or HTML. |
 | `noSpoilers`, `noSpoilerReplies` | Reject `spoiler: true` on comments, or on replies only. |
-| `requirePostLink`, `requireReplyLink` | Require an `https` `link` on posts, or on replies. |
-| `requirePostLinkIsMedia`, `requireReplyLinkIsMedia` | Require that link to be image, video, or audio. |
+| `requirePostLink`, `requireReplyLink` | Require an `https` `link` on posts, or on replies. A `gallery` does not satisfy them. |
+| `requirePostLinkIsMedia`, `requireReplyLinkIsMedia` | Require that link to be image, video, or audio. A post with several files then carries the first in `link` and the rest in `gallery`. |
 | `noNestedReplies` | Reject replies to replies (maximum depth 1). |
 | `noUpvotes`, `noDownvotes`, `noPostUpvotes`, `noPostDownvotes`, `noReplyUpvotes`, `noReplyDownvotes` | Reject those votes ([BSIP-6](./bsip-6.md)). |
 | `postFlairs`, `requirePostFlairs` | Let authors choose post flairs from `flairs.post`, or require one on posts. |
@@ -234,6 +236,9 @@ pages object has the shape:
   ([BSIP-2](./bsip-2.md)) with the latest comment update the community signed for it
   ([BSIP-5](./bsip-5.md)), nested reply pages included. `nextCid` points at the next page of the same
   sort.
+- A page fetched from `pageCids` SHOULD be at most 1 MiB, and each page reached through `nextCid` at
+  most twice the size allowed for the page before it, and never more than 32 MiB. Readers MAY refuse
+  larger pages; pkc-js does, and its communities publish pages within these limits.
 
 The sorts a community generates are its operator's choice. An unconfigured community generates the
 post sorts `hot`, `new`, `topHour`, `topDay`, `topWeek`, `topMonth`, `topYear`, `topAll`, and `active`,

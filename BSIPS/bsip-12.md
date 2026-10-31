@@ -448,7 +448,7 @@ Tier-1 check 3 is a new rejection rule, but conforming signers sign every member
 rejects only records whose signable members were added after signing.
 
 The reference implementation, pkc-js, has supported crossposts since v0.0.82. This BSIP describes
-its behavior as of v0.0.124.
+its behavior as of v0.0.132.
 
 ## Security Considerations
 
@@ -482,7 +482,8 @@ its behavior as of v0.0.124.
   over-deep chain from costing more than a capped one. Size is bounded by the limits on publications
   and on fetched records; the embedded record counts toward both, so nesting consumes the budget
   available to the crossposting comment. pkc-js rejects publications over 40,000 bytes of JSON and
-  refuses to fetch comment records and pages over 1 MiB. Clients SHOULD batch and bound concurrent
+  refuses to fetch comment records over 1 MiB and pages over the limits of
+  [BSIP-3, Pages](./bsip-3.md#pages). Clients SHOULD batch and bound concurrent
   name resolutions for embedded authors, especially when rendering pages that hold many
   crossposting comments.
 - **Removed or deleted originals.** Embedding is designed so that a repost survives the original's

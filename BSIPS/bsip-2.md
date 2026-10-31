@@ -72,8 +72,8 @@ another purpose (see [Reserved names](#reserved-names)); communities reject such
 ### Author-set comment fields
 
 A comment publication is a JSON object with the [common publication fields](#common-publication-fields)
-and the following content fields. The author MUST set at least one of `title`, `content`, `link`, or
-`crosspost`.
+and the following content fields. The author MUST set at least one of `title`, `content`, `link`,
+`crosspost`, or `gallery`.
 
 - `title` — string, the post title.
 - `content` — string, the body text (Markdown).
@@ -91,6 +91,15 @@ and the following content fields. The author MUST set at least one of `title`, `
   quoted comment MUST belong to the same thread.
 - `crosspost` — a repost of another comment record, embedded verbatim. Its shape and verification are
   specified in [BSIP-12](./bsip-12.md). A comment whose only payload is `crosspost` is valid.
+- `gallery` — a non-empty array of media items (images, videos, or audio). Each item is an object
+  with `url` (string, 1 to 2000 characters), `htmlTagName` (`img`, `video`, or `audio`), and
+  optional `width` and `height` (positive numbers) and `alt` (string of at most 1000 characters, the
+  author's text description of the media). Items MAY carry further members, which are signed with the
+  comment and MUST be preserved. A comment without a gallery omits the field; an empty array is
+  invalid. A comment whose only payload is `gallery` is valid. A comment MAY carry both `link` and
+  `gallery`; clients show the `link` first, then the gallery. Readers check only this structure;
+  the media checks in [Community acceptance of comments](#community-acceptance-of-comments) apply
+  when a community accepts the comment, so a later change to them cannot invalidate a published one.
 
 Example comment publication:
 
@@ -279,12 +288,18 @@ community node knows the mapping between aliases and original authors.
 In addition to the rules every publication must meet ([BSIP-4](./bsip-4.md#publication-acceptance)),
 a community MUST reject a comment publication that:
 
-- sets none of `title`, `content`, `link`, or `crosspost`;
+- sets none of `title`, `content`, `link`, `crosspost`, or `gallery`;
 - sets `parentCid` without `postCid`, or whose `postCid` is not the root post of `parentCid`'s
   thread;
 - sets `quotedCids` on a post, or quotes a comment that does not exist in the community, belongs to
   another thread, or is pending approval;
 - carries a `crosspost` the community does not accept ([BSIP-12](./bsip-12.md));
+- carries a `gallery` when the community's `features.maxPostGalleryItems` (for a post) or
+  `features.maxReplyGalleryItems` (for a reply) is absent or 0, or with more items than that maximum
+  ([BSIP-3](./bsip-3.md#features));
+- carries a `gallery` item whose `url` is not an `https` URL whose path ends in a file extension of
+  an image, video, or audio type, or whose `htmlTagName` does not match that type: `img` for images
+  (animated ones included), `video` for video, `audio` for audio;
 - has the same signature as a comment it already stored (a duplicate);
 - carries author-chosen post `flairs` when `features.postFlairs` is not enabled, or a post flair not
   listed in the record's `flairs.post`; or `author.flairs` when `features.authorFlairs` is not

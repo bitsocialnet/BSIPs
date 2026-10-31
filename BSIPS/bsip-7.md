@@ -67,8 +67,8 @@ and the [common publication fields](./bsip-2.md#common-publication-fields): `tim
 fields `communityPublicKey` and `communityName`
 ([BSIP-2, Community addressing](./bsip-2.md#community-addressing)).
 
-An edit can change only the edit fields above. `title`, `link`, `parentCid`, and every other field
-of the comment record stay as the author first signed them.
+An edit can change only the edit fields above. `title`, `link`, `gallery`, `parentCid`, and every
+other field of the comment record stay as the author first signed them.
 
 Example edit as signed by the author:
 

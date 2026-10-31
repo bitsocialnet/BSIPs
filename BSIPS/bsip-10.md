@@ -335,16 +335,21 @@ outcomes with backoff. It then fetches and verifies the record reachable from N
 ([BSIP-3](./bsip-3.md#signing), [BSIP-11](./bsip-11.md)) and MUST check the record against D:
 
 - If the record has a `name`, it MUST be the same name as D. A reader that loaded `n.bso` and
-  receives a record named `m.bso` MUST reject it; readers do not follow renames.
-- If the record has no `name`, the reader MUST reject it unless it already holds a key address for
-  D and the record's signer address equals it.
+  receives a record named `m.bso` MUST reject it; readers that loaded a community by name do not
+  follow renames.
+- If the record has no `name`, the reader MUST reject it.
 
 It then classifies D against the record's identity key with the table above, and fetches later
-records through the identity key rather than resolving D on every fetch.
+records through the identity key rather than resolving D on every fetch. Each later record is checked
+against D the same way. Rejecting a later record does not end the load: the reader keeps the last
+record that claimed D, reports the rejection to the application, keeps updating, and accepts a later
+record that claims D again. To follow the community under another name, or under none, the
+application loads it again by that name or by its key.
 
 **Loading a community by key.** The reader fetches and verifies the record under that key. A `name` in
 the record is the owner's claim; the reader classifies it with the table above and MUST NOT let it
-change `address`.
+change `address`. A later record that changes or drops the name is accepted: the reader then presents
+the record's name, or none, and discards the verification outcome it held for the previous name.
 
 #### Key migration
 
