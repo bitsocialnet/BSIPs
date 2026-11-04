@@ -190,6 +190,13 @@ ENSIP-15 allows) or is longer than 255 bytes, is left out, together with every s
 owner keeps the `.eth` name. `seed` applies the same label checks as `reveal`, and the script that
 builds the list MUST check every label against them, so every entry in the tree can be seeded.
 
+Rules 1 and 2 take only `.eth` names whose labels are already ENS-normalized
+([ENSIP-15](https://docs.ens.domains/ensip/15)): normalizing the name leaves it unchanged. ENS
+registers unnormalized spellings such as `MEMES.eth` as separate names, but BSIP-10 clients normalize
+before resolving, so those names never served a Bitsocial identity. Leaving them out keeps them from
+competing with the normalized name for the same `.bso` label. The seed list MUST contain at most one
+entry per `(label, parent)`, and the script MUST check this.
+
 Proposed reserved names:
 
 | Labels | Owner |
@@ -200,10 +207,9 @@ Proposed reserved names:
 | `esteban`, `estebanabaroa` | fee recipient |
 
 `SEED_ROOT` is the root of an OpenZeppelin `StandardMerkleTree` over the entries, with leaf encoding
-`["string", "uint256", "address", "string"]` for `(label, parent, owner, record)`. Labels are
-ENS-normalized. Before deployment, the seed list, the reserved list, and the script that builds them
-from block `S` MUST be published in `assets/bsip-13/`, so anyone can rebuild `SEED_ROOT` and check
-every entry. Block `S` SHOULD be as close to deployment as practical.
+`["string", "uint256", "address", "string"]` for `(label, parent, owner, record)`. Before
+deployment, the seed list, the reserved list, and the script that builds them from block `S` MUST be
+published in `assets/bsip-13/`, so anyone can rebuild `SEED_ROOT` and check every entry. Block `S` SHOULD be as close to deployment as practical.
 
 #### Seeding
 
