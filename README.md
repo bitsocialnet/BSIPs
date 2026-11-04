@@ -80,6 +80,7 @@ as additional states.
 | [BSIP-10](./BSIPS/bsip-10.md) | Names and Addresses | Standards Track | Core | Draft |
 | [BSIP-11](./BSIPS/bsip-11.md) | Delegated Communities | Standards Track | Core | Draft |
 | [BSIP-12](./BSIPS/bsip-12.md) | Crossposts | Standards Track | Core | Draft |
+| [BSIP-13](./BSIPS/bsip-13.md) | Interim .bso Name Registry | Standards Track | Appchain | Draft |
 
 ## Contributing
 
