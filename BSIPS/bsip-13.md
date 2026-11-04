@@ -18,7 +18,8 @@ non-upgradeable contract on Ethereum mainnet, forked from the `.gwei` Name Servi
 ERC-721 tokens that expire, are registered by commit-reveal at fixed length-based prices, and carry
 ENS-style text records, so the `bitsocial` record of [BSIP-10](./bsip-10.md) does not change. Fees
 go to a hardcoded multisig that funds Bitsocial development. The multisig can only collect those
-fees and start a one-time sunset. Prices and names are out of its reach. At launch, every `.bso` name
+fees and start a one-time sunset. It cannot change prices, and over names it has only the rights
+any account has. At launch, every `.bso` name
 already in use through ENS is copied into the registry with the same owner and record before public
 registration opens. The registry is temporary: when Bitsocial Chain launches, unexpired names are
 copied onto it and the Ethereum registry stops selling names. This BSIP replaces steps 2–4 of
@@ -135,9 +136,10 @@ The fee recipient's only powers over the registry are:
 1. receiving fees through `withdraw()`; and
 2. calling `sunset()`, once.
 
-It cannot change prices, periods, or the seed list. It cannot register, renew, transfer, or edit a
-name it does not own, and it cannot stop `withdraw()`. It may own names like any other account
-([Seed list](#seed-list)).
+It cannot change prices, periods, or the seed list, and it cannot stop `withdraw()`. Over names it has
+no power beyond what any account has: like anyone, it can register an available name by
+commit-reveal and renew any top-level name, but it cannot transfer or edit a name it does not own. It
+holds the reserved names assigned to it ([Seed list](#seed-list)) as an ordinary owner.
 
 Safe signers can be added, removed, or replaced without changing the Safe's address, so the registry
 does not depend on any one signer. Signers:
@@ -262,7 +264,8 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   only which contract they call, and BSIP-10's record format is unchanged. The diff is limited to the
   four changes above, so most of the deployed code is code that already runs upstream.
 - **Collect fees instead of burning them.** Bitsocial has no other funding, and this registry is
-  temporary. A fixed recipient is acceptable because it has no power over prices or names. It is a
+  temporary. A fixed recipient is acceptable because it cannot change prices and has no special
+  power over names. It is a
   multisig rather than one person's address so that the registry survives the loss of any one key or
   person.
 - **Seed from a snapshot instead of checking ENS on chain.** The registry could let `.eth` holders
@@ -321,7 +324,8 @@ To be written:
   a migration. The signer rules in [Fee recipient](#fee-recipient) exist to prevent this. Signers who
   reach the threshold can call `sunset()` early: it stops registrations and renewals, so without a
   migration every name would expire within about 15 months. The 30-day notice makes such a call
-  public before it takes effect. Signers cannot touch names, prices, or the seed list.
+  public before it takes effect. Signers cannot change prices or the seed list, and have no power over
+names beyond what any account has.
 - **Seed list.** A wrong owner, record, or omission in the seed list is permanent once `SEED_ROOT` is
   deployed. Anyone holding a `.eth` name at block `S` receives the `.bso` name, including a holder who
   had compromised it by then. The list MUST be published and checked before deployment.
