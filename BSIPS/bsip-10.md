@@ -280,10 +280,11 @@ value: 12D3KooWNsF2eMrdw3YFPycAaFEvZ9Eq3ekhNL3vrAAfN6dAwXLp
 A value MAY carry metadata segments, for example
 `12D3KooWNsF2eMrdw3YFPycAaFEvZ9Eq3ekhNL3vrAAfN6dAwXLp;lang=en`.
 
-`.bso` is mapped onto ENS in this BSIP because that is the registry `.bso` names live in today. If a
-later Appchain BSIP moves `.bso` to another registry, it will replace steps 2–4 for `.bso` and must
-revisit [Name equivalence](#name-equivalence). Names under other TLDs MAY be supported by other
-resolvers; this BSIP does not define them, and they match only exactly.
+`.bso` is mapped onto ENS in this BSIP because that is the registry `.bso` names live in today.
+[BSIP-13](./bsip-13.md) proposes moving `.bso` to a registry of its own. A client that adopts it
+replaces steps 2–4 for `.bso` and applies its amendment to [Name equivalence](#name-equivalence).
+Names under other TLDs MAY be supported by other resolvers; this BSIP does not define them, and they
+match only exactly.
 
 #### Verification outcomes
 
