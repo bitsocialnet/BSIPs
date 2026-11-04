@@ -19,9 +19,10 @@ ERC-721 tokens that expire, are registered by commit-reveal at fixed length-base
 ENS-style text records, so the `bitsocial` record of [BSIP-10](./bsip-10.md) does not change. Fees
 go to a hardcoded multisig that funds Bitsocial development. The multisig can only collect those
 fees and start a one-time sunset. It cannot change prices, and over names it has only the rights
-any account has. At launch, every `.bso` name already in use through ENS, subdomains included, is
-copied into the registry with the same owner and record, as long as its entry is seeded before public
-registration opens. Anyone can seed an entry, and the maintainers must seed them all. The registry is
+any account has. At launch, every `.bso` name in use through ENS at a snapshot block, subdomains
+included, is copied into the registry with the same owner and record, as long as the registry
+accepts its label and its entry is seeded before public registration opens. Anyone can seed an
+entry, and the maintainers must seed them all. Names that come into use later are not copied. The registry is
 temporary: when Bitsocial Chain launches, the Ethereum registry freezes and its unexpired names are
 copied onto the chain. This BSIP replaces steps 2–4 of BSIP-10's `.bso` resolution and narrows
 BSIP-10's `.bso`/`.eth` equivalence.
@@ -171,7 +172,8 @@ is `0` for a top-level name, and for a subdomain it is `uint256(namehash(p))`, w
 subdomain's parent name in `.bso` form.
 
 1. **Names in use.** Every `.eth` name, at any level, that at Ethereum mainnet block `S` resolves in
-   ENS (registered and, for a second-level name, not expired) and has a non-empty `bitsocial` text
+   ENS (registered and, for a second-level name, not past ENS's grace period) and has a non-empty
+   `bitsocial` text
    record. The entry holds the name's first label, its parent, the account that holds the `.eth`
    name at `S` (for a second-level name its registrant or the holder of the wrapped name, for a
    subname its owner in the ENS registry or the holder of the wrapped name), and the value of the
@@ -182,6 +184,11 @@ subdomain's parent name in `.bso` form.
 3. **Reserved names.** A short list of top-level names that identify the project, its apps, and its
    maintainers, with an empty record. A reserved label that is also listed under rule 1 or 2 is
    dropped from the reserved list. A name in use always goes to its current holder.
+
+An entry whose label the registry rejects, such as a label that starts or ends with `-` (which
+ENSIP-15 allows) or is longer than 255 bytes, is left out, together with every subname under it. Its
+owner keeps the `.eth` name. `seed` applies the same label checks as `reveal`, and the script that
+builds the list MUST check every label against them, so every entry in the tree can be seeded.
 
 Proposed reserved names:
 
@@ -258,7 +265,9 @@ also resolve `x.eth` through ENS as BSIP-10 specifies:
   reader keeps the identity it holds;
 - otherwise, including when ENS returns `none` or fails, the registry's answer K stands.
 
-The name stays **unknown** until its owner makes the two records agree. From `TRANSITION_END` on, the
+The name stays **unknown** until its owner makes the two records agree. The same rule covers a name
+that was not seeded and that someone else registered after `SEED_END`: while its `.eth` record holds
+a different key, activated readers get **unknown**, not a migration. From `TRANSITION_END` on, the
 registry alone decides.
 
 ### Name equivalence
@@ -270,11 +279,14 @@ are different names, held in different registries, possibly by different owners.
 
 There is one exception, for comments signed while `.bso` was still an alias. When a client checks
 whether a stored comment belongs to a community (rule 2 of
-[Community membership of comments](./bsip-10.md#community-membership-of-comments)) and the comment's
-`timestamp` is before `SEED_END`, it MUST keep using BSIP-10's original rule. A comment signed with
-`communityName: "a.eth"` before then, by a community that later renamed itself `a.bso`, stays a member.
-A comment with a later `timestamp` gets the new rule, so new comments signed for `a.eth` never pass as
-members of `a.bso`.
+[Community membership of comments](./bsip-10.md#community-membership-of-comments)), the comment's
+`communityName` is the record's name with the other of the two suffixes, the comment's `timestamp`
+is before `SEED_END`, and its `communityPublicKey` is present and equals the community's identity
+key, the comment is a member. In every other case the new rule applies. A comment signed for
+`a.eth` before then, in a community that later renamed itself `a.bso` and kept its key, stays a
+member. A comment signed later, or under another community's key, never passes as a member of `a.bso`.
+Comments that lack `communityPublicKey`, or that were signed before a key migration, lose membership
+across the two suffixes.
 
 ### Sunset and migration
 
@@ -339,16 +351,21 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   and owners can renew or move names before the freeze.
 - **Separate `.bso` and `.eth`.** Once the two registries can have different owners, equivalence would
   let whoever holds `bot.bso` match identity-list entries written for `bot.eth`, and the reverse. The
-  membership exception keeps pages with comments from the alias era valid, and its `SEED_END` cutoff
-  stops it from applying to new comments. `timestamp` is set by the comment's author, so backdating
-  only lets authors misfile their own comments. The exception decides only which comments a community
-  may show, not who holds authority.
+  membership exception keeps pages with comments from the alias era valid. Its `SEED_END` cutoff
+  stops it from applying to new comments. Its key check stops the holder of `a.bso` from showing
+  comments that were posted to a different community at `a.eth`, since those carry that community's
+  key. `timestamp` is set by the comment's author, so backdating only lets authors misfile their own
+  comments. The exception decides only which comments a community may show, not who holds authority.
 
 ## Backwards Compatibility
 
 - Every `.bso` name in use at block `S`, subdomains included, keeps its owner, key, and record in the
-  registry once its entry is seeded. The maintainers must seed every entry before `SEED_END`, and an
-  entry still unseeded then loses that guarantee ([Seeding](#seeding)).
+  registry once its entry is seeded, unless the registry rejects its label
+  ([Seed list](#seed-list)). The maintainers must seed every entry before `SEED_END`, and an entry
+  still unseeded then loses that guarantee ([Seeding](#seeding)).
+- A name that comes into use on ENS after block `S` is not seeded. Its owner has to register the
+  `.bso` name like anyone else, and someone else may get it first
+  ([Security Considerations](#security-considerations)).
 - Clients that have not activated keep resolving `x.bso` as `x.eth`. For a seeded name both
   registries give the same answer until an owner changes one of them. Until `TRANSITION_END`,
   activated clients treat a disagreement as **unknown** ([Transition window](#transition-window)).
@@ -395,6 +412,15 @@ To be written:
   activated reader would migrate back to that key. The window makes the name **unknown** instead, and
   the comparison published at `SEED_END` tells owners to update their `.bso` record. After
   `TRANSITION_END` the window no longer protects a name whose owner never did.
+- **Names not on the seed list.** After `SEED_END`, anything not seeded is first come, first served.
+  That includes a `.eth` name that got its `bitsocial` record after block `S`, a label the registry
+  rejects, and an entry left unseeded. Someone else can register `x.bso` and set their own key, and
+  under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
+  them create `memes.b.bso` for free. Until `TRANSITION_END`, the transition window turns such a
+  takeover into **unknown** whenever the `.eth` record holds a different key. After that, the takeover
+  succeeds. Taking block `S` close to deployment narrows the gap. Owners of such names SHOULD
+  register their `.bso` names as soon as public registration opens. Readers that load the community
+  by its `.eth` name are unaffected.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
