@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/exo';
 import '@fontsource-variable/manrope';
+import Analytics from '@vercel/analytics/astro';
 import '../styles/global.css';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -60,6 +61,8 @@ const bsips = await getBsips();
       <slot />
     </main>
     <SiteFooter />
+    {/* Vercel Web Analytics: a custom element, so it goes in <body> rather than <head>. */}
+    <Analytics />
 
     <script>
       // Header search. A BSIP number ("7", "bsip-7") opens that BSIP. Anything else filters the index in
