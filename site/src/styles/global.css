@@ -174,7 +174,6 @@ button { font: inherit; color: inherit; }
   position: sticky;
   top: 0;
   z-index: 40;
-  border-top: 3px solid var(--blue);
   border-bottom: 1px solid var(--border);
   background: var(--header-bg);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
