@@ -1,0 +1,11 @@
+---
+import { statusSlug } from '../lib/bsips';
+
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+---
+
+<span class="chip status" data-status={statusSlug(status)}>{status.toLowerCase()}</span>

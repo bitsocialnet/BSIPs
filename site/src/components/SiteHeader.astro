@@ -1,0 +1,41 @@
+---
+// Search-first header: the name on the left, a wide search bar, then the theme toggle and GitHub.
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { GITHUB_REPO_URL, type Bsip } from '../lib/bsips';
+
+interface Props {
+  bsips: Bsip[];
+}
+
+const { bsips } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="brand" aria-label="BSIPs, Bitsocial Improvement Proposals: home">
+      <img src="/logo-transparent-64.png" width="30" height="30" alt="" />
+      <span class="brand-name">BSIPs</span>
+      <span class="brand-sub">Bitsocial Improvement Proposals</span>
+    </a>
+    <form role="search" action="/" method="get" class="search" data-search-form data-ids={bsips.map((b) => b.bsip).join(',')}>
+      <input
+        type="search"
+        name="q"
+        placeholder="Search BSIPs"
+        aria-label="Search BSIPs"
+        autocomplete="off"
+        data-search-input
+      />
+      <button type="submit" class="search-button" aria-label="Search">
+        <Icon name="search" />
+      </button>
+    </form>
+    <div class="header-actions">
+      <ThemeToggle />
+      <a href={GITHUB_REPO_URL} class="square-button" aria-label="BSIPs on GitHub" title="BSIPs on GitHub">
+        <Icon name="github" />
+      </a>
+    </div>
+  </div>
+</header>

@@ -12,6 +12,8 @@ export default defineConfig({
   site: 'https://bsips.bitsocial.net',
   integrations: [sitemap()],
   markdown: {
+    // Emit both themes as CSS variables; global.css picks one per site theme.
+    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: false },
     processor: unified({
       remarkPlugins: [remarkBsipLinks, remarkPele],
       rehypePlugins: [
@@ -19,7 +21,7 @@ export default defineConfig({
         [
           rehypeAutolinkHeadings,
           {
-            behavior: 'append',
+            behavior: 'prepend',
             properties: { className: ['heading-anchor'], ariaHidden: 'true', tabIndex: -1 },
             content: { type: 'text', value: '#' },
           },

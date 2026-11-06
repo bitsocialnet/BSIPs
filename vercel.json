@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd site && npm install",
-  "buildCommand": "cd site && npm run build",
+  "installCommand": "corepack yarn install --immutable",
+  "buildCommand": "corepack yarn build",
   "outputDirectory": "site/dist",
   "framework": null
 }

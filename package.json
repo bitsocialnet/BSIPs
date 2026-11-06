@@ -1,0 +1,27 @@
+{
+  "name": "bsips",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bitsocial Improvement Proposals, and the bsips.bitsocial.net website built from them.",
+  "type": "module",
+  "packageManager": "yarn@4.17.1+sha512.ccbfabf7d7b6b32075088be9386fb9a2e00bb6887ef07fa56effabc890a56d53da1ccc4128d62db245fcbd3961b236d75335bdf7d5320ed6eafb7588b7ad4697",
+  "scripts": {
+    "start": "node site/scripts/start-dev.mjs",
+    "build": "astro build --root site && node site/scripts/check-links.mjs",
+    "preview": "astro preview --root site",
+    "verify:vectors": "node assets/verify-vectors.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.3.1",
+    "@astrojs/sitemap": "3.7.3",
+    "@fontsource-variable/exo": "5.2.8",
+    "@fontsource-variable/manrope": "5.2.8",
+    "astro": "7.4.1",
+    "pele": "1.9.0",
+    "rehype-autolink-headings": "7.1.0",
+    "rehype-slug": "6.0.0"
+  },
+  "devDependencies": {
+    "portless": "0.11.1"
+  }
+}

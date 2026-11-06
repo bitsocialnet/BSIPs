@@ -19,18 +19,21 @@ The build also checks the BSIPs:
 
 ## Develop
 
+The package lives at the repository root (Yarn 4 via Corepack); run these from there:
+
 ```bash
-cd site
-npm install
-npm run dev      # local dev server
-npm run build    # static build -> dist/, then the internal link check
-npm run preview  # serve the built output
+corepack yarn install
+yarn start    # dev server through portless at https://bsips.localhost (https://<branch>.bsips.localhost off master)
+yarn build    # static build -> site/dist, then the internal link check
+yarn preview  # serve the built output
 ```
 
-CI runs `npm run build` on every pull request (`.github/workflows/checks.yml`).
+`PORTLESS=0 yarn start` runs Astro directly on `http://localhost:4321`.
+
+CI runs `yarn build` on every pull request (`.github/workflows/checks.yml`).
 
 ## Deploy
 
-Deployed on Vercel. Build config lives in [`../vercel.json`](../vercel.json): Vercel installs and builds
-the `site/` project and serves `site/dist`. Adding a new BSIP markdown file under `../BSIPS` is enough
+Deployed on Vercel. Build config lives in [`../vercel.json`](../vercel.json): Vercel runs `yarn build` at
+the repository root and serves `site/dist`. Adding a new BSIP markdown file under `../BSIPS` is enough
 for it to appear on the site after the next build.

@@ -1,6 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import StatusChip from '../components/StatusChip.astro';
+import { GITHUB_REPO_URL, getBsips, getRequiredBy, isoDate, parseAuthors } from '../lib/bsips';
 
 export async function getStaticPaths() {
   const entries = await getCollection('bsips');
@@ -16,71 +19,248 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const fm = entry.data;
 
-const created = fm.created.toISOString().slice(0, 10);
-const requires = fm.requires ?? [];
+const bsips = await getBsips();
+const byNumber = new Map(bsips.map((b) => [b.bsip, b]));
+const requires = (fm.requires ?? []).map((n) => byNumber.get(n)).filter((b) => b !== undefined);
+const requiredBy = getRequiredBy(bsips, fm.bsip);
+const authors = parseAuthors(fm.author);
 
-const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
-const badgeClass = `badge s-${String(fm.status).replace(/\s+/g, '-')}`;
-const kind = [fm.type, fm.category].filter(Boolean).join(' · ');
-const ghUrl = `https://github.com/bitsocialnet/BSIPs/blob/master/BSIPS/${entry.id}.md`;
+const path = `BSIPS/${entry.id}.md`;
+const sourceUrl = `${GITHUB_REPO_URL}/blob/master/${path}`;
+const rawUrl = `https://raw.githubusercontent.com/bitsocialnet/BSIPs/master/${path}`;
+const historyUrl = `${GITHUB_REPO_URL}/commits/master/${path}`;
+const discussionsUrl = fm['discussions-to'];
+
+// Heading text from the collector includes the prepended "#" anchor.
+const toc = headings
+  .filter((h) => h.depth === 2 || h.depth === 3)
+  .map((h) => ({ ...h, text: h.text.replace(/^\s*#\s*/, '') }));
 ---
 
 <Base title={`BSIP-${fm.bsip}: ${fm.title}`} description={fm.description}>
-  <a class="back" href="/">← All BSIPs</a>
-
-  <div class="doc-grid">
-    <div>
-      <div class="doc-eyebrow">
-        <span class={badgeClass}>{fm.status}</span>
-        <span class="doc-kind">{kind}</span>
-      </div>
-
-      <h1 class="page-title">BSIP-{fm.bsip}: {fm.title}</h1>
-
-      <div class="preamble">
-        <dl>
-          <dt>Author</dt>
-          <dd>{fm.author}</dd>
-          <dt>Created</dt>
-          <dd>{created}</dd>
-          {
-            requires.length > 0 && (
-              <>
-                <dt>Requires</dt>
-                <dd>
-                  {requires.map((r, i) => (
-                    <span>
-                      {i > 0 ? ', ' : ''}
-                      <a href={`/bsip-${r}`}>BSIP-{r}</a>
-                    </span>
-                  ))}
-                </dd>
-              </>
-            )
-          }
-        </dl>
-      </div>
-
-      <article class="prose">
-        <Content />
-      </article>
-
-      <p class="edit-link"><a href={ghUrl}>Edit this BSIP on GitHub →</a></p>
-    </div>
-
+  <div class="container doc">
     {
       toc.length > 0 && (
-        <aside class="toc" aria-label="Table of contents">
-          <p class="toc-label">On this page</p>
+        <nav class="doc-toc" aria-label="On this page">
+          <p class="rail-title">On this page</p>
           <ul>
             {toc.map((h) => (
               <li class={`lvl-${h.depth}`}>
-                <a href={`#${h.slug}`}>{h.text.replace(/\s*#+\s*$/, '')}</a>
+                <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                  {h.text}
+                </a>
               </li>
             ))}
           </ul>
-        </aside>
+        </nav>
       )
     }
+
+    <header class="doc-header">
+      <div class="doc-topline">
+        <a href="/" class="back-link"><Icon name="arrow-left" />All BSIPs</a>
+        <div class="button-group">
+          <button type="button" class="small-button" data-copy-link>
+            <Icon name="copy" class="ic-copy" />
+            <Icon name="check" class="ic-done" />
+            <span data-copy-label>Copy link</span>
+          </button>
+          <a href={rawUrl} class="small-button" title="Raw markdown">.md</a>
+        </div>
+      </div>
+      <p class="number-badge">BSIP-{fm.bsip}</p>
+      <h1>{fm.title}</h1>
+      <p class="doc-desc">{fm.description}</p>
+      <div class="chips">
+        <StatusChip status={fm.status} />
+        <span class="chip">{fm.category ?? fm.type}</span>
+      </div>
+    </header>
+
+    <article class="doc-content">
+      {
+        toc.length > 0 && (
+          <details class="toc-inline">
+            <summary>On this page</summary>
+            <ul>
+              {toc.map((h) => (
+                <li class={`lvl-${h.depth}`}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )
+      }
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+
+    <aside class="doc-rail" aria-label="About this BSIP">
+      <section class="rail-card">
+        <h2 class="rail-title">About this BSIP</h2>
+        <dl class="facts">
+          <div>
+            <dt>Status</dt>
+            <dd><StatusChip status={fm.status} /></dd>
+          </div>
+          {
+            fm['last-call-deadline'] && (
+              <div>
+                <dt>Last call ends</dt>
+                <dd><time datetime={isoDate(fm['last-call-deadline'])}>{isoDate(fm['last-call-deadline'])}</time></dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>Type</dt>
+            <dd>{fm.type}</dd>
+          </div>
+          {
+            fm.category && (
+              <div>
+                <dt>Category</dt>
+                <dd>{fm.category}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>{authors.length > 1 ? 'Authors' : 'Author'}</dt>
+            <dd>
+              {authors.map((a) => (
+                <span class="author">
+                  {a.name}
+                  {a.github && <a href={`https://github.com/${a.github}`}>@{a.github}</a>}
+                </span>
+              ))}
+            </dd>
+          </div>
+          <div>
+            <dt>Created</dt>
+            <dd><time datetime={isoDate(fm.created)}>{isoDate(fm.created)}</time></dd>
+          </div>
+          {
+            fm['withdrawal-reason'] && (
+              <div>
+                <dt>Withdrawal reason</dt>
+                <dd>{fm['withdrawal-reason']}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>Discussion</dt>
+            <dd><a href={discussionsUrl}>{/github\.com\/[^/]+\/[^/]+\/issues\/?$/.test(discussionsUrl) ? 'GitHub issues' : new URL(discussionsUrl).host}</a></dd>
+          </div>
+          <div>
+            <dt>Source</dt>
+            <dd><a href={sourceUrl}>View on GitHub</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="rail-related">
+        {
+          requires.length > 0 && (
+            <section class="rail-card">
+              <h2 class="rail-title">
+                Requires <span class="count">{requires.length}</span>
+              </h2>
+              <ul class="mini-list">
+                {requires.map((b) => (
+                  <li>
+                    <a href={`/${b.id}`} class="mini-bsip">
+                      <span class="mini-head">
+                        <span class="mini-num">BSIP-{b.bsip}</span>
+                        <StatusChip status={b.status} />
+                      </span>
+                      <span class="mini-title">{b.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          requiredBy.length > 0 && (
+            <details class="rail-card rail-collapsible">
+              <summary class="rail-title">
+                <Icon name="chevron-right" class="summary-icon" />
+                Required by <span class="count">{requiredBy.length}</span>
+              </summary>
+              <ul class="mini-list">
+                {requiredBy.map((b) => (
+                  <li>
+                    <a href={`/${b.id}`} class="mini-bsip">
+                      <span class="mini-head">
+                        <span class="mini-num">BSIP-{b.bsip}</span>
+                        <StatusChip status={b.status} />
+                      </span>
+                      <span class="mini-title">{b.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )
+        }
+
+        <a href={historyUrl} class="rail-button"><Icon name="history" />Change history</a>
+      </div>
+    </aside>
   </div>
 </Base>
+
+<script>
+  // Copy link: the page URL without the section hash.
+  const copy = document.querySelector<HTMLButtonElement>('[data-copy-link]');
+  const label = copy?.querySelector('[data-copy-label]');
+  copy?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(location.origin + location.pathname);
+      copy.dataset.copied = '';
+      if (label) label.textContent = 'Copied';
+      setTimeout(() => {
+        delete copy.dataset.copied;
+        if (label) label.textContent = 'Copy link';
+      }, 1600);
+    } catch {
+      if (label) label.textContent = 'Copy failed';
+    }
+  });
+
+  // Mark the section being read in the table of contents: the last heading above the top quarter.
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')].map((a) => [a.dataset.tocLink!, a]));
+  const headings = [...links.keys()].map((id) => document.getElementById(id)).filter((h): h is HTMLElement => h !== null);
+  let active: HTMLAnchorElement | undefined;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const line = window.innerHeight * 0.25;
+    let current: HTMLElement | undefined;
+    for (const h of headings) {
+      if (h.getBoundingClientRect().top <= line) current = h;
+      else break;
+    }
+    // At the bottom of the page the last sections can never reach the line; show the last one.
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = headings[headings.length - 1];
+    const link = current && links.get(current.id);
+    if (link === active) return;
+    active?.removeAttribute('aria-current');
+    link?.setAttribute('aria-current', 'location');
+    active = link;
+  };
+  const queue = () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(update);
+    }
+  };
+  if (headings.length) {
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    update();
+  }
+</script>

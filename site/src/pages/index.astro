@@ -1,38 +1,74 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import StatusChip from '../components/StatusChip.astro';
+import { GITHUB_REPO_URL, getBsips, groupBsips } from '../lib/bsips';
 
-const entries = await getCollection('bsips');
-const bsips = entries.map((e) => ({ id: e.id, ...e.data })).sort((a, b) => a.bsip - b.bsip);
+const bsips = await getBsips();
+const groups = groupBsips(bsips);
 
-type Bsip = (typeof bsips)[number];
-const badgeClass = (s: Bsip['status']) => `badge s-${s.replace(/\s+/g, '-')}`;
-const meta = (b: Bsip) => [b.type, b.category].filter(Boolean).join(' · ');
+// What the header search matches: the preamble plus every section heading.
+const searchText = (b: (typeof bsips)[number]) =>
+  [`bsip-${b.bsip}`, b.title, b.description, b.author, b.type, b.category, b.status, ...Array.from(b.body.matchAll(/^#{2,4}\s+(.+)$/gm), (m) => m[1])]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
 ---
 
 <Base title="Bitsocial Improvement Proposals">
-  <p class="eyebrow">The Bitsocial protocol</p>
-  <h1 class="page-title">Improvement Proposals</h1>
-  <p class="lede">
-    BSIPs are the design documents that specify the decentralized Bitsocial protocol: the
-    peer-to-peer social core, networking, interfaces, the Bitsocial Network appchain, and the
-    standards independent clients share. Start with <a href="/bsip-1">BSIP-1</a>.
-  </p>
+  <div class="container index">
+    <section class="intro">
+      <h1>Bitsocial Improvement Proposals</h1>
+      <p class="lede">
+        BSIPs describe the standards of the Bitsocial protocol: the peer-to-peer social core, networking,
+        developer interfaces, the Bitsocial Network appchain, and the conventions independent clients share.
+      </p>
+      <p>
+        New here? <a href="/bsip-1">BSIP-1</a> explains what a BSIP is and how one moves from draft to final.
+        To propose a BSIP, copy the <a href={`${GITHUB_REPO_URL}/blob/master/bsip-template.md`}>template</a> and
+        open a pull request; <a href={`${GITHUB_REPO_URL}/blob/master/CONTRIBUTING.md`}>Contributing</a> has the details.
+      </p>
+    </section>
 
-  <div class="index">
+    <nav class="category-nav" aria-label="Categories">
+      {
+        groups.map((group) => (
+          <a href={`#${group.slug}`}>
+            {group.key}
+            <span class="count">{group.bsips.length}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <p class="search-count" data-search-count aria-live="polite"></p>
+    <div class="empty-state" data-search-empty hidden>
+      <p><strong>No BSIPs match “<span data-search-term></span>”.</strong></p>
+      <p>Search matches numbers, titles, descriptions, authors and section headings. <a href="/">Show all BSIPs</a></p>
+    </div>
+
     {
-      bsips.map((b) => (
-        <a class="index-row" href={`/${b.id}`}>
-          <span class="index-num">{b.bsip}</span>
-          <span class="index-main">
-            <span class="index-title">{b.title}</span>
-            <span class="index-desc">{b.description}</span>
-            <span class="index-meta">{meta(b)}</span>
-          </span>
-          <span class="index-status">
-            <span class={badgeClass(b.status)}>{b.status}</span>
-          </span>
-        </a>
+      groups.map((group) => (
+        <section class="group" id={group.slug} aria-labelledby={`${group.slug}-title`} data-group>
+          <h2 id={`${group.slug}-title`}>
+            <a class="heading-anchor" href={`#${group.slug}`} aria-hidden="true" tabindex="-1">#</a>
+            {group.key}
+          </h2>
+          <p class="group-desc">{group.description}</p>
+          <ul class="bsip-list">
+            {group.bsips.map((b) => (
+              <li data-bsip-row data-bsip={b.bsip} data-search={searchText(b)}>
+                <a href={`/${b.id}`} class="bsip-row">
+                  <span class="bsip-num">BSIP-{b.bsip}</span>
+                  <span class="bsip-main">
+                    <span class="bsip-title">{b.title}</span>
+                    <span class="bsip-desc">{b.description}</span>
+                  </span>
+                  <StatusChip status={b.status} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))
     }
   </div>

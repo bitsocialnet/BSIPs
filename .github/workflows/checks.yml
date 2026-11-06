@@ -15,18 +15,14 @@ jobs:
   site:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: site
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: site/package-lock.json
-      - run: npm ci
-      - run: npm run build
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn build
 
   vectors:
     runs-on: ubuntu-latest
