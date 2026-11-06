@@ -81,6 +81,12 @@ as additional states.
 | [BSIP-11](./BSIPS/bsip-11.md) | Delegated Communities | Standards Track | Core | Draft |
 | [BSIP-12](./BSIPS/bsip-12.md) | Crossposts | Standards Track | Core | Draft |
 | [BSIP-13](./BSIPS/bsip-13.md) | Interim .bso Name Registry | Standards Track | Appchain | Draft |
+| [BSIP-14](./BSIPS/bsip-14.md) | Author Communities | Standards Track | Application | Draft |
+| [BSIP-15](./BSIPS/bsip-15.md) | Community Lists | Standards Track | Application | Draft |
+| [BSIP-16](./BSIPS/bsip-16.md) | Fetching Records | Standards Track | Networking | Draft |
+| [BSIP-17](./BSIPS/bsip-17.md) | RPC Protocol | Standards Track | Interface | Draft |
+| [BSIP-18](./BSIPS/bsip-18.md) | Pubsub Voting | Standards Track | Application | Draft |
+| [BSIP-19](./BSIPS/bsip-19.md) | Directories | Standards Track | Application | Draft |
 
 ## Contributing
 

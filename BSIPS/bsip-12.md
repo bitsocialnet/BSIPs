@@ -427,10 +427,10 @@ but `crosspost` as content (abbreviated):
 - **Prior art.** Mainstream platforms store a reference, render one embed level, and in Reddit's
   case flatten a crosspost of a crosspost to the original. Embedding the innermost record expresses
   that flattening in this format.
-- **Profile feeds.** A feed built from an author's crossposts of their own comments needs no
-  further mechanism: whether an embedded record was signed by a given key is a tier-1 fact, a
-  removed original still renders as removed rather than vanishing, and verified entries keep
-  counting after their origin goes away.
+- **Profile feeds.** A feed built from an author's crossposts of their own comments, as in an author
+  community ([BSIP-14](./bsip-14.md)), needs no further mechanism: whether an embedded record was
+  signed by a given key is a tier-1 fact, a removed original still renders as removed rather than
+  vanishing, and verified entries keep counting after their origin goes away.
 
 ## Backwards Compatibility
 

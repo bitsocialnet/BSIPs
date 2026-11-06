@@ -89,7 +89,7 @@ Metadata:
 - `suggested` — owner-suggested presentation; clients MAY ignore any of it without breaking
   interoperability: `primaryColor`, `secondaryColor`, `avatarUrl`, `bannerUrl`, `backgroundUrl`,
   `language`, and `uiType` (how the owner suggests clients render the community, for example
-  `"author"` for a profile). It never affects validation or loading.
+  `"author"` for a profile, [BSIP-14](./bsip-14.md)). It never affects validation or loading.
 - `features` — feature toggles; see [Features](#features).
 
 Posts and indexes:
