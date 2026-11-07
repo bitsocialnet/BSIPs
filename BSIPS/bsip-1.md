@@ -64,14 +64,31 @@ There are three types of BSIP:
     communities, comments, votes, and comment updates; signatures; the anti-spam challenge exchange;
     and addressing. A client cannot interoperate without implementing the relevant Core BSIPs.
   - **Networking**: peer discovery and transport — HTTP routers, libp2p gossipsub pubsub, content
-    transfer, and browser peer-to-peer.
+    transfer, and browser peer-to-peer. Networking BSIPs bind implementations that join the
+    peer-to-peer network themselves; a client that reaches the network through a node, over the RPC
+    protocol, relies on that node to implement them.
   - **Interface**: developer-facing interfaces shared across clients — the RPC protocol and client
-    SDK conventions.
+    SDK conventions. Interface BSIPs bind the implementations that expose or consume the interface
+    in question, and no others.
   - **Appchain**: the Bitsocial Network (L2/appchain) economic layer — `.bso` naming, the token,
-    tipping, awards, and on-chain standards.
+    tipping, awards, and on-chain standards. Appchain BSIPs bind any implementation that reads or
+    writes the on-chain state they define.
   - **Application**: conventions that independent clients agree on above the protocol — anti-spam
     challenge interfaces, profile and identity schemas, community list formats, and media or link
-    handling.
+    handling. Application BSIPs are opt-in: a client may adopt any subset of them, and skipping one
+    costs the client that convention and whatever depends on it, not its interoperability with the
+    rest of the network. A client that claims to implement an Application BSIP must implement it as
+    specified.
+
+  Readers coming from Ethereum will recognize Application BSIPs as the counterpart of ERCs. An ERC is
+  an EIP in the ERC category and shares the EIP number space, so ERC-20 and EIP-20 are the same
+  document. BSIPs follow the same model and do not add a separate prefix: an Application BSIP is a
+  BSIP, numbered like any other, and its category says how binding it is. Ethereum draws the line
+  more sharply because a Core EIP is a hard fork that every node must adopt or split from the chain,
+  while an ERC is an interface that contracts and wallets opt into. Outside the Appchain category,
+  Bitsocial has no global consensus to fork, so the difference between Core and Application is one
+  of degree, and the `category` header expresses it. If Application BSIPs ever need their own editors
+  or repository, they can be split out the way ERCs were split from EIPs, keeping their numbers.
 
 - A **Meta BSIP** describes a process around Bitsocial, or proposes a change to a process. Meta BSIPs
   apply to areas other than the protocol itself; they often require community consensus and, unlike

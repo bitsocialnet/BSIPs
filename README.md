@@ -57,6 +57,10 @@ Every BSIP has a **type**, and Standards Track BSIPs additionally have a **categ
 | **Appchain** | The Bitsocial Network (L2/appchain) economic layer: `.bso` naming, the token, tipping, awards, and on-chain standards. |
 | **Application** | Conventions independent clients agree on above the protocol: anti-spam challenge interfaces, profile/identity schemas, community list formats, and media/link handling. |
 
+Application BSIPs are opt-in conventions and play the role ERCs play in Ethereum. Like ERCs, they
+share the main number space instead of getting their own prefix; [BSIP-1](./BSIPS/bsip-1.md#bsip-types)
+explains why.
+
 ## Status
 
 A BSIP moves through the following lifecycle (defined in full in [BSIP-1](./BSIPS/bsip-1.md)):
