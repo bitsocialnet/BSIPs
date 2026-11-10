@@ -214,20 +214,26 @@ const toc = headings
 </Base>
 
 <script>
-  // Copy link: the page URL without the section hash.
+  // Copy link: the page URL without the section hash. One state sets the icon and label together, and a single
+  // timer returns both to idle, so a newer click restarts it instead of an older timer cutting it short.
   const copy = document.querySelector<HTMLButtonElement>('[data-copy-link]');
   const label = copy?.querySelector('[data-copy-label]');
+  const copyLabels = { idle: 'Copy link', copied: 'Copied', failed: 'Copy failed' };
+  let copyReset: ReturnType<typeof setTimeout> | undefined;
+  const setCopyState = (state: keyof typeof copyLabels) => {
+    if (!copy) return;
+    clearTimeout(copyReset);
+    if (state === 'copied') copy.dataset.copied = '';
+    else delete copy.dataset.copied;
+    if (label) label.textContent = copyLabels[state];
+    if (state !== 'idle') copyReset = setTimeout(() => setCopyState('idle'), 1600);
+  };
   copy?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(location.origin + location.pathname);
-      copy.dataset.copied = '';
-      if (label) label.textContent = 'Copied';
-      setTimeout(() => {
-        delete copy.dataset.copied;
-        if (label) label.textContent = 'Copy link';
-      }, 1600);
+      setCopyState('copied');
     } catch {
-      if (label) label.textContent = 'Copy failed';
+      setCopyState('failed');
     }
   });
 
