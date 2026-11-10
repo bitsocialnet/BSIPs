@@ -115,7 +115,16 @@ if (usePortless) {
   child = spawn(astroBin, [...astroArgs, '--host', '127.0.0.1', '--port', String(port)], { stdio: 'inherit', env });
 }
 
+// Pass a stop signal sent to this launcher alone (kill, a process manager) on to the dev server, so Astro or portless
+// does not keep running and holding the route. portless cleans up (stops its detached Astro, frees the route) only on
+// SIGINT and SIGTERM, so it gets SIGHUP as SIGTERM. A closed terminal also hangs up portless directly, which this
+// cannot cover. Ctrl-C already reaches the child through the process group, and a repeated SIGINT is harmless.
+const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+const forward = (signal) => child.kill(usePortless && signal === 'SIGHUP' ? 'SIGTERM' : signal);
+for (const signal of signals) process.on(signal, forward);
+
 child.on('exit', (code, signal) => {
+  for (const s of signals) process.off(s, forward);
   if (signal) process.kill(process.pid, signal);
   else process.exit(code ?? 0);
 });
