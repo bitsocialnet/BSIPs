@@ -67,6 +67,7 @@ const toc = headings
           </button>
           <a href={rawUrl} class="small-button" title="Raw markdown">.md</a>
         </div>
+        <span class="visually-hidden" role="status" data-copy-status></span>
       </div>
       <p class="number-badge">BSIP-{fm.bsip}</p>
       <h1>{fm.title}</h1>
@@ -215,9 +216,12 @@ const toc = headings
 
 <script>
   // Copy link: the page URL without the section hash. One state sets the icon and label together, and a single
-  // timer returns both to idle, so a newer click restarts it instead of an older timer cutting it short.
+  // timer returns both to idle, so a newer click restarts it instead of an older timer cutting it short. Screen
+  // readers may not announce the label change, so the result also goes to a status region that keeps it after
+  // the reset; it is cleared on each click so a repeated result is announced again.
   const copy = document.querySelector<HTMLButtonElement>('[data-copy-link]');
   const label = copy?.querySelector('[data-copy-label]');
+  const status = document.querySelector('[data-copy-status]');
   const copyLabels = { idle: 'Copy link', copied: 'Copied', failed: 'Copy failed' };
   let copyReset: ReturnType<typeof setTimeout> | undefined;
   const setCopyState = (state: keyof typeof copyLabels) => {
@@ -226,9 +230,13 @@ const toc = headings
     if (state === 'copied') copy.dataset.copied = '';
     else delete copy.dataset.copied;
     if (label) label.textContent = copyLabels[state];
-    if (state !== 'idle') copyReset = setTimeout(() => setCopyState('idle'), 1600);
+    if (state !== 'idle') {
+      if (status) status.textContent = copyLabels[state];
+      copyReset = setTimeout(() => setCopyState('idle'), 1600);
+    }
   };
   copy?.addEventListener('click', async () => {
+    if (status) status.textContent = '';
     try {
       await navigator.clipboard.writeText(location.origin + location.pathname);
       setCopyState('copied');
