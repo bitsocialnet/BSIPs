@@ -218,13 +218,15 @@ const toc = headings
   // Copy link: the page URL without the section hash. One state sets the icon and label together, and a single
   // timer returns both to idle, so a newer click restarts it instead of an older timer cutting it short. Screen
   // readers may not announce the label change, so the result also goes to a status region that keeps it after
-  // the reset; it is cleared on each click so a repeated result is announced again. Only the latest click's
-  // result is shown: an older attempt that settles later is ignored.
+  // the reset. Each click clears the region and the result is written 100 ms later: a clear and refill in one
+  // task (a missing clipboard API fails synchronously) looks unchanged to screen readers, so a repeat would be
+  // missed. Only the latest click counts: an older result is ignored and a newer click cancels a pending write.
   const copy = document.querySelector<HTMLButtonElement>('[data-copy-link]');
   const label = copy?.querySelector('[data-copy-label]');
   const status = document.querySelector('[data-copy-status]');
   const copyLabels = { idle: 'Copy link', copied: 'Copied', failed: 'Copy failed' };
   let copyReset: ReturnType<typeof setTimeout> | undefined;
+  let statusWrite: ReturnType<typeof setTimeout> | undefined;
   let copyAttempt = 0;
   const setCopyState = (state: keyof typeof copyLabels) => {
     if (!copy) return;
@@ -233,12 +235,15 @@ const toc = headings
     else delete copy.dataset.copied;
     if (label) label.textContent = copyLabels[state];
     if (state !== 'idle') {
-      if (status) status.textContent = copyLabels[state];
+      statusWrite = setTimeout(() => {
+        if (status) status.textContent = copyLabels[state];
+      }, 100);
       copyReset = setTimeout(() => setCopyState('idle'), 1600);
     }
   };
   copy?.addEventListener('click', async () => {
     const attempt = ++copyAttempt;
+    clearTimeout(statusWrite);
     if (status) status.textContent = '';
     let result: 'copied' | 'failed' = 'copied';
     try {
