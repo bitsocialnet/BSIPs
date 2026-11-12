@@ -388,6 +388,23 @@ so a negative verdict usually costs a full timeout.
   ([BSIP-2](./bsip-2.md#pseudonymity)). The community at the alias's key, if any, is not the
   author's profile, and clients SHOULD NOT look one up for such a comment.
 
+A client can also start from an author name instead of a comment, for example when a user opens the
+author page of `john.bso`. It resolves the name ([BSIP-10](./bsip-10.md#name-resolution)) and acts
+on the outcome:
+
+- **found(K)**: the client looks up the profile at `K`, by key, as above. A name cannot serve as an
+  author's name and a community's name at once ([BSIP-10](./bsip-10.md#names)), so the client does
+  not load the profile as a community named `john.bso`. The same resolution makes the name
+  **verified** for `K` ([BSIP-10](./bsip-10.md#verification-outcomes)), so the client MAY show the
+  profile's owner under that name.
+- **no record** or **invalid record**: the name designates no key, so there is no profile to look up.
+- **failed** or **unsupported**: nothing was learned about the name. The client MUST NOT record a
+  negative verdict for it, and retries as described in
+  [BSIP-10, Caching and retries](./bsip-10.md#caching-and-retries).
+
+Verdicts stay cached per key, not per name, so once a name comes to designate a different key and
+its cached resolution lapses, the client finds that key's profile.
+
 ### Key lifetime
 
 The owner key signs both the owner's comments and the anchor record. Consequently:
