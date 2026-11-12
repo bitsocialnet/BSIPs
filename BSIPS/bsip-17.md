@@ -112,18 +112,29 @@ A **notification** is a message from the node with no `id`:
 
 ### Connection and authentication
 
-A node accepts two kinds of connection:
+A node classifies each WebSocket upgrade request by where it comes from and by its `Origin` header:
 
 - **Local**: the connection comes from the node's own host, meaning the socket's remote address
-  equals its local address, and the upgrade request carries no `X-Forwarded-For` header. A local
-  connection needs no credential and uses the path `/`.
-- **Remote**: any other connection. Its request path MUST be exactly `/` followed by the node's
-  **auth key**, for example `wss://node.example:9138/<authKey>`, with no query string. A node without
-  an auth key accepts local connections only.
+  equals its local address, and the upgrade request carries no `X-Forwarded-For` header. Every other
+  connection is **remote**.
+- **Trusted origin**: the request has no `Origin` header (a client that is not a browser); its
+  `Origin` is exactly `file://` (a page a desktop app loads from disk); or its `Origin` is an `http:`
+  or `https:` origin whose host, compared case-insensitively, is `localhost`, a name ending in
+  `.localhost`, an IPv4 address in `127.0.0.0/8`, or `[::1]` (a local development server, or a web
+  interface the node serves itself). Every other `Origin` is untrusted, including `null`, other
+  schemes such as `chrome-extension:`, and any value that does not parse as an origin.
+
+A connection that is both local and from a trusted origin needs no credential and uses the path `/`.
+Every other connection, remote or local, needs the node's **auth key**: its request path MUST be
+exactly `/` followed by the auth key, for example `wss://node.example:9138/<authKey>`, with no query
+string. A node MUST NOT accept such a connection without the auth key and MUST NOT treat any origin
+not listed above as trusted; it MAY require the auth key from more connections, or from all of them.
+A node without an auth key therefore accepts only local connections from trusted origins.
 
 A node rejects any other upgrade with HTTP status 403. A client that receives 403 MUST NOT reconnect
-automatically: the credential is wrong, and retrying cannot fix it. Because the auth key travels in
-the request path, a remote connection SHOULD use `wss://`.
+automatically: the credential is wrong or missing, and retrying cannot fix it. Because the auth key
+travels in the request path, a remote connection SHOULD use `wss://`. A web client served from any
+origin other than a trusted one needs the auth key even to reach a node on the user's own machine.
 
 Whoever holds a connection can call every method. The protocol has no accounts, roles, or
 per-method permissions; the auth key is a single bearer credential for the whole node.
@@ -657,6 +668,16 @@ The protocol carries no version number and no capability negotiation. It evolves
 - **A path-based auth key.** The browser WebSocket API cannot set request headers, so a credential
   has to travel in the URL. Local connections are exempt so that a desktop app and its embedded node
   work with no setup.
+- **Local is not enough; the origin decides.** Browsers let any web page open a WebSocket to
+  `localhost`, and that connection reaches the node from the loopback address like a local process.
+  Exempting every local connection let any site the user visited call every method of a node on the
+  user's machine, including `exportCommunity` and `deleteCommunity`. A page cannot set or forge the
+  `Origin` header its browser sends, so the exemption is limited to requests that are not from a
+  remote page: no `Origin` (not a browser), `file://` (a desktop app's own page), and loopback hosts
+  (software already running on the machine). `null` is excluded because any site can produce it from
+  a sandboxed iframe. The rule is normative, not left to implementations, because a node that relaxes
+  it exposes its owner to every web page they visit, and because a web client has to know in advance
+  whether it must ask its user for the auth key.
 - **Starts outlive connections; stops are deliberate.** A community must keep publishing when the
   laptop that started it sleeps or loses its connection. `startedCommunitySubscribe` exists so that a
   reconnecting client can resume without restarting a community someone else stopped on purpose.
@@ -676,12 +697,15 @@ Open questions:
   a community the node runs. Both could be normalized in a breaking revision.
 - **Scoped credentials.** One key grants everything. A read-only or per-community key would let
   owners share a node without sharing control of it.
+- **Trusted origins.** The set is fixed. A desktop shell that serves its pages from a custom scheme
+  (`app://`) instead of `file://` or a loopback host needs the auth key to reach its own node.
+  Whether an owner should be able to add origins, and how without reopening the node to web pages.
 - **Client-supplied hints.** Whether a node must verify the `raw` records a client passes to
   `commentUpdateSubscribe`, or may use them as given.
 
 ## Backwards Compatibility
 
-This is the first BSIP for the RPC protocol; it specifies the protocol as pkc-js v0.0.135 implements
+This is the first BSIP for the RPC protocol; it specifies the protocol as pkc-js v0.0.142 implements
 it. The protocol evolved without a version number, so peers from older releases can disagree on
 shapes. Notable changes: the communities list carries `{ name?, publicKey, started }` entries since
 v0.0.129 and plain addresses before it, which current clients reject with
@@ -689,6 +713,13 @@ v0.0.129 and plain addresses before it, which current clients reject with
 comment methods take `communityPublicKey` and `communityName` instead of a single address. A client
 talking to an older node can detect a missing method by its `-32601` error and a missing optional
 member by its absence.
+
+Nodes before v0.0.136 accept every local connection without the auth key, whatever its `Origin`, so
+any web page the user visits can call every method on them; they do not meet
+[Connection and authentication](#connection-and-authentication) and SHOULD be upgraded. Since
+v0.0.136 a web client served from an untrusted origin, such as a hosted web app connecting to a node
+on the user's machine, receives 403 where it used to connect without the key, and has to obtain the
+auth key from its user.
 
 The pkc-js README for the RPC predates several of these changes and differs from this BSIP; where
 they disagree, this BSIP describes the implementation.
@@ -699,8 +730,8 @@ Non-normative. The reference implementation is [pkc-js](https://github.com/pkcpr
 
 - the node, `PKCWsServer`, in [`src/rpc`](https://github.com/pkcprotocol/pkc-js/tree/master/src/rpc),
   mainly [`src/rpc/src/index.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/rpc/src/index.ts),
-  with the challenge-message encoding in
-  [`src/rpc/src/utils.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/rpc/src/utils.ts),
+  with the challenge-message encoding and the trusted-origin check (`isOriginTrustedWithoutAuthKey`)
+  in [`src/rpc/src/utils.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/rpc/src/utils.ts),
   built on [rpc-websockets](https://github.com/elpheria/rpc-websockets);
 - the client in
   [`src/clients/rpc-client/pkc-rpc-client.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/clients/rpc-client/pkc-rpc-client.ts),
@@ -745,11 +776,19 @@ set to a node's URL.
   read a `ws://` connection learns it. `settingschange` exposes the node's options, and local community
   payloads expose `settings`, including challenge options that may be secrets, to every connected
   client.
-- **Local connections are unauthenticated.** Any process on the node's host can connect without the
-  key, and so can a local reverse proxy that does not add `X-Forwarded-For`. Browsers generally let a
-  web page open a WebSocket to `localhost`, so a page the user visits can also reach a node on the
-  user's machine. A node SHOULD reject upgrade requests whose `Origin` header names a web origin it
-  does not trust unless they present the auth key; the reference node does not check `Origin`.
+- **Local connections from trusted origins are unauthenticated.** Any process on the node's host can
+  connect without the key, since a non-browser client chooses its own `Origin` or sends none. So can
+  a client that is not a browser connecting through a local reverse proxy that does not add
+  `X-Forwarded-For`; web pages behind such a proxy are still stopped by their `Origin`. The `Origin`
+  check holds only because browsers set the header and pages cannot change it, so it protects
+  against web pages, not against software on the machine.
+- **What the trusted origins admit.** `file://` covers any local HTML file opened in a browser that
+  reports that origin, including one the user downloaded, and a loopback origin covers every local
+  web server, including other software's. Such a page can drive the node without the key. A node
+  whose owner does not need key-less browser access SHOULD require the auth key from every
+  connection that carries an `Origin` header. Pages on other origins, including sandboxed iframes
+  (`Origin: null`), browser extensions, and sites whose names resolve to `127.0.0.1` (DNS
+  rebinding), need the key: their `Origin` names their own origin, not a loopback host.
 - **Export URLs are credentials.** `GET /exports/<exportId>` takes no auth key. The 122-bit random
   export id is the only protection, so it MUST be treated as a secret, especially for exports that
   include a private key. Deleting files after download and after a bounded time limits exposure.
