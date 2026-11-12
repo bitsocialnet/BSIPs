@@ -65,8 +65,15 @@ explains why.
 
 A BSIP moves through the following lifecycle (defined in full in [BSIP-1](./BSIPS/bsip-1.md)):
 
-**Idea → Draft → Review → Last Call → Final**, with **Stagnant**, **Withdrawn**, and **Living**
-as additional states.
+**Idea → Draft → Review → Last Call → Final or Living**, with **Stagnant** and **Withdrawn** as
+additional states.
+
+Outside the appchain, the protocol grows by compatible additions rather than forks, so most Standards
+Track BSIPs are expected to become **Living**: maintained indefinitely, without ever invalidating a
+record they once accepted. An Appchain BSIP that specifies an immutable contract becomes **Final**
+before the contract is deployed. [BSIP-1](./BSIPS/bsip-1.md#final-or-living) sets the rules, and
+[#5](https://github.com/bitsocialnet/BSIPs/issues/5) tracks what each BSIP still needs before Last
+Call.
 
 ## All BSIPs
 

@@ -36,9 +36,13 @@ BSIP specifies behavior currently implemented through PKC, it should say so, but
 Bitsocial protocol, not PKC.
 
 BSIPs are the normative description of the protocol; implementation documentation, such as
-pkc-js's protocol notes, should link to the BSIP it implements rather than restate it. While a BSIP
-is a Draft, a disagreement between it and the reference implementation is a defect in one of the two.
-It is resolved explicitly, by changing the BSIP or the implementation, and never left standing.
+pkc-js's protocol notes, should link to the BSIP it implements rather than restate it. A disagreement
+between a BSIP and the reference implementation is a defect in one of the two. It is resolved
+explicitly, by changing the BSIP or the implementation, and never left standing. While a BSIP is a
+Draft, either may be the one that changes. Once it has left Draft, implementations follow it: a change
+to an implementation that alters a format, a validation rule, or another behavior a BSIP specifies
+lands together with a pull request that updates the BSIP, and is released only once that pull request
+is merged.
 
 Centralized products built *on top of* Bitsocial are out of scope. A hosted RPC provider, a managed
 build service such as Bitsocial Forge, or any swappable operator product is not the subject of a
@@ -122,7 +126,7 @@ discussion, and build rough consensus around the idea.
 
 For Core BSIPs, interoperability matters most: you will generally need either a reference
 implementation or commitments from client and node maintainers to implement the change, before it can
-become Final.
+become Final or Living.
 
 ### BSIP Process
 
@@ -132,17 +136,88 @@ The following is the standardization process for all BSIPs:
 - **Draft** — The first formally tracked stage. A BSIP is merged by an editor into the repository
   once it is properly formatted.
 - **Review** — The author marks the BSIP as ready for and requesting peer review.
-- **Last Call** — The final review window before `Final`. The author opens a pull request setting a
-  review end date (`last-call-deadline`), typically 14 days later. Necessary normative changes during
-  this window send the BSIP back to `Review`.
-- **Final** — The BSIP is a finished standard. It should only change to correct errata or add
-  non-normative clarifications.
+- **Last Call** — The final review window before `Final` or `Living`. The author opens a pull request
+  setting a review end date (`last-call-deadline`), typically 14 days later, and stating which of the
+  two the BSIP is to become. Necessary normative changes during this window send the BSIP back to
+  `Review`.
+- **Final** — The BSIP is a finished standard. It should only change to correct errata, add
+  non-normative clarifications, or record changes to facts it says it tracks
+  ([Final or Living](#final-or-living)).
 - **Stagnant** — Any BSIP in `Draft`, `Review`, or `Last Call` that is inactive for six months or
   more may be moved to `Stagnant`. It can be resurrected by an author or editor.
 - **Withdrawn** — The author(s) have withdrawn the BSIP. This is final; the number is not reused. A
   later revival is considered a new proposal.
-- **Living** — A special status for BSIPs designed to be continually updated and never reach
-  finality, most notably this document, BSIP-1.
+- **Living** — The BSIP is maintained indefinitely instead of reaching finality. This document,
+  BSIP-1, is Living. A Standards Track BSIP becomes Living through Last Call, and afterwards changes
+  only as [Living Standards Track BSIPs](#living-standards-track-bsips) allows. A Living BSIP does not
+  become `Stagnant`.
+
+### Final or Living
+
+Ethereum's Standards Track EIPs end in Final because each change ships in a hard fork at a fixed
+point, after which the old rules are history. Outside the Appchain category, the Bitsocial protocol
+has no such points: it grows by additions that implementations ship continuously, and the records it
+governs are signed and kept, so its rules have to go on accepting them. A Standards Track BSIP
+therefore ends in one of two statuses:
+
+- **Final** suits a BSIP whose subject cannot change once it ships. The clearest case is an Appchain
+  BSIP that specifies an immutable contract: the deployed contract is the standard, so the BSIP
+  completes Last Call and becomes Final before the contract is deployed. A later version is a new
+  BSIP and a new deployment that clients choose to adopt.
+- **Living** suits a BSIP whose subject grows by compatible additions, which outside the Appchain
+  category is most of the protocol.
+
+A Final BSIP that says it tracks a fact, such as the signers of a multisig, may be updated to record a
+change to that fact, provided the change follows the rules the BSIP sets for it. Beyond errata and
+non-normative clarifications, this is the only change a Final BSIP takes.
+
+### Entering Last Call
+
+A Standards Track BSIP may enter Last Call only when:
+
+1. every BSIP it `requires` is in Last Call, Final, or Living, or enters Last Call with it;
+2. no disagreement with the reference implementation is known, and the BSIP names the implementation
+   release it describes;
+3. a release of a client or node that people use ships that implementation release, or a later one
+   that still conforms, so that the BSIP describes what the network does and not only what a
+   repository does. For a BSIP that specifies an immutable contract, which is deployed only once the
+   BSIP is Final, the contract's code and tests and the client changes that use it are ready instead;
+4. where it defines a signed or content-addressed record, test vectors cover valid and invalid
+   records, inline or in `assets/bsip-N/`, and both this repository's CI and the reference
+   implementation's tests check them;
+5. its open questions concern only possible additions, not how the current specification is to be
+   read or implemented; and
+6. its Security Considerations section is sufficient.
+
+A change that a Living BSIP could not take later, because it is incompatible, is made before Last Call.
+
+### Living Standards Track BSIPs
+
+A Living Standards Track BSIP changes only compatibly. A revision MUST NOT make a record that was
+valid under an earlier revision invalid, change what such a record means, or stop implementations that
+conform to the earlier revision from interoperating with implementations that conform to the new one.
+Adding optional members, record and publication types, methods, and error codes is compatible.
+
+The one exception is a security fix, which may reject records or requests that an earlier revision
+accepted. The BSIP's Backwards Compatibility section then says what stops working and from which
+implementation release.
+
+A change that is neither compatible nor a security fix needs a new BSIP, which says how readers tell
+records made under the old rules from records made under the new ones.
+
+Normative changes are made by pull request, as for a Draft, and are merged together with the
+implementation change they describe ([What is the Bitsocial protocol?](#what-is-the-bitsocial-protocol)).
+Each names, in Backwards Compatibility, the implementation release that introduced the behavior. The
+repository history is the record of revisions, so an implementation that claims to implement a Living
+BSIP says which revision, by date or commit.
+
+### Deciding status
+
+Authors propose status changes by pull request. Editors merge them when the BSIP meets the criteria
+above and its discussion shows rough consensus among implementers and community operators. No vote
+of token holders, on chain or off, decides a BSIP's status or contents. Status records whether
+independent implementations can rely on a document, which a vote cannot establish, and a vote
+weighted by holdings would let whoever buys enough tokens decide the protocol's rules.
 
 ## What belongs in a successful BSIP?
 
@@ -158,10 +233,11 @@ Each BSIP should have the following parts:
 - **Rationale** — Why these design decisions were made, what alternatives were considered, and the
   important objections raised in discussion.
 - **Backwards Compatibility** *(optional)* — Any incompatibilities introduced, their severity, and
-  how they are handled. Required when incompatibilities exist.
+  how they are handled. Required when incompatibilities exist. In a Living Standards Track BSIP, it
+  also names the implementation release behind each normative change.
 - **Reference Implementation** *(optional)* — A minimal implementation that aids understanding.
 - **Security Considerations** — The security and abuse implications of the proposal. A BSIP cannot
-  reach Final without a Security Considerations section the editors consider sufficient.
+  reach Final or Living without a Security Considerations section the editors consider sufficient.
 - **Copyright Waiver** — All BSIPs must be in the public domain. Include the exact wording:
   `Copyright and related rights waived via [CC0](../LICENSE.md).`
 
