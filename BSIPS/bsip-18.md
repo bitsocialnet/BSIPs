@@ -3,7 +3,7 @@ bsip: 18
 title: Pubsub Voting
 description: Holder-gated contests over gossipsub, and how clients derive the topic from the rules, sign and check ballots, merge them, and tally.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/22
 status: Draft
 type: Standards Track
 category: Application

@@ -3,7 +3,7 @@ bsip: 16
 title: Fetching Records
 description: How readers fetch and verify records over IPFS nodes, libp2p and HTTP gateways, and what nodes must do to keep records reachable.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/20
 status: Draft
 type: Standards Track
 category: Networking

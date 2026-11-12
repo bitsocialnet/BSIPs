@@ -3,7 +3,7 @@ bsip: 8
 title: Comment Moderation
 description: The moderator-signed publication that removes, approves, locks, pins, labels, or purges a comment and bans or flairs its author.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/12
 status: Draft
 type: Standards Track
 category: Core

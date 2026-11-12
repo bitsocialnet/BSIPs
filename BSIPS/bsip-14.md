@@ -3,7 +3,7 @@ bsip: 14
 title: Author Communities
 description: A profile as a community configuration, addressed by its author's key, posted to only by that author, and fed by their crossposts.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/18
 status: Draft
 type: Standards Track
 category: Application

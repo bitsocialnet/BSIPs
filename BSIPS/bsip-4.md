@@ -3,7 +3,7 @@ bsip: 4
 title: Publishing and Challenges
 description: How publications are published to a community over pubsub, and the encrypted four-message challenge exchange that gates them against spam.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/8
 status: Draft
 type: Standards Track
 category: Core

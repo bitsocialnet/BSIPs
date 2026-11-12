@@ -3,7 +3,7 @@ bsip: 12
 title: Crossposts
 description: How a comment reposts another comment by embedding its signed record verbatim, and how that embed is verified and shown.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/16
 status: Draft
 type: Standards Track
 category: Core

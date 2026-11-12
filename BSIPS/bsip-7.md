@@ -3,7 +3,7 @@ bsip: 7
 title: Comment Edits
 description: The author-signed publication that edits or deletes the author's own comment, and how a community carries it in the comment update.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/11
 status: Draft
 type: Standards Track
 category: Core

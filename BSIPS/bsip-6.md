@@ -3,7 +3,7 @@ bsip: 6
 title: Votes
 description: The format and signing of upvotes and downvotes on Bitsocial comments, and how communities count them.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/10
 status: Draft
 type: Standards Track
 category: Core

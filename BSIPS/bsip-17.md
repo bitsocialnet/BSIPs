@@ -3,7 +3,7 @@ bsip: 17
 title: RPC Protocol
 description: The JSON-RPC protocol over WebSocket through which a thin client reads, subscribes, publishes, and runs communities on a full node.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/21
 status: Draft
 type: Standards Track
 category: Interface
