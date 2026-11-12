@@ -288,10 +288,25 @@ sequenceDiagram
    community.
 
 The current implementation stops after the first valid record, tries at most 4 providers per lookup,
-bounds each fetch request to 5 seconds, and in browsers dials only WebSocket addresses by default
-(WebRTC and WebTransport dials are denied unless the application overrides it). Browsers cannot open
-TCP connections, so a browser reader can load a community only from a node that announces a secure
-WebSocket (or another browser transport) address.
+and bounds each fetch request to 5 seconds. In steps 3 and 4 it defers a provider whose only direct
+addresses it can dial are private or loopback, meaning in a range that is not globally routable
+(such as `10.0.0.0/8`, `100.64.0.0/10`, `127.0.0.0/8`, `169.254.0.0/16`, `fc00::/7`, `fe80::/10`,
+and `::1`) or in the deprecated IPv6 site-local range `fec0::/10`. It dials such a provider once its
+dials to the other providers have settled, or 2 seconds after it found the first such provider,
+whichever comes first. A node behind NAT, often in a virtual machine, announces addresses like these;
+only its own host or network can reach them, and a dial to one from anywhere else can hang for
+seconds while it holds one of the 4 slots. Within a provider it tries addresses in libp2p's default
+order (loopback last, public first, relayed last, those from the peer's signed record first, then
+TCP, secure WebSocket, WebSocket, WebRTC, WebRTC-direct, WebTransport) and breaks the remaining ties
+between UDP addresses by trying port 443 first, then IPv6, then IPv4 on other ports, because some
+networks drop IPv4 UDP to port 4001.
+
+Browsers cannot open TCP connections. In browsers the current implementation dials secure WebSocket
+and WebTransport addresses and denies WebRTC and WebRTC-direct dials, unless the application
+replaces its connection gater. A browser reader can therefore load a community over libp2p only from
+a node that announces a secure WebSocket address whose certificate the browser trusts, or a
+WebTransport address with its certificate hashes (`/certhash/…`), which a browser that supports
+them dials with no certificate authority involved.
 
 ### Making records reachable
 
@@ -320,13 +335,17 @@ A node that runs a community:
    ([BSIP-4](./bsip-4.md#transport)). It SHOULD also announce the CIDs of the records it publishes.
    HTTP routers drop announcements after 24 hours, so it MUST re-announce within that window. The
    current implementation pins and announces both routing CIDs at start and every hour, re-announces
-   them when its browser-dialable addresses change (checked every minute), and announces each
-   community record recursively and each comment record, page, and statistics record as it adds
-   them.
-5. SHOULD be directly reachable on at least one address a browser can dial, such as a secure
-   WebSocket address (Kubo provides one through AutoTLS on a publicly reachable node). A node behind
-   NAT announces only `/p2p-circuit` addresses, and libp2p readers cannot load from it
-   ([Failures](#failures)).
+   them when its browser-dialable addresses change (checked every minute; these are its WebSocket,
+   WebRTC, and WebTransport addresses, the last only with certificate hashes, so a rotation of its
+   WebTransport certificate also counts), and announces each community record recursively and each
+   comment record, page, and statistics record as it adds them.
+5. SHOULD be directly reachable on at least one address a browser can dial: a WebTransport address
+   with its certificate hashes, which Kubo announces by default, or a secure WebSocket address whose
+   certificate chains to a public certificate authority (Kubo provides one through AutoTLS on a
+   publicly reachable node). Announcing both, with listeners on port 443 as well as the default
+   4001, keeps the node reachable from browsers when one transport, its certificate, or a network
+   path fails ([Security Considerations](#security-considerations)). A node behind NAT announces only
+   `/p2p-circuit` addresses, and libp2p readers cannot load from it ([Failures](#failures)).
 6. For a delegated community, MUST also publish and keep providing the anchor record as
    [BSIP-11](./bsip-11.md#setting-up-and-rotating-a-minter) specifies.
 
@@ -409,6 +428,21 @@ The current implementation uses these timeouts by default:
   racing several gateways limits what one slow or withholding gateway can do.
 - **HTTP routers instead of the DHT.** Browsers cannot take part in the DHT, and lookups in it are
   slow. A router only maps a CID to peers, stores no content, and can be replaced by changing a URL.
+- **Two browser transports, not WebRTC.** A secure WebSocket needs a certificate a browser trusts,
+  which a Kubo node typically gets through AutoTLS, for a name under one third-party zone.
+  WebTransport is authenticated by the certificate hash in the address instead, and Kubo announces
+  it by default, so a browser can reach a node that no certificate authority or DNS name vouches for. Dialing both
+  keeps browser readers working when either fails. WebRTC stays denied by default because its
+  connection setup (STUN, ICE, SDP exchange, certificate rotation) is long and often fails, which
+  slows every load that tries it.
+- **Port 443 and IPv6 first.** Some consumer networks drop IPv4 UDP to port 4001 while UDP 443,
+  used by HTTP/3, passes. libp2p tries a peer's addresses one at a time, each with its own timeout,
+  so trying a filtered address first costs a whole per-address timeout before one that works.
+- **Private-only providers last.** Providers behind NAT, often in virtual machines, announce only
+  private or loopback addresses. Dialing them first spends the reader's provider slots on peers it
+  usually cannot reach and delays the public ones by tens of seconds; skipping them altogether would
+  lose a seeder on the reader's own machine or network. The 2 second cap bounds the delay when a
+  router keeps its response open.
 - **IPNS over pubsub.** Pushes deliver a new community record in under a second and need no DHT,
   where a reader that polls a cache sees it only once the cached record's TTL expires. The libp2p
   fetch protocol lets a reader get the current record the moment it connects, without waiting for a
@@ -446,11 +480,16 @@ Open questions:
 
 ## Backwards Compatibility
 
-This BSIP introduces no wire format; it describes the behavior of pkc-js 0.0.135. Earlier versions of
+This BSIP introduces no wire format; it describes the behavior of pkc-js 0.0.142. Earlier versions of
 the implementation published IPNS records with a TTL of three publish intervals; those records are
-valid, and gateway readers see their updates later. Kubo releases before 0.43.0 dropped
-browser-dialable addresses from announcements to HTTP routers, so nodes running them are not
-reachable from browsers without an address-rewriting proxy, which the implementation no longer uses.
+valid, and gateway readers see their updates later. Browser readers before 0.0.139 dial only secure
+WebSocket addresses and deny WebTransport, so they cannot load a community whose providers a
+browser can reach only over WebTransport, and they dial providers in discovery order, private-only
+ones included. Nodes before 0.0.139 re-announce on an address change only for WebSocket and WebRTC
+addresses, so their routers can hold a rotated WebTransport certificate hash until the next hourly
+announcement. Kubo releases before 0.43.0 dropped browser-dialable addresses from announcements to
+HTTP routers, so nodes running them are not reachable from browsers without an address-rewriting
+proxy, which the implementation no longer uses.
 A node that publishes IPNS records only to the DHT, or does not announce its routing CIDs to HTTP
 routers, cannot be loaded by libp2p readers or by Kubo readers configured by the current
 implementation, which use no DHT.
@@ -473,9 +512,17 @@ Non-normative. The current implementation is [pkc-js](https://github.com/pkcprot
   (`getPostUpdateTimestampRange`).
 - [`src/helia/helia-for-pkc.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/helia/helia-for-pkc.ts)
   and [`src/helia/util.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/helia/util.ts): the
-  libp2p reader, its IPNS cache and push channel, direct record fetch from providers, and the
-  reachability verdicts described in
-  [`docs/reachability.md`](https://github.com/pkcprotocol/pkc-js/blob/master/docs/reachability.md).
+  libp2p reader, its IPNS cache and push channel, direct record fetch from providers with
+  private-only providers deferred (`multiaddrIsPrivateOrLoopback`), and the reachability verdicts
+  described in
+  [`docs/reachability.md`](https://github.com/pkcprotocol/pkc-js/blob/master/docs/reachability.md),
+  which also lists what a seeder must announce to be dialable from browsers. The default connection
+  gater is in
+  [`src/helia/dial-transport-filter.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/helia/dial-transport-filter.ts),
+  the address order in
+  [`src/helia/dial-address-sorter.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/helia/dial-address-sorter.ts),
+  and the browser's WebTransport transport in
+  [`src/runtime/browser/libp2p-extra-transports.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/runtime/browser/libp2p-extra-transports.ts).
 - [`src/publications/comment/comment-client-manager.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/publications/comment/comment-client-manager.ts)
   and [`src/pages/pages-client-manager.ts`](https://github.com/pkcprotocol/pkc-js/blob/master/src/pages/pages-client-manager.ts):
   comment, comment update, and page fetches.
@@ -523,6 +570,20 @@ An HTTP router implementing the rules above is
 - **NAT and relays.** A community whose only providers sit behind NAT is unreachable from libp2p
   readers. Telling users so, rather than "not found", avoids pushing them to look-alike communities
   that do load.
+- **Shared dependencies of browser reachability.** A secure WebSocket address works only while its
+  certificate authority issues certificates and its DNS name resolves. Kubo's AutoTLS names every
+  node under the single zone `libp2p.direct`; when those names stopped resolving on 2026-10-31,
+  every AutoTLS address failed at once, and browser readers, which then dialed only secure WebSocket,
+  could no longer reach any node that relied on it, which in practice stopped browsers from loading
+  communities over libp2p. WebTransport depends on neither. Nodes SHOULD NOT rely on a single third
+  party for browser reachability. Neither transport is a source of trust: libp2p authenticates the
+  peer ID in its own handshake, and readers verify every record they fetch.
+- **Private addresses in provider records.** Anyone who announces a provider record chooses its
+  addresses, and the current implementation dials private and loopback addresses after the public
+  ones, so an announcer can make a reader open connections to hosts on the reader's own machine or
+  network. The libp2p handshake fails against anything that is not the announced peer, but the
+  attempt itself still reaches those hosts. Readers that do not need seeders on their own network MAY
+  skip such addresses.
 
 ## Copyright
 
