@@ -237,8 +237,18 @@ pages object has the shape:
   ([BSIP-5](./bsip-5.md)), nested reply pages included. `nextCid` points at the next page of the same
   sort.
 - A page fetched from `pageCids` SHOULD be at most 1 MiB, and each page reached through `nextCid` at
-  most twice the size allowed for the page before it, and never more than 32 MiB. Readers MAY refuse
-  larger pages; pkc-js does, and its communities publish pages within these limits.
+  most twice the size allowed for the page before it, and never more than 32 MiB. A community
+  applies these limits to the page's **DAG size**: the total size of the blocks produced by
+  importing the whole serialized page as in
+  [BSIP-2, Addressing and fetching](./bsip-2.md#addressing-and-fetching), which `ipfs add` reports
+  as the file's cumulative size. That is the page's UTF-8 byte length plus the dag-pb and UnixFS
+  framing of each 262,144-byte chunk and the links of the nodes above them, about 7,950 bytes for a
+  32 MiB page. It is not the sum of the entries' sizes taken as separate files, which counts framing
+  a page does not have and misses the framing it has.
+- Readers MAY refuse a page whose bytes exceed its limit; pkc-js does, and stops downloading at the
+  limit ([BSIP-16](./bsip-16.md#verifying-what-was-fetched)). The DAG size of a page always exceeds
+  its byte length, so a reader never refuses a page that its community kept within the limit. pkc-js
+  communities keep every page's DAG size at least 1 KiB under its limit.
 
 The sorts a community generates are its operator's choice. An unconfigured community generates the
 post sorts `hot`, `new`, `topHour`, `topDay`, `topWeek`, `topMonth`, `topYear`, `topAll`, and `active`,
@@ -373,6 +383,16 @@ community address as `address` instead of `name`, and older exclude items MAY ca
 `role`; see [Anti-spam configuration](#anti-spam-configuration). Readers parse records loosely enough
 that fields added by newer versions, such as `pageSorts` and `anchor`, do not break them, but such
 fields are still signed and verified.
+
+Since pkc-js 0.0.140, its communities measure pages by DAG size as [Pages](#pages) specifies.
+Earlier versions decided where a page ends by summing each entry's DAG size as if it were a separate
+file, which undercounts a page of a few hundred large entries by more than the 1 KiB margin they
+kept. They still checked the whole page's DAG size before publishing it, so such a page was never
+published: the generation failed with `ERR_PAGE_GENERATED_IS_OVER_EXPECTED_SIZE`, and the community
+kept its previous record until a later cycle packed its pages differently. A community on a version
+before 0.0.140 can therefore stop publishing new records for a while, but it does not publish pages
+over these limits. Versions before 0.0.127 did not stop doubling page sizes at 32 MiB, so their
+communities could publish larger pages, which pkc-js readers refuse since 0.0.127.
 
 ## Security Considerations
 
