@@ -1,6 +1,6 @@
 ---
 // Three-state theme toggle: auto -> light -> dark. The no-flash init lives in Base.astro <head>;
-// this only handles the click cycle and icon state.
+// this handles the click cycle and keeps the page and icon in step with the stored choice.
 import Icon from './Icon.astro';
 ---
 
@@ -15,21 +15,33 @@ import Icon from './Icon.astro';
   const order = ['auto', 'light', 'dark'] as const;
   type Mode = (typeof order)[number];
   const labels: Record<Mode, string> = { auto: 'system', light: 'light', dark: 'dark' };
-  const stored = document.documentElement.dataset.theme;
-  let mode: Mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
-  const show = () => {
+  const root = document.documentElement;
+  // html[data-theme] is this page's mode. Another tab, or a visit while this page sat in the back/forward
+  // cache, can change the stored choice, so re-read it then rather than cycling on from a stale mode.
+  const current = (): Mode => (root.dataset.theme === 'light' || root.dataset.theme === 'dark' ? root.dataset.theme : 'auto');
+  const show = (mode: Mode) => {
+    if (mode === 'auto') delete root.dataset.theme;
+    else root.dataset.theme = mode;
     btn.dataset.mode = mode;
     btn.title = `Theme: ${labels[mode]}`;
   };
-  show();
+  const sync = () => {
+    let mode = current();
+    try {
+      const stored = localStorage.getItem('theme');
+      mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
+    } catch {}
+    show(mode);
+  };
+  sync();
+  addEventListener('storage', sync);
+  addEventListener('pageshow', sync);
   btn.addEventListener('click', () => {
-    mode = order[(order.indexOf(mode) + 1) % order.length];
+    const mode = order[(order.indexOf(current()) + 1) % order.length];
     try {
       if (mode === 'auto') localStorage.removeItem('theme');
       else localStorage.setItem('theme', mode);
     } catch {}
-    if (mode === 'auto') delete document.documentElement.dataset.theme;
-    else document.documentElement.dataset.theme = mode;
-    show();
+    show(mode);
   });
 </script>
