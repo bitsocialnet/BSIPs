@@ -101,6 +101,7 @@ const bsips = await getBsips();
         const empty = document.querySelector<HTMLElement>('[data-search-empty]')!;
         const emptyTerm = empty.querySelector('[data-search-term]')!;
         const count = document.querySelector<HTMLElement>('[data-search-count]');
+        const nav = document.querySelector<HTMLElement>('[data-category-nav]');
         const filter = () => {
           const raw = input.value.trim();
           const query = raw.toLowerCase();
@@ -111,6 +112,8 @@ const bsips = await getBsips();
             row.hidden = !match;
           }
           for (const group of groups) group.hidden = !group.querySelector('[data-bsip-row]:not([hidden])');
+          // The category chips jump to sections a query can hide and count every BSIP, so they only fit the full list.
+          if (nav) nav.hidden = raw !== '';
           const shown = rows.filter((row) => !row.hidden).length;
           empty.hidden = shown > 0;
           emptyTerm.textContent = raw;

@@ -29,7 +29,7 @@ const searchText = (b: (typeof bsips)[number]) =>
       </p>
     </section>
 
-    <nav class="category-nav" aria-label="Categories">
+    <nav class="category-nav" aria-label="Categories" data-category-nav>
       {
         groups.map((group) => (
           <a href={`#${group.slug}`}>
