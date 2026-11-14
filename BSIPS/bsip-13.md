@@ -36,7 +36,7 @@ three years for a new community name under ENS v2. Most owners will not pay that
 community, so they run key-only communities, which are harder to find and cannot recover from a key
 compromise ([BSIP-10](./bsip-10.md#key-migration)).
 
-Bitsocial Chain, phase 2 of the Bitsocial master plan, is meant to host `.bso` names natively, but it
+Bitsocial Chain, phase 3 of the Bitsocial master plan, is meant to host `.bso` names natively, but it
 does not exist yet. An interim registry on Ethereum mainnet makes a normal-length `.bso` name cost
 0.0005 ETH a year now, and makes the later move to Bitsocial Chain a copy of state rather than a
 change of owners.
