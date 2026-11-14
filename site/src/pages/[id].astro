@@ -30,6 +30,7 @@ const sourceUrl = `${GITHUB_REPO_URL}/blob/master/${path}`;
 const rawUrl = `https://raw.githubusercontent.com/bitsocialnet/BSIPs/master/${path}`;
 const historyUrl = `${GITHUB_REPO_URL}/commits/master/${path}`;
 const discussionsUrl = fm['discussions-to'];
+const hasDiagrams = /^```mermaid\s*$/m.test(entry.body ?? '');
 
 // Heading text from the collector includes the prepended "#" anchor.
 const toc = headings
@@ -212,6 +213,20 @@ const toc = headings
       </div>
     </aside>
   </div>
+
+  {
+    hasDiagrams && (
+      <dialog class="diagram-dialog" aria-label="Diagram" data-diagram-dialog>
+        <div class="diagram-dialog-bar">
+          <p class="diagram-dialog-hint">Pinch, ctrl/⌘ + scroll or +/− to zoom; drag to pan</p>
+          <button type="button" class="diagram-close" aria-label="Close diagram" title="Close" data-diagram-close>
+            <Icon name="x" />
+          </button>
+        </div>
+        <div class="diagram-stage" data-diagram-stage />
+      </dialog>
+    )
+  }
 </Base>
 
 <script>
@@ -263,5 +278,72 @@ const toc = headings
     addEventListener('scroll', queue, { passive: true });
     addEventListener('resize', queue);
     update();
+  }
+
+  // Diagram viewer: move the diagram's SVG into a full-screen dialog, fit it to the screen and let
+  // Pele's zoom (loaded on first use) handle zoom and pan. Closing puts the SVG back.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-diagram-dialog]');
+  const stage = dialog?.querySelector<HTMLElement>('[data-diagram-stage]');
+  if (dialog && stage) {
+    let home: Element | undefined;
+    let svg: SVGSVGElement | undefined;
+    let inlineStyle = '';
+    let zoom: { destroy(): void } | undefined;
+
+    const fit = async () => {
+      zoom?.destroy();
+      zoom = undefined;
+      if (!svg) return;
+      const width = Number(svg.getAttribute('width'));
+      const height = Number(svg.getAttribute('height'));
+      const box = stage.getBoundingClientRect();
+      const padding = 32;
+      const scale = Math.min((box.width - padding) / width, (box.height - padding) / height, 2);
+      svg.style.width = `${Math.floor(width * scale)}px`;
+      const { enableZoom } = await import('pele/core');
+      // The dialog may have closed, or another resize started, while Pele loaded.
+      if (!dialog.open || svg.parentElement !== stage || zoom) return;
+      zoom = enableZoom(stage, { always: true, maxScale: 4 });
+    };
+
+    let resizeQueued = false;
+    addEventListener('resize', () => {
+      if (!dialog.open || resizeQueued) return;
+      resizeQueued = true;
+      requestAnimationFrame(() => {
+        resizeQueued = false;
+        void fit();
+      });
+    });
+
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-diagram-expand]')) {
+      button.hidden = false;
+      button.addEventListener('click', async () => {
+        home = button.closest('.diagram')?.querySelector('.diagram-scroll') ?? undefined;
+        svg = home?.querySelector('svg') ?? undefined;
+        if (!svg) return;
+        inlineStyle = svg.getAttribute('style') ?? '';
+        stage.append(svg);
+        dialog.showModal();
+        await fit();
+        svg.focus({ preventScroll: true });
+      });
+    }
+
+    dialog.querySelector('[data-diagram-close]')?.addEventListener('click', () => dialog.close());
+    // A click on the dialog element itself is a click on the backdrop.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      zoom?.destroy();
+      zoom = undefined;
+      if (svg && home) {
+        svg.setAttribute('style', inlineStyle);
+        home.append(svg);
+      }
+      svg = undefined;
+      home = undefined;
+    });
   }
 </script>

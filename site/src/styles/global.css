@@ -614,14 +614,70 @@ button { font: inherit; color: inherit; }
 
 /* mermaid diagrams, rendered to SVG at build time by Pele */
 .prose .diagram {
+  position: relative;
   margin: 1.5rem 0;
-  padding: 1rem;
-  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
 }
-.prose .diagram svg { margin-inline: auto; max-width: 100%; height: auto; }
+.prose .diagram-scroll { padding: 1rem; overflow-x: auto; }
+.prose .diagram svg { display: block; margin-inline: auto; max-width: 100%; height: auto; }
+.diagram-expand,
+.diagram-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms;
+}
+.diagram-expand { position: absolute; top: 0.5rem; right: 0.5rem; }
+.diagram-expand:hover,
+.diagram-close:hover { background: var(--surface-hover); color: var(--fg); }
+.diagram-expand:focus-visible,
+.diagram-close:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.diagram-expand .icon,
+.diagram-close .icon { width: 1rem; height: 1rem; }
+
+/* Full-screen diagram viewer: Pele's zoom adds the +/- controls and pinch, ctrl/cmd-wheel and drag. */
+.diagram-dialog {
+  width: calc(100vw - 2rem);
+  max-width: none;
+  height: calc(100dvh - 2rem);
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--fg);
+}
+.diagram-dialog[open] { display: flex; flex-direction: column; }
+.diagram-dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+.diagram-dialog-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.diagram-dialog-hint { margin: 0; color: var(--muted); font-size: 0.8125rem; }
+.diagram-stage {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: 1rem;
+  overflow: hidden;
+  background: var(--surface);
+}
+.diagram-stage svg { max-width: none; min-width: 0 !important; height: auto; }
 /* Opaque: Pele paints edge-label backgrounds with it to mask the lines underneath. */
 .pele {
   --pele-bg: var(--surface);
