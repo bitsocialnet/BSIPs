@@ -111,29 +111,27 @@ already outside it.
 
 ### Reading a community
 
-A reader that knows only a name resolves it first. It then loads the latest community record from the
-IPNS name of the community key, checks it, and reads posts from the pages embedded in it. Further
-pages and each post's comment update are fetched by CID or path as the reader needs them.
+Reading follows a chain of pointers. A name, if the reader starts from one, resolves to the
+community's address. The address resolves through IPNS to the latest community record, which holds the
+first page of posts and the CIDs of further pages. Each entry of a page pairs a comment with its
+comment update. The reader checks every signature and hash along the way, so it does not matter which
+peer or gateway served the bytes.
 
 ```mermaid
-sequenceDiagram
+flowchart TB
     accTitle: Reading a community
-    accDescr: If the reader starts from a name, it resolves the name's bitsocial record to a key address. It asks the network for the latest IPNS record of that key, which points at the CID of the community record. It fetches the record and verifies its signature, its address and every entry of its preloaded pages. It then fetches more pages and the comment updates of the posts it shows, and verifies each one.
-    participant Reader
-    participant Names as Name registry
-    participant Net as IPFS and IPNS network
-    opt Loaded by name, such as memes.bso
-        Reader->>Names: read the bitsocial record of the name
-        Names-->>Reader: community key address 12D3KooW…
-    end
-    Reader->>Net: latest IPNS record of the community key
-    Net-->>Reader: CID of the current community record
-    Reader->>Net: community record by CID
-    Net-->>Reader: signed record with title, rules, roles and first pages
-    Reader->>Reader: verify signature, address and every page entry
-    Reader->>Net: further pages by CID
-    Reader->>Net: comment updates of the posts it shows
-    Net-->>Reader: community-signed counts, replies and moderation state
+    accDescr: A chain of pointers. A name such as memes.bso resolves through the name registry to the community address, which is the community's public key. The address resolves through IPNS to the latest community record, signed by the community, holding its title, rules, roles and first page of posts. The record links by CID to pages of posts. Each page entry pairs a comment, signed by its author, with a comment update, signed by the community.
+    Name["Name<br/>memes.bso"]
+    Key["Community address<br/>12D3KooW… (its public key)"]
+    Record["Community record<br/>title, rules, roles, first posts<br/>signed by the community"]
+    Pages["Pages of posts<br/>the rest of each feed"]
+    Comment["Comment<br/>a post or reply<br/>signed by its author"]
+    Update["Comment update<br/>votes, replies, moderation<br/>signed by the community"]
+    Name -- "name registry (optional)" --> Key
+    Key -- "IPNS: latest record" --> Record
+    Record -- "IPFS: by CID" --> Pages
+    Pages --> Comment
+    Pages --> Update
 ```
 
 A reader that cannot run a peer, such as a web page, can fetch the same records through HTTP
