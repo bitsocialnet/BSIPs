@@ -202,19 +202,37 @@ subdomain's parent name in `.bso` form.
 An entry whose label the registry rejects, such as a label that starts or ends with `-` (which
 ENSIP-15 allows) or is longer than 255 bytes, is left out, together with every subname under it. So
 is a subname more than `MAX_SUBDOMAIN_DEPTH` = 10 levels below its top-level name, which upstream
-refuses to register. Their owners keep the `.eth` names. `seed` applies the same label and depth
+refuses to register, and an entry whose holder at block `S` is the zero address, to which the
+registry cannot mint. Their owners keep the `.eth` names. `seed` applies the same label and depth
 checks as ordinary registration, and the script that builds the list MUST check every entry against
-them, so every entry in the tree can be seeded.
+all three, so every entry in the tree can be seeded.
 
-The script MUST find the names by scanning Ethereum mainnet logs up to block `S`, not by reading
-known lists, because a name that is missed cannot be added later. It MUST filter on both ENS
-`TextChanged` events, `TextChanged(bytes32,string,string)` and
-`TextChanged(bytes32,string,string,string)`, with the indexed key `bitsocial`, emitted by any
-contract, so that names on custom resolvers are found. It MUST then confirm each candidate by
-resolving it at block `S`, and MUST report every event node it cannot map to a name, so that none
-is dropped silently. A name whose record is served by an offchain
-([EIP-3668](https://eips.ethereum.org/EIPS/eip-3668)) or wildcard
-([ENSIP-10](https://docs.ens.domains/ensip/10)) resolver emits no such event and is not seeded.
+The script takes candidate names from two sources, and MUST confirm each candidate by resolving it
+at block `S`:
+
+- **Logs.** It MUST scan Ethereum mainnet logs up to block `S` for both ENS `TextChanged` events,
+  `TextChanged(bytes32,string,string)` and `TextChanged(bytes32,string,string,string)`, with the
+  indexed key `bitsocial`, emitted by any contract, so that names on custom resolvers and names
+  outside every known list are found.
+- **Supplied names.** It MUST also check every name on a published list of supplied names: the
+  names in the maintainers' community lists, and every name an owner sends the maintainers before
+  the seed list is fixed. This covers what the logs cannot give.
+
+A log holds a node, not a name, and a subname's label may never have been published on chain. The
+script MUST publish, with the seed list, every event node it could not map to a name. Rules 1 and 2
+cover only names the script finds, so these are not seeded:
+
+- a name whose record is served by an offchain
+  ([EIP-3668](https://eips.ethereum.org/EIPS/eip-3668)) or wildcard
+  ([ENSIP-10](https://docs.ens.domains/ensip/10)) resolver, even when it is supplied, because it
+  has no record or owner on chain to copy;
+- a name whose onchain resolver returns a `bitsocial` record without emitting `TextChanged`, unless
+  it is supplied; and
+- a name behind an event node nobody could map, unless it is supplied.
+
+A name that is missed cannot be added once `SEED_ROOT` is deployed. Before the seed list is fixed,
+the maintainers MUST therefore publish and announce a preliminary seed list together with the
+unmapped nodes, and SHOULD leave owners at least 3 days to supply missing names.
 
 Rules 1 and 2 take only `.eth` names whose labels are already ENS-normalized
 ([ENSIP-15](https://docs.ens.domains/ensip/15)): normalizing the name leaves it unchanged. ENS
@@ -424,8 +442,10 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 ## Backwards Compatibility
 
 - Every `.bso` name in use at block `S`, subdomains included, keeps its owner, key, and record in the
-  registry once its entry is seeded, unless the registry rejects its label or depth, or its record
-  is served by an offchain or wildcard resolver ([Seed list](#seed-list)). The maintainers must seed every entry before `SEED_END`, and an entry
+  registry once its entry is seeded, unless the registry rejects its label or depth, its holder
+  is the zero address, or the list builder cannot find it: an offchain or wildcard record, or a
+  name with no `TextChanged` event or no recoverable label that nobody supplied
+  ([Seed list](#seed-list)). The maintainers must seed every entry before `SEED_END`, and an entry
   still unseeded then loses that guarantee ([Seeding](#seeding)).
 - A name that comes into use on ENS after block `S` is not seeded. Its owner has to register the
   `.bso` name like anyone else, and someone else may get it first
@@ -479,9 +499,9 @@ To be written:
   also set it on the `.bso` name, which is possible as soon as the name is seeded. The comparisons
   the maintainers publish ([Seeding](#seeding)) are the only notice an owner gets.
 - **Names not on the seed list.** After the opening, anything not seeded is first come, first served.
-  That includes a `.eth` name that got its `bitsocial` record after block `S`, a name whose record
-  is served by an offchain or wildcard resolver, a label or depth the registry rejects, and an
-  entry left unseeded at `SEED_END`. Someone else can register `x.bso` and set their own key, and
+  That includes a `.eth` name that got its `bitsocial` record after block `S`, a name the list
+  builder could not find ([Seed list](#seed-list)), a label or depth the registry rejects, a name
+  held by the zero address, and an entry left unseeded at `SEED_END`. Someone else can register `x.bso` and set their own key, and
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
   of such names SHOULD register their `.bso` names as soon as public registration opens. Readers

@@ -107,8 +107,9 @@ For a requested website name, a resolver MUST:
 Resolvers MUST NOT fall back to the matching `.eth` name, an ancestor's record, the `bitsocial`
 text record, DNSLink, or an operator-maintained replacement record. Each subname has its own
 contenthash. Website resolution does not require a non-empty `bitsocial` record and does not
-establish a Bitsocial community's identity. BSIP-13's transition check against an ENS `bitsocial`
-record applies to identity resolution, not to this website record.
+establish a Bitsocial community's identity. Under BSIP-13 an activated client resolves a `.bso`
+identity from the registry's `bitsocial` record alone, and that record plays no part in website
+resolution.
 
 An implementation MAY use a local chain node or a configured RPC service. It MUST bind its
 configuration to the published chain ID and registry address, rather than accepting either from
