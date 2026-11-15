@@ -91,6 +91,7 @@ as additional states.
 | [BSIP-17](./BSIPS/bsip-17.md) | RPC Protocol | Standards Track | Interface | Draft |
 | [BSIP-18](./BSIPS/bsip-18.md) | Pubsub Voting | Standards Track | Application | Draft |
 | [BSIP-19](./BSIPS/bsip-19.md) | Directories | Standards Track | Application | Draft |
+| [BSIP-20](./BSIPS/bsip-20.md) | Protocol Overview | Informational | — | Living |
 
 ## Contributing
 
