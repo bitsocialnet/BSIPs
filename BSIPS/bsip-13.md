@@ -54,6 +54,7 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 - **Fee recipient**: the multisig address hardcoded in the registry
   ([Fee recipient](#fee-recipient)).
 - **Seed list**: the names copied into the registry at launch ([Launch](#launch)).
+- **Opening**: the moment public registration opens ([Seeding](#seeding)).
 - **Activation**: the point at which a client starts resolving `.bso` names through the registry
   ([Resolving `.bso` names](#resolving-bso-names)).
 
@@ -66,10 +67,11 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 | Upstream | [`lucadonnoh/gwei-names`](https://github.com/lucadonnoh/gwei-names) `src/NameNFT.sol` at commit `8e094ab343d0bfdbd9ec948594fc48f20bed6e5d` |
 | TLD node | `namehash("bso")` = `0xe07ef0fd54600878e8c5c0087ff379e0fb9e1c49dfcc763bdada48721f534a20` |
 | Fee recipient | Safe multisig, address TBD |
-| Fee recipient signers and threshold | TBD ([Fee recipient](#fee-recipient)) |
+| Fee recipient signers and threshold | 6 keys held by 4 people, threshold 4 ([Fee recipient](#fee-recipient)) |
 | Snapshot block `S` | TBD, shortly before deployment |
-| Seed period | 7 days from deployment, ending at `SEED_END` |
-| Transition window | until `TRANSITION_END = SEED_END + 90 days` |
+| Seed entries | `SEED_COUNT`, TBD: the number of entries in the seed list |
+| Seeding window | from deployment until `SEED_END`, 7 days later |
+| Opening of public registration | `openAt`, one hour (`OPEN_DELAY`) after every entry is seeded, or `SEED_END`, whichever comes first |
 | Sunset notice | 30 days |
 
 Every TBD value MUST be filled in before this BSIP moves to Review, and the registry address MUST be
@@ -86,8 +88,10 @@ The registry is the upstream `NameNFT` with these changes and no others:
    in the registry as they do upstream. A new function `withdraw()`, callable by anyone, transfers the
    registry's entire ETH balance to `FEE_RECIPIENT`, a constant address. Apart from upstream's refunds
    of overpayment, no other code path sends ETH.
-3. **Seeding.** A constant `SEED_ROOT`, a constant `SEED_END = deployment time + 7 days`, and a
-   function `seed` ([Seeding](#seeding)). Before `SEED_END`, `reveal` reverts.
+3. **Seeding.** The constants `SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY = 1 hour`, and
+   `SEED_END = deployment time + 7 days`, a counter `seededCount`, a timestamp `openAt`, and the
+   functions `seed` and `seedBatch` ([Seeding](#seeding)). Until the opening, `reveal`,
+   `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
 
@@ -114,7 +118,16 @@ The rest of the contract is unchanged, and clients rely on it:
   not active.
 
 The registry has no owner, admin, proxy, pause, or upgrade path. Prices, `FEE_RECIPIENT`,
-`SEED_ROOT`, `SEED_END`, and every period above are constants.
+`SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY`, `SEED_END`, and every period above are constants.
+
+Because the registry checks only the characters listed above, it accepts labels that are not
+ENSIP-15 normalized. Such a name never resolves: clients normalize a name before they resolve it
+([Resolving `.bso` names](#resolving-bso-names)), so they either reject the spelling or look up a
+different label. The fee paid for it is not refunded. A front-end that registers names MUST
+ENS-normalize the label, MUST commit only the normalized form, and MUST refuse a label that
+normalization rejects. For example, ENSIP-15 rejects `relationship_advice`, because it allows an
+underscore only at the start of a label, but the registry would register it. A front-end SHOULD
+suggest `relationship-advice` instead.
 
 #### Prices
 
@@ -152,14 +165,17 @@ does not depend on any one signer. Signers:
 | --- | --- |
 | Tommaso Casaburi (@tomcasaburi) | 2 |
 | Rinse (@Rinse12) | 2 |
-| TBD | TBD |
+| A trustee named by Tommaso Casaburi | 1 |
+| A trustee named by Rinse | 1 |
 
-Threshold: TBD. The signer set and threshold MUST satisfy both rules:
+Threshold: 4 of 6. The signers' addresses are TBD. The signer set and threshold MUST satisfy both
+rules:
 
 - the threshold is higher than the number of keys held by any one person, so nobody acts alone; and
 - if any one person becomes unavailable, the keys held by everyone else still reach the threshold.
 
-Two people with two keys each and a 3-of-4 threshold meet the first rule but not the second.
+Two people with two keys each and a 3-of-4 threshold meet the first rule but not the second. The set
+above meets both: nobody holds more than 2 keys, and without any one person at least 4 keys remain.
 
 Any change to the signers or the threshold MUST be recorded in this BSIP.
 
@@ -185,10 +201,46 @@ subdomain's parent name in `.bso` form.
    maintainers, with an empty record. A reserved label that is also listed under rule 1 or 2 is
    dropped from the reserved list. A name in use always goes to its current holder.
 
-An entry whose label the registry rejects, such as a label that starts or ends with `-` (which
-ENSIP-15 allows) or is longer than 255 bytes, is left out, together with every subname under it. Its
-owner keeps the `.eth` name. `seed` applies the same label checks as `reveal`, and the script that
-builds the list MUST check every label against them, so every entry in the tree can be seeded.
+An entry is left out when the registry could not hold it:
+
+- its label is one the registry rejects, such as a label that starts or ends with `-` (which
+  ENSIP-15 allows) or is longer than 255 bytes;
+- it is a subname more than `MAX_SUBDOMAIN_DEPTH` = 10 levels below its top-level name, which
+  upstream refuses to register; or
+- its holder at block `S` is the zero address, to which the registry cannot mint.
+
+Every subname under an entry that is left out is left out too, whatever the reason, because a
+subdomain can be seeded only under a registered parent. Their owners keep the `.eth` names. `seed`
+applies the same label and depth checks as ordinary registration. The script that builds the list
+MUST apply all three checks to every entry and MUST check that every subdomain entry's parent is in
+the list, so every entry in the tree can be seeded.
+
+The script takes candidate names from two sources, and MUST confirm each candidate by resolving it
+at block `S`:
+
+- **Logs.** It MUST scan Ethereum mainnet logs up to block `S` for both ENS `TextChanged` events,
+  `TextChanged(bytes32,string,string)` and `TextChanged(bytes32,string,string,string)`, with the
+  indexed key `bitsocial`, emitted by any contract, so that names on custom resolvers and names
+  outside every known list are found.
+- **Supplied names.** It MUST also check every name on a published list of supplied names: the
+  names in the maintainers' community lists, and every name an owner sends the maintainers before
+  the seed list is fixed. This covers what the logs cannot give.
+
+A log holds a node, not a name, and a subname's label may never have been published on chain. The
+script MUST publish, with the seed list, every event node it could not map to a name. Rules 1 and 2
+cover only names the script finds, so these are not seeded:
+
+- a name whose record is served by an offchain
+  ([EIP-3668](https://eips.ethereum.org/EIPS/eip-3668)) or wildcard
+  ([ENSIP-10](https://docs.ens.domains/ensip/10)) resolver, even when it is supplied, because it
+  has no record or owner on chain to copy;
+- a name whose onchain resolver returns a `bitsocial` record without emitting `TextChanged`, unless
+  it is supplied; and
+- a name behind an event node nobody could map, unless it is supplied.
+
+A name that is missed cannot be added once `SEED_ROOT` is deployed. Before the seed list is fixed,
+the maintainers MUST therefore publish and announce a preliminary seed list together with the
+unmapped nodes, and SHOULD leave owners at least 3 days to supply missing names.
 
 Rules 1 and 2 take only `.eth` names whose labels are already ENS-normalized
 ([ENSIP-15](https://docs.ens.domains/ensip/15)): normalizing the name leaves it unchanged. ENS
@@ -213,26 +265,67 @@ published in `assets/bsip-13/`, so anyone can rebuild `SEED_ROOT` and check ever
 
 #### Seeding
 
-`seed(label, parent, owner, record, proof)` may be called by anyone before `SEED_END`. If `proof`
-shows that the entry is in the tree and the name is not registered, the registry:
+`seed(label, parent, owner, record, proof)` may be called by anyone before `SEED_END`. It reverts
+unless `proof` shows that the entry is in the tree and the name has no record in the registry.
+Otherwise the registry:
 
 - for a top-level entry, registers the label to `owner` for 365 days;
 - for a subdomain entry, requires `parent` to be registered and active, and registers the label under
-  it to `owner` as a subdomain, with no expiry of its own as upstream; and
-- charges no fee and, if `record` is non-empty, sets the name's `bitsocial` text record to `record`.
+  it to `owner` as a subdomain, with no expiry of its own as upstream;
+- charges no fee and, if `record` is non-empty, sets the name's `bitsocial` text record to `record`;
+  and
+- adds one to `seededCount`.
 
-A parent must therefore be seeded before its subdomains. Seeding MUST NOT call `onERC721Received`, so
-a contract owner without that hook still receives its name. From `SEED_END` on, `seed` reverts.
+`seedBatch(entries)` takes a list of `(label, parent, owner, record, proof)` and seeds each entry in
+order. It skips an entry whose name already has a record, and reverts if any other entry would make
+`seed` revert. Anyone can seed, so without the skip one entry seeded by someone else would revert a
+whole batch. Skipping loses nothing, because an entry can only be seeded to its listed owner and
+record. `seededCount` counts only the names a call actually registers. A parent must be seeded
+before its subdomains, in an earlier call or earlier in the same batch. From `SEED_END` on, `seed`
+and `seedBatch` revert.
 
-Because `reveal` reverts before `SEED_END`, nobody can register a seeded label first. The maintainers
-MUST seed every entry before `SEED_END`, SHOULD do so within one day of deployment, and MUST publish a
-check that every entry is registered to its listed owner. An entry that is still unseeded at
-`SEED_END` loses that protection: a top-level label opens to public registration, and a subdomain is
-left to its parent's owner.
+`seed` does not use upstream's internal `_register`, which requires the caller to own the parent and
+mints with `_safeMint`. It has its own path, which MUST:
 
-At `SEED_END` the maintainers MUST also compare every seeded record with the name's current ENS
+- validate and lowercase the label with the function `reveal` uses (`_validateAndNormalize`), and
+  apply the depth limit of subdomain registration;
+- write the name's record as an ordinary registration does, including the parent's epoch for a
+  subdomain;
+- mint with `_mint`, so that `onERC721Received` is never called and a contract owner without that
+  hook still receives its name; and
+- emit `NameRegistered`, `SubdomainRegistered` for a subdomain, and `TextChanged` for a non-empty
+  record, so that indexers see a seeded name like any other.
+
+The call that brings `seededCount` to `SEED_COUNT` sets `openAt = block.timestamp + OPEN_DELAY` and
+emits an event. Public registration opens at `openAt`, or at `SEED_END` if that comes first or the
+count is never reached. This moment is the **opening**. Until then `reveal`, `registerSubdomain`,
+and `registerSubdomainFor` revert. Nobody can therefore register a seeded label first, and the
+owner of a seeded parent can neither register a listed subname before it is seeded nor reclaim one
+after. An entry can be seeded only once and anyone can seed, so nobody can inflate the count or
+keep registration closed. Nothing else is paused: the owner of a seeded name can transfer it or
+change its records at once, and anyone can `commit`.
+
+The delay exists because anyone can send the last `seed`. Without it, whoever sends that
+transaction could reveal their own commitments in the same block, ahead of everyone else. With it,
+the opening time is on chain an hour before it arrives.
+
+The maintainers MUST seed every entry before `SEED_END`, SHOULD do so within one hour of deployment,
+and MUST publish a check that every entry is registered to its listed owner. An entry that is still
+unseeded at `SEED_END` loses its protection: a top-level label opens to public registration, and a
+subdomain is left to its parent's owner.
+
+Because `commit` is not paused, anyone can commit before the opening and reveal as soon as it comes.
+Upstream accepts a reveal between 60 seconds and 24 hours after its commit, so a commitment is
+valid at the opening only if it was made at least 60 seconds and at most 24 hours before it. For
+an opening at `openAt`, any commitment made after `openAt` is known and at least 60 seconds before
+it qualifies. The maintainers MUST announce the planned deployment time in advance, and the
+announcement MUST state these limits. Reveals at the opening still compete on transaction
+ordering, as for any name that becomes available at a known time.
+
+At the opening the maintainers MUST compare every seeded record with the name's current ENS
 `bitsocial` record and publish the names whose records differ, so that their owners can update the
-`.bso` record ([Transition window](#transition-window)).
+`.bso` record. They SHOULD repeat the comparison 30 and 90 days later. It is the only notice such an
+owner gets ([Security Considerations](#security-considerations)).
 
 ### Resolving `.bso` names
 
@@ -257,24 +350,8 @@ value:  12D3KooWNsF2eMrdw3YFPycAaFEvZ9Eq3ekhNL3vrAAfN6dAwXLp
 rewriting a `.bso` suffix.
 
 Each client activates when it ships a resolver that implements this section. Clients SHOULD NOT
-activate until every seed entry has been seeded or `SEED_END` has passed.
-
-#### Transition window
-
-A seeded record is the `.eth` record as it was at block `S`. If an owner later replaced the key on
-ENS, for example after a compromise, the registry still holds the old key, and an activated reader
-would treat it as a [key migration](./bsip-10.md#key-migration) back to that key. To prevent this,
-until `TRANSITION_END` an activated resolver that gets a key K from the registry for `x.bso` MUST
-also resolve `x.eth` through ENS as BSIP-10 specifies:
-
-- if ENS returns a different key K′, the resolver MUST fail, so the outcome is **unknown** and the
-  reader keeps the identity it holds;
-- otherwise, including when ENS returns `none` or fails, the registry's answer K stands.
-
-The name stays **unknown** until its owner makes the two records agree. The same rule covers a name
-that was not seeded and that someone else registered after `SEED_END`: while its `.eth` record holds
-a different key, activated readers get **unknown**, not a migration. From `TRANSITION_END` on, the
-registry alone decides.
+activate before the opening. An activated client resolves `.bso` names from the registry alone and
+does not consult ENS for them.
 
 ### Name equivalence
 
@@ -336,17 +413,33 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   contract to ENS contracts, which have changed before, and give `.bso` names to every `.eth` holder,
   squatters included. Seeding only names that have a `bitsocial` record, at any level, copies exactly
   the identities Bitsocial users rely on, records included, so those communities keep resolving
-  without their owners doing anything. Subnames bring their ancestors so that the registry can hold
+  for the first year without their owners doing anything. Renewal is permissionless, so anyone can
+  extend a seeded name for its owner. Subnames bring their ancestors so that the registry can hold
   them. The cost is that the maintainers build the list. Fixing it at block `S` and publishing the
   script makes it checkable.
-- **A transition window instead of trusting the snapshot.** The seed list freezes records at block
-  `S`, and under BSIP-10 a changed record moves a community to another key. Comparing with ENS for 90
-  days turns a stale seed into an **unknown** outcome, which BSIP-10 never acts on, instead of a
-  silent move back to a key the owner abandoned. It costs one extra lookup per `.bso` name during the
-  window.
-- **Pause public registration while seeding.** The registry cannot tell whether an arbitrary label is
-  on the seed list without storing the list. Pausing `reveal` until `SEED_END` removes the race
-  instead.
+- **Seed by transactions, not in the constructor.** Ethereum mainnet caps a transaction at 2^24 gas
+  ([EIP-7825](https://eips.ethereum.org/EIPS/eip-7825)). Deploying the contract and registering about
+  100 entries is estimated at 23 to 25 million gas, which does not fit. A Merkle root keeps the
+  deployment small, and `seedBatch` seeds an estimated 70 entries per transaction.
+- **No transition window.** The seed list freezes records at block `S`, and under BSIP-10 a changed
+  record moves a community to another key. An earlier draft made activated clients also resolve
+  `x.eth` for 90 days and treat a disagreement as **unknown**. That costs an extra lookup per name,
+  and it lets whoever holds `x.eth` make `x.bso` **unknown** by setting a different record. For a
+  `.bso` name registered after the opening, that is anyone willing to register the `.eth` name. On a
+  seed list of about 100 names, a stale record that its owner can fix at once is the smaller
+  problem, and the published comparison tells the owner about it.
+- **Pause registration until every entry is seeded.** The registry cannot tell whether an arbitrary
+  label is on the seed list without storing the list. Pausing `reveal` and subdomain registration
+  until the opening removes the race instead. Counting seeded entries lets registration open an
+  hour after the list is done, in practice within about two hours of deployment, with `SEED_END` as
+  the fallback if an entry is never seeded. The hour makes the opening time public in advance, so
+  the sender of the last seeding transaction gets no head start.
+- **One price for 5 bytes and more.** A cheaper tier for labels of 10 bytes or more was considered
+  and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
+  long descriptive name, so long names are the normal product and a cheap tier would remove most
+  fee income. Names that cheap could also be held in bulk and would be imported into Bitsocial
+  Chain, which a later change could not undo. If the flat price is the mistake, owners overpay by
+  about a dollar a year.
 - **Reserved names.** Squatters can use project and maintainer names to impersonate them. The list is
   kept short so the registry stays neutral, and names in use take precedence over it.
 - **Sunset freezes the registry, after notice.** The migration imports the state at `sunsetAt`. If
@@ -366,16 +459,18 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 ## Backwards Compatibility
 
 - Every `.bso` name in use at block `S`, subdomains included, keeps its owner, key, and record in the
-  registry once its entry is seeded, unless the registry rejects its label
+  registry once its entry is seeded, unless the registry rejects its label or depth, its holder
+  is the zero address, or the list builder cannot find it: an offchain or wildcard record, or a
+  name with no `TextChanged` event or no recoverable label that nobody supplied
   ([Seed list](#seed-list)). The maintainers must seed every entry before `SEED_END`, and an entry
   still unseeded then loses that guarantee ([Seeding](#seeding)).
 - A name that comes into use on ENS after block `S` is not seeded. Its owner has to register the
   `.bso` name like anyone else, and someone else may get it first
   ([Security Considerations](#security-considerations)).
-- Clients that have not activated keep resolving `x.bso` as `x.eth`. For a seeded name both
-  registries give the same answer until an owner changes one of them. Until `TRANSITION_END`,
-  activated clients treat a disagreement as **unknown** ([Transition window](#transition-window)).
-  Owners SHOULD keep both records the same until then, and clients SHOULD activate promptly.
+- Clients that have not activated keep resolving `x.bso` as `x.eth`, and activated clients read only
+  the registry. For a seeded name both registries give the same answer until an owner changes one
+  of them. Owners SHOULD keep both records the same while clients that have not activated are in
+  use, and clients SHOULD activate promptly.
 - A `.bso` name that is not seeded stops resolving in activated clients until someone registers it in
   the registry.
 - `.eth` names keep resolving as before. They no longer match `.bso` spellings in identity lists or
@@ -389,7 +484,8 @@ To be written:
 
 - the registry: a fork of `lucadonnoh/gwei-names` at the upstream commit with the changes in
   [Registry contract](#registry-contract), with a test for each change, in a `bitsocialnet`
-  repository;
+  repository. The deployed upstream `NameNFT` is 19,682 bytes, 4,894 below the 24,576-byte limit of
+  [EIP-170](https://eips.ethereum.org/EIPS/eip-170), so the fork's size MUST be measured early;
 - the seed-list builder and its output, in `assets/bsip-13/`;
 - `.bso` resolution through the registry in
   [bso-resolver](https://github.com/bitsocialnet/bso-resolver).
@@ -398,8 +494,8 @@ To be written:
 
 - **No upgrades.** A bug in the registry is permanent. The upstream `NameNFT`, inherited from
   wei-names, has had automated reviews (Cantina Apex, Plainshift AI, Zellic V12), and its repository
-  shows no manual audit. The added code (`withdraw`, `seed`, the `SEED_END` check, `sunset`, and the
-  freeze)
+  shows no manual audit. The added code (`withdraw`, `seed`, `seedBatch`, the opening check,
+  `sunset`, and the freeze)
   SHOULD be reviewed independently and tested on Sepolia and on a mainnet fork before deployment.
 - **Fee recipient.** If the signers can no longer reach the threshold, fees are stuck where nobody can
   reach them, and `sunset()` can never be called, so the Ethereum registry keeps selling names after
@@ -414,36 +510,41 @@ To be written:
   at block `S` receives the `.bso` name, including a holder who had compromised it by then. The list
   MUST be published and checked before deployment, and the seeding check after it.
 - **Stale seeded records.** A record copied at block `S` can hold a key its owner has since replaced on
-  ENS, possibly because it was compromised. Without the [transition window](#transition-window), an
-  activated reader would migrate back to that key. The window makes the name **unknown** instead, and
-  the comparison published at `SEED_END` tells owners to update their `.bso` record. After
-  `TRANSITION_END` the window no longer protects a name whose owner never did.
-- **Names not on the seed list.** After `SEED_END`, anything not seeded is first come, first served.
-  That includes a `.eth` name that got its `bitsocial` record after block `S`, a label the registry
-  rejects, and an entry left unseeded. Someone else can register `x.bso` and set their own key, and
+  ENS, possibly because it was compromised. Activated readers of `x.bso` follow the registry, so
+  they follow the old key, as a migration back to it, until the owner updates the `.bso` record.
+  Nothing in the protocol prevents this. An owner who changes a key on ENS after block `S` SHOULD
+  also set it on the `.bso` name, which is possible as soon as the name is seeded. The comparisons
+  the maintainers publish ([Seeding](#seeding)) are the only notice an owner gets.
+- **Names not on the seed list.** After the opening, anything not seeded is first come, first served.
+  That includes a `.eth` name that got its `bitsocial` record after block `S`, a name the list
+  builder could not find ([Seed list](#seed-list)), a label or depth the registry rejects, a name
+  held by the zero address, and an entry left unseeded at `SEED_END`. Someone else can register `x.bso` and set their own key, and
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
-  them create `memes.b.bso` for free. Until `TRANSITION_END`, the transition window turns such a
-  takeover into **unknown** whenever the `.eth` record holds a different key. After that, the takeover
-  succeeds. Taking block `S` close to deployment narrows the gap. Owners of such names SHOULD
-  register their `.bso` names as soon as public registration opens. Readers that load the community
-  by its `.eth` name are unaffected.
+  them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
+  of such names SHOULD register their `.bso` names as soon as public registration opens. Readers
+  that load the community by its `.eth` name are unaffected.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
   Renewal is permissionless, so others, such as a directory maintainer, can also renew a name for its
   owner.
 - **Subdomains.** A parent owner can reclaim any subdomain at any time and move its readers. A
-  community named by a subdomain trusts its parent's owner completely.
+  community named by a subdomain trusts its parent's owner completely. It also cannot leave: under
+  BSIP-10's [Community membership of comments](./bsip-10.md#community-membership-of-comments), a
+  community that moves to another name loses membership of its earlier comments, so its only exit
+  is to drop the name and never take another. A community that does not want a name of its own
+  SHOULD stay key-only, which lets it take a name later and keep its comments. Services that
+  register names for others SHOULD NOT hand out subdomains as community names.
 - **Look-alike names.** The registry lowercases ASCII only, so Unicode confusables and non-normalized
   spellings can be registered. BSIP-10's normalization and look-alike rules apply to `.bso` names
-  unchanged.
-- **Two registries during the transition.** Someone who controls `x.eth` but not `x.bso`, for example
+  unchanged, so a non-normalized spelling never resolves
+  ([Registry contract](#registry-contract)).
+- **Two registries until clients activate.** Someone who controls `x.eth` but not `x.bso`, for example
   by registering an `x.eth` that expired after block `S`, can move readers on clients that have not
-  activated to their own key. On activated clients, until `TRANSITION_END`, they can only make the
-  name **unknown** by setting a different ENS record. Prompt activation limits the first, and the
-  window's end limits the second.
+  activated to their own key. Activated clients ignore ENS for `.bso` names, so prompt activation
+  limits this.
 - **Front-running and resolver trust.** Commit-reveal stops a mempool watcher from registering a name
-  first, and before `SEED_END` `reveal` is disabled entirely. BSIP-10's resolver trust considerations
+  first, and before the opening `reveal` is disabled entirely. BSIP-10's resolver trust considerations
   apply to the Ethereum providers that clients read the registry through.
 
 ## Copyright
