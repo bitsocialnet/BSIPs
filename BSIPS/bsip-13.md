@@ -70,7 +70,8 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 | Fee recipient signers and threshold | 6 keys held by 4 people, threshold 4 ([Fee recipient](#fee-recipient)) |
 | Snapshot block `S` | TBD, shortly before deployment |
 | Seed entries | `SEED_COUNT`, TBD: the number of entries in the seed list |
-| Seed period | from deployment until one hour (`OPEN_DELAY`) after every entry is seeded, and at most 7 days (`SEED_END`) |
+| Seeding window | from deployment until `SEED_END`, 7 days later |
+| Opening of public registration | `openAt`, one hour (`OPEN_DELAY`) after every entry is seeded, or `SEED_END`, whichever comes first |
 | Sunset notice | 30 days |
 
 Every TBD value MUST be filled in before this BSIP moves to Review, and the registry address MUST be
@@ -200,13 +201,19 @@ subdomain's parent name in `.bso` form.
    maintainers, with an empty record. A reserved label that is also listed under rule 1 or 2 is
    dropped from the reserved list. A name in use always goes to its current holder.
 
-An entry whose label the registry rejects, such as a label that starts or ends with `-` (which
-ENSIP-15 allows) or is longer than 255 bytes, is left out, together with every subname under it. So
-is a subname more than `MAX_SUBDOMAIN_DEPTH` = 10 levels below its top-level name, which upstream
-refuses to register, and an entry whose holder at block `S` is the zero address, to which the
-registry cannot mint. Their owners keep the `.eth` names. `seed` applies the same label and depth
-checks as ordinary registration, and the script that builds the list MUST check every entry against
-all three, so every entry in the tree can be seeded.
+An entry is left out when the registry could not hold it:
+
+- its label is one the registry rejects, such as a label that starts or ends with `-` (which
+  ENSIP-15 allows) or is longer than 255 bytes;
+- it is a subname more than `MAX_SUBDOMAIN_DEPTH` = 10 levels below its top-level name, which
+  upstream refuses to register; or
+- its holder at block `S` is the zero address, to which the registry cannot mint.
+
+Every subname under an entry that is left out is left out too, whatever the reason, because a
+subdomain can be seeded only under a registered parent. Their owners keep the `.eth` names. `seed`
+applies the same label and depth checks as ordinary registration. The script that builds the list
+MUST apply all three checks to every entry and MUST check that every subdomain entry's parent is in
+the list, so every entry in the tree can be seeded.
 
 The script takes candidate names from two sources, and MUST confirm each candidate by resolving it
 at block `S`:
@@ -308,10 +315,11 @@ unseeded at `SEED_END` loses its protection: a top-level label opens to public r
 subdomain is left to its parent's owner.
 
 Because `commit` is not paused, anyone can commit before the opening and reveal as soon as it comes.
-Upstream accepts a reveal between 60 seconds and 24 hours after its commit, so a commitment made
-once `openAt` is known is always valid at the opening, and for an opening at `SEED_END` it has to be
-made in the 24 hours before. The maintainers MUST announce the planned deployment time in advance,
-and the announcement SHOULD explain this. Reveals at the opening still compete on transaction
+Upstream accepts a reveal between 60 seconds and 24 hours after its commit, so a commitment is
+valid at the opening only if it was made at least 60 seconds and at most 24 hours before it. For
+an opening at `openAt`, any commitment made after `openAt` is known and at least 60 seconds before
+it qualifies. The maintainers MUST announce the planned deployment time in advance, and the
+announcement MUST state these limits. Reveals at the opening still compete on transaction
 ordering, as for any name that becomes available at a known time.
 
 At the opening the maintainers MUST compare every seeded record with the name's current ENS
