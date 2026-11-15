@@ -3,7 +3,7 @@ bsip: 19
 title: Directories
 description: Named slots such as /biz/ that communities compete for, and how every client resolves a slot to the same current winner.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/23
 status: Draft
 type: Standards Track
 category: Application

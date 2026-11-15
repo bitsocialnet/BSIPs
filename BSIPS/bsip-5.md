@@ -3,7 +3,7 @@ bsip: 5
 title: Comment Updates
 description: The mutable, community-signed record that carries a comment's vote counts, replies, and moderation state.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/9
 status: Draft
 type: Standards Track
 category: Core

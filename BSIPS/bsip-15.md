@@ -3,7 +3,7 @@ bsip: 15
 title: Community Lists
 description: A signed, immutable record, addressed by CID, in which a curator lists communities with metadata for default feeds and search.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/19
 status: Draft
 type: Standards Track
 category: Application

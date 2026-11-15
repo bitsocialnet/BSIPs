@@ -3,7 +3,7 @@ bsip: 11
 title: Delegated Communities
 description: How a community keeps its owner key offline while an online minter key publishes for it, and how readers verify what the minter signs.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/15
 status: Draft
 type: Standards Track
 category: Core

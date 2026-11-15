@@ -75,7 +75,7 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 <!--
   REQUIRED. Discuss the security and abuse implications: signature and key handling, spam and
   denial-of-service surfaces, privacy, moderation and trust assumptions, and anything an
-  implementer must get right. A BSIP cannot reach Final without a sufficient Security
+  implementer must get right. A BSIP cannot reach Final or Living without a sufficient Security
   Considerations section.
 -->
 

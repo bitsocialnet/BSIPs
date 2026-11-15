@@ -3,7 +3,7 @@ bsip: 3
 title: Communities and Pages
 description: The mutable community record — metadata, roles, anti-spam configuration, and paginated posts — and how it is addressed and signed.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/7
 status: Draft
 type: Standards Track
 category: Core

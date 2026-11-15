@@ -41,8 +41,14 @@ full process. This file is the short, practical version.
 ## Updating an existing BSIP
 
 - **Draft / Review** BSIPs can be updated freely by their authors via pull request.
-- **Final** BSIPs may only change to fix errata or add non-normative clarifications.
-- Status changes follow the lifecycle in [BSIP-1](./BSIPS/bsip-1.md).
+- **Final** BSIPs may only change to fix errata, add non-normative clarifications, or record changes
+  to facts they say they track, such as a multisig's signers.
+- **Living** Standards Track BSIPs change only compatibly, by a pull request merged together with the
+  implementation change it describes. An incompatible change needs a new BSIP, except for a
+  documented security fix under
+  [BSIP-1](./BSIPS/bsip-1.md#living-standards-track-bsips).
+- Status changes follow the lifecycle in [BSIP-1](./BSIPS/bsip-1.md), including the criteria for
+  [entering Last Call](./BSIPS/bsip-1.md#entering-last-call).
 
 ## Style
 

@@ -3,7 +3,7 @@ bsip: 9
 title: Community Edits
 description: The owner- or admin-signed publication that edits a community's public record over pubsub, including renaming the community.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/13
 status: Draft
 type: Standards Track
 category: Core

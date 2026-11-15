@@ -3,7 +3,7 @@ bsip: 2
 title: Comments
 description: The format, addressing, and signing of Bitsocial comments — the posts and replies users publish to communities.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/6
 status: Draft
 type: Standards Track
 category: Core

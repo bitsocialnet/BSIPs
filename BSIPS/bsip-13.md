@@ -3,7 +3,7 @@ bsip: 13
 title: Interim .bso Name Registry
 description: An ownerless Ethereum mainnet registry for .bso names, how it launches from names already in use, and how it moves to Bitsocial Chain.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/17
 status: Draft
 type: Standards Track
 category: Appchain

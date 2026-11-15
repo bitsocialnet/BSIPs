@@ -3,7 +3,7 @@ bsip: 10
 title: Names and Addresses
 description: How authors and communities are addressed by public key or by crypto-domain name, and when a name counts as verified.
 author: Tommaso Casaburi (@tomcasaburi)
-discussions-to: https://github.com/bitsocialnet/BSIPs/issues
+discussions-to: https://github.com/bitsocialnet/BSIPs/issues/14
 status: Draft
 type: Standards Track
 category: Core
