@@ -70,7 +70,7 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 | Fee recipient signers and threshold | 6 keys held by 4 people, threshold 4 ([Fee recipient](#fee-recipient)) |
 | Snapshot block `S` | TBD, shortly before deployment |
 | Seed entries | `SEED_COUNT`, TBD: the number of entries in the seed list |
-| Seed period | from deployment until every entry is seeded, and at most 7 days (`SEED_END`) |
+| Seed period | from deployment until one hour (`OPEN_DELAY`) after every entry is seeded, and at most 7 days (`SEED_END`) |
 | Sunset notice | 30 days |
 
 Every TBD value MUST be filled in before this BSIP moves to Review, and the registry address MUST be
@@ -87,9 +87,10 @@ The registry is the upstream `NameNFT` with these changes and no others:
    in the registry as they do upstream. A new function `withdraw()`, callable by anyone, transfers the
    registry's entire ETH balance to `FEE_RECIPIENT`, a constant address. Apart from upstream's refunds
    of overpayment, no other code path sends ETH.
-3. **Seeding.** The constants `SEED_ROOT`, `SEED_COUNT`, and `SEED_END = deployment time + 7 days`, a
-   counter `seededCount`, and the functions `seed` and `seedBatch` ([Seeding](#seeding)). Until the
-   opening, `reveal`, `registerSubdomain`, and `registerSubdomainFor` revert.
+3. **Seeding.** The constants `SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY = 1 hour`, and
+   `SEED_END = deployment time + 7 days`, a counter `seededCount`, a timestamp `openAt`, and the
+   functions `seed` and `seedBatch` ([Seeding](#seeding)). Until the opening, `reveal`,
+   `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
 
@@ -116,7 +117,7 @@ The rest of the contract is unchanged, and clients rely on it:
   not active.
 
 The registry has no owner, admin, proxy, pause, or upgrade path. Prices, `FEE_RECIPIENT`,
-`SEED_ROOT`, `SEED_COUNT`, `SEED_END`, and every period above are constants.
+`SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY`, `SEED_END`, and every period above are constants.
 
 Because the registry checks only the characters listed above, it accepts labels that are not
 ENSIP-15 normalized. Such a name never resolves: clients normalize a name before they resolve it
@@ -288,23 +289,30 @@ mints with `_safeMint`. It has its own path, which MUST:
 - emit `NameRegistered`, `SubdomainRegistered` for a subdomain, and `TextChanged` for a non-empty
   record, so that indexers see a seeded name like any other.
 
-Public registration opens when `seededCount` equals `SEED_COUNT`, or at `SEED_END`, whichever comes
-first. This moment is the **opening**. Until then `reveal`, `registerSubdomain`, and
-`registerSubdomainFor` revert. Nobody can therefore register a seeded label first, and the owner of
-a seeded parent can neither register a listed subname before it is seeded nor reclaim one after. An
-entry can be seeded only once and anyone can seed, so nobody can inflate the count or keep
-registration closed. Nothing else is paused: the owner of a seeded name can transfer it or change
-its records at once, and anyone can `commit`.
+The call that brings `seededCount` to `SEED_COUNT` sets `openAt = block.timestamp + OPEN_DELAY` and
+emits an event. Public registration opens at `openAt`, or at `SEED_END` if that comes first or the
+count is never reached. This moment is the **opening**. Until then `reveal`, `registerSubdomain`,
+and `registerSubdomainFor` revert. Nobody can therefore register a seeded label first, and the
+owner of a seeded parent can neither register a listed subname before it is seeded nor reclaim one
+after. An entry can be seeded only once and anyone can seed, so nobody can inflate the count or
+keep registration closed. Nothing else is paused: the owner of a seeded name can transfer it or
+change its records at once, and anyone can `commit`.
+
+The delay exists because anyone can send the last `seed`. Without it, whoever sends that
+transaction could reveal their own commitments in the same block, ahead of everyone else. With it,
+the opening time is on chain an hour before it arrives.
 
 The maintainers MUST seed every entry before `SEED_END`, SHOULD do so within one hour of deployment,
 and MUST publish a check that every entry is registered to its listed owner. An entry that is still
 unseeded at `SEED_END` loses its protection: a top-level label opens to public registration, and a
 subdomain is left to its parent's owner.
 
-Because `commit` is not paused, anyone can commit before the opening and reveal as soon as it comes,
-within upstream's limit of 24 hours between the two. The maintainers MUST announce the planned
-deployment time in advance, and the announcement SHOULD say this, so that everyone has the same
-chance at a name that is not seeded.
+Because `commit` is not paused, anyone can commit before the opening and reveal as soon as it comes.
+Upstream accepts a reveal between 60 seconds and 24 hours after its commit, so a commitment made
+once `openAt` is known is always valid at the opening, and for an opening at `SEED_END` it has to be
+made in the 24 hours before. The maintainers MUST announce the planned deployment time in advance,
+and the announcement SHOULD explain this. Reveals at the opening still compete on transaction
+ordering, as for any name that becomes available at a known time.
 
 At the opening the maintainers MUST compare every seeded record with the name's current ENS
 `bitsocial` record and publish the names whose records differ, so that their owners can update the
@@ -414,9 +422,10 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   problem, and the published comparison tells the owner about it.
 - **Pause registration until every entry is seeded.** The registry cannot tell whether an arbitrary
   label is on the seed list without storing the list. Pausing `reveal` and subdomain registration
-  until the opening removes the race instead. Counting seeded entries lets registration open as
-  soon as the list is done, in practice within an hour of deployment, with `SEED_END` as the
-  fallback if an entry is never seeded.
+  until the opening removes the race instead. Counting seeded entries lets registration open an
+  hour after the list is done, in practice within about two hours of deployment, with `SEED_END` as
+  the fallback if an entry is never seeded. The hour makes the opening time public in advance, so
+  the sender of the last seeding transaction gets no head start.
 - **One price for 5 bytes and more.** A cheaper tier for labels of 10 bytes or more was considered
   and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
   long descriptive name, so long names are the normal product and a cheap tier would remove most
