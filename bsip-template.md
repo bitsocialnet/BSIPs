@@ -73,10 +73,18 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 ## Security Considerations
 
 <!--
-  REQUIRED. Discuss the security and abuse implications: signature and key handling, spam and
-  denial-of-service surfaces, privacy, moderation and trust assumptions, and anything an
-  implementer must get right. A BSIP cannot reach Final or Living without a sufficient Security
-  Considerations section.
+  REQUIRED. Discuss the security and abuse implications: signature and key handling, moderation
+  and trust assumptions, and anything an implementer must get right.
+
+  A BSIP cannot reach Final or Living without a sufficient Security Considerations section. BSIP-1
+  defines sufficient: address each of the following, or say in a sentence why it does not apply.
+
+  - Abuse and spam: what the proposal lets an attacker publish, forge, replay, or flood, and what
+    limits it.
+  - Privacy and metadata exposure: what the proposal reveals about users, such as IP addresses,
+    activity patterns, or a link between identities, and to whom.
+  - Resource cost: the storage, bandwidth, and computation the proposal imposes on nodes and
+    community operators, and whether a peer can inflate it.
 -->
 
 ## Copyright

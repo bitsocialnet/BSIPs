@@ -185,7 +185,8 @@ A Standards Track BSIP may enter Last Call only when:
    implementation's tests check them;
 5. its open questions concern only possible additions, not how the current specification is to be
    read or implemented; and
-6. its Security Considerations section is sufficient.
+6. its Security Considerations section is sufficient
+   ([What belongs in a successful BSIP?](#what-belongs-in-a-successful-bsip)).
 
 A change that a Living BSIP could not take later, because it is incompatible, is made before Last Call.
 
@@ -238,6 +239,13 @@ Each BSIP should have the following parts:
 - **Reference Implementation** *(optional)* — A minimal implementation that aids understanding.
 - **Security Considerations** — The security and abuse implications of the proposal. A BSIP cannot
   reach Final or Living without a Security Considerations section the editors consider sufficient.
+  A sufficient section addresses each of the following, or says in a sentence why it does not apply:
+  - **Abuse and spam**: what the proposal lets an attacker publish, forge, replay, or flood, and
+    what limits it.
+  - **Privacy and metadata exposure**: what the proposal reveals about users, such as IP addresses,
+    activity patterns, or a link between identities, and to whom.
+  - **Resource cost**: the storage, bandwidth, and computation the proposal imposes on nodes and
+    community operators, and whether a peer can inflate it.
 - **Copyright Waiver** — All BSIPs must be in the public domain. Include the exact wording:
   `Copyright and related rights waived via [CC0](../LICENSE.md).`
 
