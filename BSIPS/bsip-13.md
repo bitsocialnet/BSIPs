@@ -66,8 +66,8 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 | Registry address | TBD at deployment |
 | Upstream | [`lucadonnoh/gwei-names`](https://github.com/lucadonnoh/gwei-names) `src/NameNFT.sol` at commit `8e094ab343d0bfdbd9ec948594fc48f20bed6e5d` |
 | TLD node | `namehash("bso")` = `0xe07ef0fd54600878e8c5c0087ff379e0fb9e1c49dfcc763bdada48721f534a20` |
-| Fee recipient | Safe multisig, address TBD |
-| Fee recipient signers and threshold | 6 keys held by 4 people, threshold 4 ([Fee recipient](#fee-recipient)) |
+| Fee recipient | Safe multisig `0x442A54b2AFEe1db441Df5aA825059d663c96AA6E` |
+| Fee recipient signers and threshold | 4 keys held by 3 people, threshold 3, at launch; 6 keys held by 4 people, threshold 4, once complete ([Fee recipient](#fee-recipient)) |
 | Snapshot block `S` | TBD, shortly before deployment |
 | Seed entries | `SEED_COUNT`, TBD: the number of entries in the seed list |
 | Seeding window | from deployment until `SEED_END`, 7 days later |
@@ -145,8 +145,8 @@ Registration and renewal cost the same. Gas is paid separately to Ethereum.
 
 ### Fee recipient
 
-`FEE_RECIPIENT` is a [Safe](https://safe.global) multisig on Ethereum mainnet controlled by the
-Bitsocial maintainers. Fees fund their development of Bitsocial while the registry is in use.
+`FEE_RECIPIENT` is the [Safe](https://safe.global) multisig `0x442A54b2AFEe1db441Df5aA825059d663c96AA6E` on
+Ethereum mainnet, controlled by the Bitsocial maintainers. Fees fund their development of Bitsocial while the registry is in use.
 
 The fee recipient's only powers over the registry are:
 
@@ -159,7 +159,8 @@ commit-reveal and renew any top-level name, but it cannot transfer or edit a nam
 holds the reserved names assigned to it ([Seed list](#seed-list)) as an ordinary owner.
 
 Safe signers can be added, removed, or replaced without changing the Safe's address, so the registry
-does not depend on any one signer. Signers:
+does not depend on any one signer. The signers are the Safe's owners on chain. The complete signer
+set is:
 
 | Signer | Keys |
 | --- | --- |
@@ -168,14 +169,28 @@ does not depend on any one signer. Signers:
 | A trustee named by Tommaso Casaburi | 1 |
 | A trustee named by Rinse | 1 |
 
-Threshold: 4 of 6. The signers' addresses are TBD. The signer set and threshold MUST satisfy both
-rules:
+Threshold: 4 of 6. A complete signer set and its threshold MUST satisfy both rules:
 
 - the threshold is higher than the number of keys held by any one person, so nobody acts alone; and
 - if any one person becomes unavailable, the keys held by everyone else still reach the threshold.
 
 Two people with two keys each and a 3-of-4 threshold meet the first rule but not the second. The set
 above meets both: nobody holds more than 2 keys, and without any one person at least 4 keys remain.
+
+The registry MAY be deployed before the signer set is complete, so that the launch does not wait
+for every signer's key. The signers on 2026-11-16 are:
+
+| Signer | Keys |
+| --- | --- |
+| Tommaso Casaburi (@tomcasaburi) | 2 |
+| Rinse (@Rinse12) | 1 |
+| A trustee named by Rinse | 1 |
+
+Threshold: 3 of 4. This set meets the first rule but not the second: without Tommaso Casaburi the
+remaining keys do not reach the threshold
+([Security Considerations](#security-considerations)). The maintainers MUST complete the signer set
+and SHOULD do so within 60 days of the registry's deployment. Every step on the way MUST keep the
+first rule: the threshold MUST rise to 4 in the same transaction that adds the fifth key.
 
 Any change to the signers or the threshold MUST be recorded in this BSIP.
 
@@ -499,7 +514,8 @@ To be written:
   SHOULD be reviewed independently and tested on Sepolia and on a mainnet fork before deployment.
 - **Fee recipient.** If the signers can no longer reach the threshold, fees are stuck where nobody can
   reach them, and `sunset()` can never be called, so the Ethereum registry keeps selling names after
-  a migration. The signer rules in [Fee recipient](#fee-recipient) exist to prevent this. Signers who
+  a migration. The signer rules in [Fee recipient](#fee-recipient) exist to prevent this. Until the
+  signer set is complete, losing the one person who holds two keys has exactly that effect. Signers who
   reach the threshold can call `sunset()` early. After the 30-day notice the registry freezes, and
   without a migration each name lapses when the time already paid for it runs out. The notice makes
   such a call public before it takes effect, and because renewals are uncapped, upstream and here,
