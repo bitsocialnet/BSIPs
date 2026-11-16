@@ -47,6 +47,9 @@ full process. This file is the short, practical version.
   implementation change it describes. An incompatible change needs a new BSIP, except for a
   documented security fix under
   [BSIP-1](./BSIPS/bsip-1.md#living-standards-track-bsips).
+- **Superseded** records a Final or Living BSIP whose replacement has taken effect. Set
+  `superseded-by` to its successor BSIP number(s); retain the historical specification. Partial
+  replacement is documented in a note without changing status.
 - Status changes follow the lifecycle in [BSIP-1](./BSIPS/bsip-1.md), including the criteria for
   [entering Last Call](./BSIPS/bsip-1.md#entering-last-call).
 

@@ -147,6 +147,12 @@ The following is the standardization process for all BSIPs:
   more may be moved to `Stagnant`. It can be resurrected by an author or editor.
 - **Withdrawn** — The author(s) have withdrawn the BSIP. This is final; the number is not reused. A
   later revival is considered a new proposal.
+- **Superseded** — A previously Final or Living BSIP whose replacement has taken effect. The
+  document is retained as a historical specification, with `superseded-by` identifying its successor
+  BSIP(s). Reaching Last Call or Final alone does not activate a replacement. The successor MUST
+  specify when it takes effect and account for any rules that continue to apply. If only part of a
+  BSIP is replaced, it keeps its existing status and identifies the replaced sections and successor
+  in a non-normative note instead.
 - **Living** — The BSIP is maintained indefinitely instead of reaching finality. This document,
   BSIP-1, is Living. A Standards Track BSIP becomes Living through Last Call, and afterwards changes
   only as [Living Standards Track BSIPs](#living-standards-track-bsips) allows. A Living BSIP does not
@@ -167,7 +173,9 @@ and nodes continue to evolve. A Standards Track BSIP therefore ends in one of tw
 
 A Final BSIP that says it tracks a fact, such as the signers of a multisig, may be updated to record a
 change to that fact, provided the change follows the rules the BSIP sets for it. Beyond errata and
-non-normative clarifications, this is the only change a Final BSIP takes.
+non-normative clarifications, this is the only change a Final BSIP takes, except for recording
+its transition to Superseded. A Superseded BSIP follows the same limits on edits; supersession
+does not rewrite the historical specification.
 
 ### Entering Last Call
 
@@ -264,12 +272,14 @@ enclosed by three hyphens (`---`). The headers appear in this order:
 - `description` — one short, full sentence; 140 characters or fewer; must not include the BSIP number.
 - `author` — a comma-separated list of authors, each as `Name (@GitHubUsername)` or `Name <email>`.
 - `discussions-to` — the URL of the discussion thread for this BSIP.
-- `status` — one of `Draft`, `Review`, `Last Call`, `Final`, `Stagnant`, `Withdrawn`, or `Living`.
+- `status` — one of `Draft`, `Review`, `Last Call`, `Final`, `Stagnant`, `Withdrawn`, `Superseded`, or `Living`.
 - `last-call-deadline` — the end date of the Last Call period (only while `status` is `Last Call`).
 - `type` — `Standards Track`, `Meta`, or `Informational`.
 - `category` — `Core`, `Networking`, `Interface`, `Appchain`, or `Application` (Standards Track only).
 - `created` — the date the BSIP was created, in ISO 8601 (`yyyy-mm-dd`) format.
 - `requires` *(optional)* — BSIP number(s) this one depends on.
+- `superseded-by` — a non-empty comma-separated list of successor BSIP numbers, required only for
+  `Superseded` BSIPs. A BSIP MUST NOT list itself.
 - `withdrawal-reason` *(optional)* — for `Withdrawn` BSIPs, why it was withdrawn.
 
 ## Linking and auxiliary files

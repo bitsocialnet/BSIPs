@@ -66,7 +66,7 @@ explains why.
 A BSIP moves through the following lifecycle (defined in full in [BSIP-1](./BSIPS/bsip-1.md)):
 
 **Idea → Draft → Review → Last Call → Final or Living**, with **Stagnant** and **Withdrawn** as
-additional states.
+additional states, and **Superseded** when a Final or Living BSIP’s replacement takes effect.
 
 Outside the appchain, the protocol grows by compatible additions rather than forks, so most Standards
 Track BSIPs are expected to become **Living**: maintained indefinitely through compatible changes,
