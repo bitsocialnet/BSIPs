@@ -31,12 +31,13 @@ const bsips = defineCollection({
       description: z.string().max(140).refine(noBsipNumber, 'description must not include the BSIP number'),
       author: z.string().min(1),
       'discussions-to': z.url(),
-      status: z.enum(['Draft', 'Review', 'Last Call', 'Final', 'Stagnant', 'Withdrawn', 'Living']),
+      status: z.enum(['Draft', 'Review', 'Last Call', 'Final', 'Stagnant', 'Withdrawn', 'Superseded', 'Living']),
       'last-call-deadline': z.coerce.date().optional(),
       type: z.enum(['Standards Track', 'Meta', 'Informational']),
       category: z.enum(['Core', 'Networking', 'Interface', 'Appchain', 'Application']).optional(),
       created: z.coerce.date(),
       requires: bsipList.optional(),
+      'superseded-by': bsipList.optional(),
       'withdrawal-reason': z.string().optional(),
     })
     .strict()
@@ -46,6 +47,12 @@ const bsips = defineCollection({
       }
       if ((fm.status === 'Last Call') !== (fm['last-call-deadline'] !== undefined)) {
         ctx.addIssue({ code: 'custom', message: 'last-call-deadline is required while status is Last Call, and only then' });
+      }
+      if ((fm.status === 'Superseded') !== (fm['superseded-by'] !== undefined)) {
+        ctx.addIssue({ code: 'custom', message: 'superseded-by is required for Superseded BSIPs, and only for them' });
+      }
+      if (fm['superseded-by'] && (fm['superseded-by'].length === 0 || fm['superseded-by'].includes(fm.bsip))) {
+        ctx.addIssue({ code: 'custom', message: 'superseded-by must contain successors and must not include the BSIP itself' });
       }
       if (fm['withdrawal-reason'] !== undefined && fm.status !== 'Withdrawn') {
         ctx.addIssue({ code: 'custom', message: 'withdrawal-reason is only allowed on Withdrawn BSIPs' });

@@ -144,6 +144,16 @@ const toc = headings
             <dd><time datetime={isoDate(fm.created)}>{isoDate(fm.created)}</time></dd>
           </div>
           {
+            fm['superseded-by'] && (
+              <div>
+                <dt>Superseded by</dt>
+                <dd>{fm['superseded-by'].map((n, i) => (
+                  <span>{i > 0 && ', '}<a href={`/bsip-${n}`}>BSIP-{n}</a></span>
+                ))}</dd>
+              </div>
+            )
+          }
+          {
             fm['withdrawal-reason'] && (
               <div>
                 <dt>Withdrawal reason</dt>
