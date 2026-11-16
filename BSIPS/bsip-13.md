@@ -189,8 +189,15 @@ for every signer's key. The signers on 2026-11-16 are:
 Threshold: 3 of 4. This set meets the first rule but not the second: without Tommaso Casaburi the
 remaining keys do not reach the threshold
 ([Security Considerations](#security-considerations)). The maintainers MUST complete the signer set
-and SHOULD do so within 60 days of the registry's deployment. Every step on the way MUST keep the
-first rule: the threshold MUST rise to 4 in the same transaction that adds the fifth key.
+and SHOULD do so within 60 days of the registry's deployment.
+
+An incomplete set MAY fail the second rule, but it MUST meet the first, and a maintainer together
+with only the trustee they named MUST NOT reach the threshold. The complete set and the set above
+both meet this. With five keys it takes a threshold of 4, since a maintainer's two keys and their
+trustee's one make 3. The threshold MUST therefore rise to 4 in the same transaction that adds the
+fifth key. That choice puts control ahead of availability: with five keys and a threshold of 4,
+losing any person who holds two keys leaves the others below the threshold, until the sixth key is
+added.
 
 Any change to the signers or the threshold MUST be recorded in this BSIP.
 
@@ -422,7 +429,8 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Collect fees instead of burning them.** Bitsocial has no other funding, and this registry is
   temporary. A fixed recipient is acceptable because it cannot change prices and has no special
   power over names. It is a multisig rather than one person's address so that the registry survives
-  the loss of any one key or person.
+  the loss of any one key, and of any one person once the signer set is complete
+  ([Fee recipient](#fee-recipient)).
 - **Seed from a snapshot instead of checking ENS on chain.** The registry could let `.eth` holders
   claim matching `.bso` names by reading ENS during a claim window. That would tie an immutable
   contract to ENS contracts, which have changed before, and give `.bso` names to every `.eth` holder,
@@ -515,7 +523,7 @@ To be written:
 - **Fee recipient.** If the signers can no longer reach the threshold, fees are stuck where nobody can
   reach them, and `sunset()` can never be called, so the Ethereum registry keeps selling names after
   a migration. The signer rules in [Fee recipient](#fee-recipient) exist to prevent this. Until the
-  signer set is complete, losing the one person who holds two keys has exactly that effect. Signers who
+  signer set is complete, losing a person who holds two keys has exactly that effect. Signers who
   reach the threshold can call `sunset()` early. After the 30-day notice the registry freezes, and
   without a migration each name lapses when the time already paid for it runs out. The notice makes
   such a call public before it takes effect, and because renewals are uncapped, upstream and here,
