@@ -337,8 +337,9 @@ OPTIONAL `challengeAnswers` and `challengeCommentCids`.
   `challengeanswer`, and `challengeverification`, each carrying the decrypted message
   ([Records on the wire](#records-on-the-wire)), plus `publishingstatechange`.
 - The client answers a `challenge` with `publishChallengeAnswers`, naming the publication by its
-  subscription id. `challengeAnswers` is a non-empty array of strings matching the challenges by
-  position. The node encrypts and signs the `CHALLENGEANSWER`.
+  subscription id. `challengeAnswers` is a non-empty record of strings keyed by the challenge index
+  of each challenge in the `challenge` message ([BSIP-4](./bsip-4.md)). The node encrypts and signs
+  the `CHALLENGEANSWER`.
 - The exchange ends with `challengeverification`, or with `publishingstatechange` to `failed`. The
   client SHOULD then `unsubscribe`.
 - If the publication fails before the exchange starts, for example because its signature is invalid,
