@@ -82,6 +82,11 @@ A wallet entry is the object defined in [BSIP-2](./bsip-2.md#authors):
     `s <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0`. The high-`s` form of
     the same signature is not valid.
 
+A wallet entry or its `signature` object MAY carry members this BSIP does not define. A verifier MUST
+ignore them: they do not make the entry invalid and are not part of the proof. A client MUST NOT
+treat an unknown member as something the wallet attested to, since the wallet signed only the proof
+message.
+
 The chain ticker that keys the entry labels which chain the author intends the address for. It is not
 part of the proof message: the proof shows control of the address, on every chain where that address
 is controlled by the same key.
@@ -116,7 +121,8 @@ For `signature.type` `eip191`, the wallet signs the UTF-8 bytes of the proof mes
 
 A wallet proof is **valid** for a publication when all of the following hold:
 
-1. the entry has the shape in [The wallet entry](#the-wallet-entry);
+1. the entry has the four required members in [The wallet entry](#the-wallet-entry), each of the
+   stated type; members this BSIP does not define are ignored;
 2. `signature.type` is `eip191`;
 3. `timestamp` is not more than five minutes later than the verifier's current time;
 4. `signature.signature` has the encoding in [The wallet entry](#the-wallet-entry), including its
@@ -207,7 +213,9 @@ Resulting wallet entry:
 The signature's `v` byte is `0x1c` (28) and its `s` value is in the lower half of the curve order.
 
 This entry is valid in a publication signed by the key above, when the verifier's time is 1789999700
-or later (the proof's `timestamp` less the five-minute allowance). It is not valid when:
+or later (the proof's `timestamp` less the five-minute allowance). It stays valid with an added
+member this BSIP does not define, such as `"label": "main"` on the entry or `"publicKey": "…"` inside
+`signature`. It is not valid when:
 
 - the publication is signed by any other key (the recovered address differs);
 - the verifier's time is earlier than 1789999700;
@@ -260,6 +268,10 @@ or later (the proof's `timestamp` less the five-minute allowance). It is not val
   entry, two verifiers that follow their libraries would accept and reject the same publication. The
   values chosen are what `personal_sign` returns from mainstream wallets, and the low-`s` rule of
   [EIP-2](https://eips.ethereum.org/EIPS/eip-2).
+- **Unknown members are ignored.** If one verifier rejected an entry with an extra member and
+  another accepted it, a publication would be accepted by one community and rejected by another. Later
+  BSIPs that add signature types are likely to add members, so rejecting them would also make every
+  such addition a breaking change for entries of the existing type.
 - **A fixed five-minute allowance.** An optional allowance would let verifiers differ by choice as
   well as by clock. Five minutes matches the allowance for publication timestamps.
 - **Avatars are out of scope.** The `author.avatar` proof has the same history of inconsistent
