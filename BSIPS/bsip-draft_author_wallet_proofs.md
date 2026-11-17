@@ -18,9 +18,9 @@ carries a signature that is meant to prove the author controls the wallet. This 
 proof: the wallet signs, with EIP-191, one exact string that names the author's signing key and a
 timestamp. A community verifies the proof before it accepts any publication that carries a wallet
 entry, and rejects the publication when the proof is invalid or uses a signature type this BSIP does
-not define. A client verifies a proof itself before it relies on the address, for example before it
-sends funds to it. The result is that a wallet entry in an accepted publication can be treated as a
-proven link between a signing key and an address.
+not define. A client verifies a proof itself before it relies on the entry, for example before it
+shows the wallet as the author's or sends funds to it. A valid proof is a link between a signing key
+and an address that anyone can check from the publication alone.
 
 ## Motivation
 
@@ -75,7 +75,12 @@ A wallet entry is the object defined in [BSIP-2](./bsip-2.md#authors):
 - `timestamp` — REQUIRED. Integer Unix time in seconds at which the wallet signed the proof.
 - `signature.type` — REQUIRED. The proof scheme. This BSIP defines exactly one value, `eip191`.
 - `signature.signature` — REQUIRED. For `eip191`, the 65-byte signature `r || s || v` as `0x`
-  followed by 130 hexadecimal digits.
+  followed by 130 hexadecimal digits, where:
+  - `v` is `27` or `28` (the bytes `0x1b` or `0x1c`). The `0`/`1` form is not valid. A client whose
+    signer returns `0` or `1` MUST add 27 before it stores the signature.
+  - `s` is in the lower half of the curve order, that is
+    `s <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0`. The high-`s` form of
+    the same signature is not valid.
 
 The chain ticker that keys the entry labels which chain the author intends the address for. It is not
 part of the proof message: the proof shows control of the address, on every chain where that address
@@ -113,18 +118,24 @@ A wallet proof is **valid** for a publication when all of the following hold:
 
 1. the entry has the shape in [The wallet entry](#the-wallet-entry);
 2. `signature.type` is `eip191`;
-3. `timestamp` is not later than the verifier's current time;
-4. the address recovered from `signature.signature` over the proof message, built from the author key
+3. `timestamp` is not more than five minutes later than the verifier's current time;
+4. `signature.signature` has the encoding in [The wallet entry](#the-wallet-entry), including its
+   rules for `v` and `s`;
+5. the address recovered from `signature.signature` over the proof message, built from the author key
    address of that publication and the entry's `timestamp`, equals `address`.
 
 Verification is stateless. A verifier MUST NOT require the proof's `timestamp` to be newer than one
 it has seen before, and MUST NOT keep per-wallet or per-author state to decide validity. Recovering
 the address needs no blockchain access.
 
-Rule 3 depends on the verifier's clock, so a proof dated slightly ahead can be valid for one verifier
-and not yet valid for another whose clock is behind. A verifier MAY allow the same five-minute
-tolerance a community applies to publication timestamps
+Rule 3 depends on the verifier's clock, so a proof dated ahead can be valid for one verifier and not
+yet valid for another whose clock is behind. The five-minute allowance is fixed, not optional, and is
+the allowance a community applies to publication timestamps
 ([BSIP-4](./bsip-4.md#publication-acceptance)).
+
+A verifier MUST check the `v` and `s` rules itself when the library it uses to recover the address
+does not. Recovery libraries differ on both, and a verifier that accepts what its library accepts
+would disagree with other verifiers about the same entry.
 
 Signatures from contract accounts ([ERC-1271](https://eips.ethereum.org/EIPS/eip-1271)) are not
 `eip191` proofs and are not valid under this BSIP.
@@ -145,12 +156,17 @@ invalid entry fails locally with a clear error.
 ### Clients
 
 - A client that creates a wallet entry MUST produce a proof that is valid under this BSIP.
-- A client is not required to verify wallet proofs when it reads a publication. A community that
-  follows this BSIP has already verified them.
+- A client is not required to verify the wallet entries of publications it reads, as long as it
+  does not rely on them.
 - A client MUST verify a wallet proof itself, under [Verification](#verification), before it relies on
-  the address for an action whose result cannot be undone, in particular before it sends funds to it.
-- A client MUST NOT present an entry it has reason to believe is not valid as a wallet the author
-  controls.
+  the entry. Relying on an entry includes showing the address as a wallet the author controls, using
+  it to decide what the author holds, and sending funds to it.
+- A client MAY show an entry it has not verified only in a way that does not present it as proven.
+
+A community's acceptance is not something a client can rely on in place of its own check. A
+publication does not record whether its community applied this BSIP or when it began to, so a reader
+cannot tell an entry a community verified from one accepted before the rule existed, or by a community
+that does not apply it. Verifying is one hash and one public-key recovery, with no network access.
 
 ### Test vector
 
@@ -158,7 +174,7 @@ Author signing key (Ed25519 seed, hex) and its public forms:
 
 ```text
 seed                 0101010101010101010101010101010101010101010101010101010101010101
-signature.publicKey  iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w=
+signature.publicKey  iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w
 author key address   12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5
 ```
 
@@ -188,13 +204,18 @@ Resulting wallet entry:
 }
 ```
 
-This entry is valid in a publication signed by the key above, when verified at Unix time 1790000000
-or later. It is not valid when:
+The signature's `v` byte is `0x1c` (28) and its `s` value is in the lower half of the curve order.
+
+This entry is valid in a publication signed by the key above, when the verifier's time is 1789999700
+or later (the proof's `timestamp` less the five-minute allowance). It is not valid when:
 
 - the publication is signed by any other key (the recovered address differs);
-- it is verified before Unix time 1790000000;
+- the verifier's time is earlier than 1789999700;
 - `signature.type` is anything other than `eip191`;
 - `address` is a name such as `example.eth`;
+- the last byte of the signature is `0x01` in place of `0x1c`;
+- `s` is replaced by its high form, `n - s`, with `v` flipped to `0x1b`, which recovers the same
+  address but breaks the `s` rule;
 - the proof message is built with `authorAddress` in place of `authorPublicKey`, or with a different
   `domainSeparator`.
 
@@ -228,10 +249,19 @@ or later. It is not valid when:
   and a community acting together could then future-date both. The clock rule does not depend on the
   community: any verifier rejects a proof dated ahead of its own time. Its cost is a short disagreement
   between verifiers whose clocks differ, which resolves as time passes.
-- **The community verifies; readers usually do not.** Verifying on acceptance means every reader
-  benefits from one check. Requiring every reader to verify every entry would add work to every page
-  load for little gain. The exception is an action that cannot be undone, where trusting the community
-  is not enough: a community could have accepted a false entry, by error or on purpose.
+- **The community verifies, and a client verifies what it uses.** Verifying on acceptance keeps
+  false entries out of a community and gives challenges one check to build on. It cannot stand in for
+  a client's own check, because nothing in a publication says whether its community applied the rule.
+  Requiring every reader to verify every entry on every page load would be wasted work, so the
+  obligation attaches to use: a client that shows, counts, or pays an address verifies that entry
+  first.
+- **One signature encoding.** Signers and recovery libraries disagree on `v` (`0`/`1` or `27`/`28`)
+  and on whether a high `s` is acceptable. Because a community rejects a publication over an invalid
+  entry, two verifiers that follow their libraries would accept and reject the same publication. The
+  values chosen are what `personal_sign` returns from mainstream wallets, and the low-`s` rule of
+  [EIP-2](https://eips.ethereum.org/EIPS/eip-2).
+- **A fixed five-minute allowance.** An optional allowance would let verifiers differ by choice as
+  well as by clock. Five minutes matches the allowance for publication timestamps.
 - **Avatars are out of scope.** The `author.avatar` proof has the same history of inconsistent
   strings. It involves ownership of a token, which changes over time and needs chain access to check,
   so it is left to its own BSIP.
@@ -249,19 +279,29 @@ over one of these strings, none of which is valid here:
 
 Old proofs are not accepted and there is no transition format. Authors sign a new proof.
 
-Because a community rejects the whole publication when an entry is not valid, turning on enforcement
-before clients have updated would reject every publication from an author with a saved wallet. The
-rollout is therefore ordered:
+Two things break if the change is rolled out in the wrong order:
 
-1. Clients ship the new proof message and re-sign saved wallets, automatically where the client holds
+- A challenge that verifies wallet proofs (a token gate, for example) rebuilds the old string. Once an
+  author's client re-signs with the new message, that challenge recovers a different address and
+  fails every publication from the author.
+- A community that turns on the acceptance rule rejects every publication from an author whose client
+  still holds an old proof.
+
+The rollout is therefore ordered:
+
+1. Challenges that verify wallet proofs switch to [Verification](#verification).
+2. Clients ship the new proof message and re-sign saved wallets, automatically where the client holds
    the wallet key and with a prompt where it does not.
-2. Community nodes turn on the acceptance rule in a later release.
+3. Community nodes turn on the acceptance rule in a later release.
 
-Until step 2, a wallet entry in an accepted publication is not proven, and a client that relies on
-one MUST verify it itself.
+Between steps 1 and 2, an author whose client has not updated fails an updated challenge. That is
+already the case in deployments where the client and the challenge use different strings. A community
+operator who needs both to keep working SHOULD update the challenge and tell authors to update their
+client at the same time.
 
-Comments accepted before enforcement keep their old entries. This BSIP does not require a community
-to re-check or remove them, and a reader MUST NOT treat them as proven.
+Comments accepted before a community applied this BSIP keep their old entries. This BSIP does not
+require a community to re-check or remove them. A client treats them like any other entry: it
+verifies an entry before relying on it ([Clients](#clients)), and an old entry fails.
 
 Wallet entries on chain families other than those using `0x` addresses cannot be valid under this
 BSIP and are rejected once a community enforces it.
@@ -286,9 +326,10 @@ BSIP and are rejected once a community enforces it.
   application could ask a user to sign a proof for a key the application controls, linking the user's
   wallet to an identity that is not theirs. Clients SHOULD show the author key address being linked,
   and users should sign a proof only in a client they trust.
-- **Signature malleability.** For a given message and key, a second valid `(r, s, v)` exists with the
-  high `s` value. Both recover the same address, so malleability does not let anyone forge a proof.
-  Implementations MUST NOT use the signature bytes as a unique identifier.
+- **Signature malleability.** For a given message and key, a second `(r, s, v)` exists with the high
+  `s` value, and it recovers the same address. It is not valid here, so each proof has one accepted
+  encoding. Malleability never let anyone forge a proof; the rule exists so that verifiers agree.
+  Implementations SHOULD still not use the signature bytes as a unique identifier.
 - **Privacy.** A wallet entry permanently and publicly links a signing key to an on-chain address,
   and through it to that address's whole transaction history and balances, in every community the
   author publishes to. The link cannot be withdrawn from publications already accepted. Clients SHOULD
