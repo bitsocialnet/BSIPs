@@ -94,6 +94,12 @@ The registry is the upstream `NameNFT` with these changes and no others:
    `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
+5. **Minimum length.** `reveal` and `seed` revert for a top-level label shorter than 3 characters,
+   and `isAvailable` returns false for one, so that a client does not commit to a name it cannot
+   reveal. A character is one Unicode code point of the validated label, so `ab`, `é`, a single
+   CJK character, and an emoji of one or two code points are all too short. An emoji sequence of
+   three or more code points after normalization, such as a family joined by zero-width joiners,
+   passes although it displays as one symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
 
 Nothing else from the upstream repository is deployed: not `SubdomainRegistrar`,
 `GnsUniversalResolver`, `HumanRegistrar`, `GnsPosts`, or `GnsIntegrationVoting`.
@@ -102,7 +108,8 @@ The rest of the contract is unchanged, and clients rely on it:
 
 - A name is an ERC-721 token whose ID is `uint256(namehash(name))`
   ([EIP-137](https://eips.ethereum.org/EIPS/eip-137)).
-- A label is 1 to 255 UTF-8 bytes. The registry lowercases ASCII letters and rejects control
+- A label is 1 to 255 UTF-8 bytes, and a top-level label is at least 3 characters (change 5). The
+  registry lowercases ASCII letters and rejects control
   characters, space, `.`, DEL, invalid UTF-8, and a leading or trailing `-`. It does not apply
   Unicode normalization ([ENSIP-15](https://docs.ens.domains/ensip/15)); clients do.
 - A top-level name is registered by commit-reveal, with 60 seconds to 24 hours between commit and
@@ -135,11 +142,12 @@ Unchanged from upstream:
 
 | Label length (UTF-8 bytes) | Price per 365 days |
 | --- | --- |
-| 1 | 0.5 ETH |
-| 2 | 0.1 ETH |
 | 3 | 0.05 ETH |
 | 4 | 0.01 ETH |
 | 5 or more | 0.0005 ETH |
+
+Upstream also prices labels of 1 and 2 bytes, at 0.5 and 0.1 ETH. The fee function is left as it
+is, but the minimum length means no top-level label that short can be registered.
 
 Registration and renewal cost the same. Gas is paid separately to Ethereum.
 
@@ -235,7 +243,8 @@ Every subname under an entry that is left out is left out too, whatever the reas
 subdomain can be seeded only under a registered parent. Their owners keep the `.eth` names. `seed`
 applies the same label and depth checks as ordinary registration. The script that builds the list
 MUST apply all three checks to every entry and MUST check that every subdomain entry's parent is in
-the list, so every entry in the tree can be seeded.
+the list, so every entry in the tree can be seeded. The minimum length never excludes an entry: ENS
+registers no second-level `.eth` name shorter than 3 characters, and the reserved list has none.
 
 The script takes candidate names from two sources, and MUST confirm each candidate by resolving it
 at block `S`:
@@ -426,7 +435,7 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Fork GNS.** GNS is ownerless and immutable, prevents front-running with commit-reveal, makes names
   expire so abandoned ones return, and exposes the ENS `text(node, key)` interface. Resolvers change
   only which contract they call, and BSIP-10's record format is unchanged. The diff is limited to the
-  four changes above, so most of the deployed code is code that already runs upstream.
+  five changes above, so most of the deployed code is code that already runs upstream.
 - **Collect fees instead of burning them.** Bitsocial has no other funding, and this registry is
   temporary. A fixed recipient is acceptable because it cannot change prices and has no special
   power over names. It is a multisig rather than one person's address so that the registry survives
@@ -462,6 +471,18 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   hour after the list is done, in practice within about two hours of deployment, with `SEED_END` as
   the fallback if an entry is never seeded. The hour makes the opening time public in advance, so
   the sender of the last seeding transaction gets no head start.
+- **No top-level names shorter than 3 characters.** Bitsocial has one namespace, `.bso`, where the
+  web has hundreds of top-level domains, so its one- and two-character names are the scarcest it
+  will ever have. Sold at a fixed price, they would go to whoever revealed first at the opening,
+  and the resale value would go to them. Reserving them for the fee recipient would avoid that but
+  put the most valuable names in the maintainers' hands. Making them unregistrable does neither:
+  nobody holds them, and the BSIP that specifies Bitsocial Chain's registry decides how they are
+  allocated. ENS has the same 3-character minimum for `.eth`. The count is in code points, not
+  bytes, so that a single CJK character or a simple emoji is not a way around it. It does not stop
+  emoji sequences of three or more code points, which display as one symbol: telling those apart
+  needs grapheme segmentation, which is too much code for an immutable contract, and the Bitsocial
+  Chain registry can treat them as it sees fit. Subdomains are exempt
+  because their parent's owner controls them anyway.
 - **One price for 5 bytes and more.** A cheaper tier for labels of 10 bytes or more was considered
   and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
   long descriptive name, so long names are the normal product and a cheap tier would remove most
@@ -533,7 +554,7 @@ To be written:
 - **No upgrades.** A bug in the registry is permanent. The upstream `NameNFT`, inherited from
   wei-names, has had automated reviews (Cantina Apex, Plainshift AI, Zellic V12), and its repository
   shows no manual audit. The added code (`withdraw`, `seed`, `seedBatch`, the opening check,
-  `sunset`, and the freeze)
+  the minimum length, `sunset`, and the freeze)
   SHOULD be reviewed independently and tested on Sepolia and on a mainnet fork before deployment.
 - **Fee recipient.** If the signers can no longer reach the threshold, fees are stuck where nobody can
   reach them, and `sunset()` can never be called, so the Ethereum registry keeps selling names after
