@@ -101,20 +101,32 @@ sequenceDiagram
    object with exactly one publication under one of these keys — `comment` ([BSIP-2](./bsip-2.md)),
    `vote` ([BSIP-6](./bsip-6.md)), `commentEdit` ([BSIP-7](./bsip-7.md)), `commentModeration`
    ([BSIP-8](./bsip-8.md)), or `communityEdit` ([BSIP-9](./bsip-9.md)) — and MAY also contain:
-   - `challengeAnswers` — a non-empty array of strings answering challenges known in advance, such as
-     a static `challenge` published in the community record;
+   - `challengeAnswers` — pre-emptive answers to challenges known in advance, such as a static
+     `challenge` published in the community record. It is a non-empty record mapping a challenge
+     index to a string answer, for example `{ "2": "open sesame" }`. A challenge index is the
+     position of the challenge in the record's `challenges` array
+     ([BSIP-3](./bsip-3.md#anti-spam-configuration)), written as a decimal string with no leading
+     zeros, as in `challengeErrors` below. The publisher includes a key only for each challenge it
+     answers in advance;
    - `challengeCommentCids` — CIDs of the author's comments in other communities, used by
      `exclude.community` rules ([BSIP-3](./bsip-3.md#anti-spam-configuration)).
 
    A community MUST reject a request whose payload contains no publication or more than one.
 
-2. **`CHALLENGE`** carries `encrypted`, which decrypts to `{ "challenges": [...] }`. Each challenge
-   is `{ "challenge": string, "type": string, "caseInsensitive"?: boolean }`; `challenge` is the
+2. **`CHALLENGE`** carries `encrypted`, which decrypts to `{ "challenges": { ... } }`, a non-empty
+   record mapping a challenge index (as defined for `challengeAnswers` above) to a challenge. It
+   holds only the challenges that still need an answer, so its keys can be a sparse subset of the
+   community's challenges, for example `{ "1": {...}, "3": {...} }`. Each challenge is
+   `{ "challenge": string, "type": string, "caseInsensitive"?: boolean }`; `challenge` is the
    prompt itself, for example a base64 image when `type` is `image/png` or a question when it is
-   `text/plain`.
+   `text/plain`. A community with no challenge to ask MUST NOT send a `CHALLENGE`.
 
-3. **`CHALLENGEANSWER`** carries `encrypted`, which decrypts to `{ "challengeAnswers": [...] }`, a
-   non-empty array of strings positionally matching the challenges.
+3. **`CHALLENGEANSWER`** carries `encrypted`, which decrypts to `{ "challengeAnswers": { ... } }`, a
+   non-empty record mapping a challenge index to a string answer, using the keys of the `CHALLENGE`
+   it answers, for example `{ "1": "4", "3": "open sesame" }`. A challenge of the `CHALLENGE` whose
+   index is not a key is unanswered and fails. A key that is not the index of a challenge in the
+   `CHALLENGE` MUST be ignored. A community MUST reject a `CHALLENGEANSWER` whose `challengeAnswers`
+   is an array.
 
 4. **`CHALLENGEVERIFICATION`** carries `challengeSuccess` (boolean). On failure it MAY carry
    `challengeErrors`, a map from a challenge index (a decimal string) to an error message, and
@@ -123,6 +135,14 @@ sequenceDiagram
    ([BSIP-5](./bsip-5.md#reduced-comment-updates)), so the author learns the CID and initial state of
    the accepted comment. When the comment was held for moderator approval, the reduced update carries
    `pendingApproval: true`.
+
+A community MUST treat a challenge whose index is not a key of the request's `challengeAnswers` as
+having no pre-emptive answer, exactly as if the request carried none: it MUST NOT read another
+challenge's answer for it or treat the absence as a wrong answer. A key that is not the index of one
+of the community's challenges MUST be ignored. A community MUST reject a request whose
+`challengeAnswers` is an array. A community that sends a `CHALLENGE` after a request with
+pre-emptive answers omits the challenges those answers already settled, which is why the keys of a
+`CHALLENGE` can skip indexes.
 
 Two shortcuts are allowed:
 
@@ -224,9 +244,16 @@ against the pubsub network itself.
   published *something* to a topic, but not the content or the author's identity.
 - **A fresh per-exchange keypair** unlinks the challenge handshake from the author's long-lived key,
   so completing a challenge does not deanonymize the author at the network layer.
-- **Positional `challengeAnswers`** and **pre-emptive answers** keep the common, non-interactive case
-  (rate limits, token gates, static passwords) to a single round trip while still supporting
-  interactive captchas.
+- **Pre-emptive answers** keep the common, non-interactive case (rate limits, token gates, static
+  passwords) to a single round trip while still supporting interactive captchas.
+- **Challenge payloads are keyed by challenge index, not positional.** With an array, answering the
+  challenge at index 2 in advance forces a publisher to put filler strings at indexes 0 and 1, and a
+  challenge at one of those indexes reads the filler as the author's answer: a password challenge
+  fails the publication where it would otherwise have prompted. A keyed record lets the publisher
+  answer exactly the challenges it means to. `CHALLENGE` and `CHALLENGEANSWER` use the same keys
+  rather than positions in the list that was sent, so one index names one challenge in every message
+  of the exchange, as it already does in `challengeErrors`, and an answer does not depend on which
+  challenges happened to be settled in advance.
 - **Signing every envelope field** prevents a relay from altering plaintext fields such as
   `challengeSuccess`, `reason`, or `acceptedChallengeTypes` in transit.
 - **Answering duplicates by signature** lets a publisher safely retry over another route without the
@@ -238,6 +265,11 @@ A client that implements only `comment` and `vote` remains interoperable for tho
 publication types are additive. The AES-GCM tag check was not enforced by every earlier
 implementation; implementations MUST enforce it now. Records without `pubsubTopic` previously implied
 a default topic and now mean the community accepts no pubsub publications ([BSIP-3](./bsip-3.md)).
+
+`challengeAnswers` in a `CHALLENGEREQUEST` and a `CHALLENGEANSWER`, and `challenges` in a `CHALLENGE`,
+were previously positional arrays. The array forms are no longer accepted and there is no transition
+format: a sender that uses one is rejected, and a peer that still expects one does not find its
+payload. Publishers, communities, and the challenges that read these payloads change together.
 
 ## Security Considerations
 
