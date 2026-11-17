@@ -98,8 +98,8 @@ The registry is the upstream `NameNFT` with these changes and no others:
    and `isAvailable` returns false for one, so that a client does not commit to a name it cannot
    reveal. A character is one Unicode code point of the validated label, so `ab`, `é`, a single
    CJK character, and an emoji of one or two code points are all too short. An emoji sequence of
-   three or more code points, such as a keycap or a family, passes although it displays as one
-   symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
+   three or more code points after normalization, such as a family joined by zero-width joiners,
+   passes although it displays as one symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
 
 Nothing else from the upstream repository is deployed: not `SubdomainRegistrar`,
 `GnsUniversalResolver`, `HumanRegistrar`, `GnsPosts`, or `GnsIntegrationVoting`.
