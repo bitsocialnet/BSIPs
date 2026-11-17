@@ -279,26 +279,6 @@ over one of these strings, none of which is valid here:
 
 Old proofs are not accepted and there is no transition format. Authors sign a new proof.
 
-Two things break if the change is rolled out in the wrong order:
-
-- A challenge that verifies wallet proofs (a token gate, for example) rebuilds the old string. Once an
-  author's client re-signs with the new message, that challenge recovers a different address and
-  fails every publication from the author.
-- A community that turns on the acceptance rule rejects every publication from an author whose client
-  still holds an old proof.
-
-The rollout is therefore ordered:
-
-1. Challenges that verify wallet proofs switch to [Verification](#verification).
-2. Clients ship the new proof message and re-sign saved wallets, automatically where the client holds
-   the wallet key and with a prompt where it does not.
-3. Community nodes turn on the acceptance rule in a later release.
-
-Between steps 1 and 2, an author whose client has not updated fails an updated challenge. That is
-already the case in deployments where the client and the challenge use different strings. A community
-operator who needs both to keep working SHOULD update the challenge and tell authors to update their
-client at the same time.
-
 Comments accepted before a community applied this BSIP keep their old entries. This BSIP does not
 require a community to re-check or remove them. A client treats them like any other entry: it
 verifies an entry before relying on it ([Clients](#clients)), and an old entry fails.
