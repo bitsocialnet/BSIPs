@@ -430,7 +430,11 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   temporary. A fixed recipient is acceptable because it cannot change prices and has no special
   power over names. It is a multisig rather than one person's address so that the registry survives
   the loss of any one key, and of any one person once the signer set is complete
-  ([Fee recipient](#fee-recipient)).
+  ([Fee recipient](#fee-recipient)). The arrangement ends with this registry. The maintainers intend
+  name fees on Bitsocial Chain to stop funding them and instead be burned, or be used by the
+  registry to buy back and burn BSO. That is a statement of intent and not part of this
+  specification: the BSIP for that registry sets its fees
+  ([Sunset and migration](#sunset-and-migration)), and the mechanism is not decided.
 - **Seed from a snapshot instead of checking ENS on chain.** The registry could let `.eth` holders
   claim matching `.bso` names by reading ENS during a claim window. That would tie an immutable
   contract to ENS contracts, which have changed before, and give `.bso` names to every `.eth` holder,
