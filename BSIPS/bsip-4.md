@@ -101,8 +101,13 @@ sequenceDiagram
    object with exactly one publication under one of these keys — `comment` ([BSIP-2](./bsip-2.md)),
    `vote` ([BSIP-6](./bsip-6.md)), `commentEdit` ([BSIP-7](./bsip-7.md)), `commentModeration`
    ([BSIP-8](./bsip-8.md)), or `communityEdit` ([BSIP-9](./bsip-9.md)) — and MAY also contain:
-   - `challengeAnswers` — a non-empty array of strings answering challenges known in advance, such as
-     a static `challenge` published in the community record;
+   - `challengeAnswers` — pre-emptive answers to challenges known in advance, such as a static
+     `challenge` published in the community record. It is a non-empty record mapping a challenge
+     index to a string answer, for example `{ "2": "open sesame" }`. A challenge index is the
+     position of the challenge in the record's `challenges` array
+     ([BSIP-3](./bsip-3.md#anti-spam-configuration)), written as a decimal string with no leading
+     zeros, as in `challengeErrors` below. The publisher includes a key only for each challenge it
+     answers in advance;
    - `challengeCommentCids` — CIDs of the author's comments in other communities, used by
      `exclude.community` rules ([BSIP-3](./bsip-3.md#anti-spam-configuration)).
 
@@ -114,7 +119,8 @@ sequenceDiagram
    `text/plain`.
 
 3. **`CHALLENGEANSWER`** carries `encrypted`, which decrypts to `{ "challengeAnswers": [...] }`, a
-   non-empty array of strings positionally matching the challenges.
+   non-empty array of strings positionally matching the challenges of the `CHALLENGE` it answers.
+   This array is not the record used for pre-emptive answers in a `CHALLENGEREQUEST`.
 
 4. **`CHALLENGEVERIFICATION`** carries `challengeSuccess` (boolean). On failure it MAY carry
    `challengeErrors`, a map from a challenge index (a decimal string) to an error message, and
@@ -123,6 +129,12 @@ sequenceDiagram
    ([BSIP-5](./bsip-5.md#reduced-comment-updates)), so the author learns the CID and initial state of
    the accepted comment. When the comment was held for moderator approval, the reduced update carries
    `pendingApproval: true`.
+
+A community MUST treat a challenge whose index is not a key of the request's `challengeAnswers` as
+having no pre-emptive answer, exactly as if the request carried none: it MUST NOT read another
+challenge's answer for it or treat the absence as a wrong answer. A key that is not the index of one
+of the community's challenges MUST be ignored. A community MUST reject a request whose
+`challengeAnswers` is an array.
 
 Two shortcuts are allowed:
 
@@ -224,9 +236,14 @@ against the pubsub network itself.
   published *something* to a topic, but not the content or the author's identity.
 - **A fresh per-exchange keypair** unlinks the challenge handshake from the author's long-lived key,
   so completing a challenge does not deanonymize the author at the network layer.
-- **Positional `challengeAnswers`** and **pre-emptive answers** keep the common, non-interactive case
-  (rate limits, token gates, static passwords) to a single round trip while still supporting
-  interactive captchas.
+- **Pre-emptive answers** keep the common, non-interactive case (rate limits, token gates, static
+  passwords) to a single round trip while still supporting interactive captchas.
+- **Pre-emptive answers are keyed by challenge index, not positional.** With an array, answering the
+  challenge at index 2 in advance forces a publisher to put filler strings at indexes 0 and 1, and a
+  challenge at one of those indexes reads the filler as the author's answer: a password challenge
+  fails the publication where it would otherwise have prompted. A keyed record lets the publisher
+  answer exactly the challenges it means to. The interactive `CHALLENGEANSWER` stays positional,
+  because it answers exactly the challenges that were sent, in order.
 - **Signing every envelope field** prevents a relay from altering plaintext fields such as
   `challengeSuccess`, `reason`, or `acceptedChallengeTypes` in transit.
 - **Answering duplicates by signature** lets a publisher safely retry over another route without the
@@ -238,6 +255,11 @@ A client that implements only `comment` and `vote` remains interoperable for tho
 publication types are additive. The AES-GCM tag check was not enforced by every earlier
 implementation; implementations MUST enforce it now. Records without `pubsubTopic` previously implied
 a default topic and now mean the community accepts no pubsub publications ([BSIP-3](./bsip-3.md)).
+
+Pre-emptive `challengeAnswers` in a `CHALLENGEREQUEST` were previously a positional array of strings.
+The array form is no longer accepted and there is no transition format: a publisher that sends it is
+rejected, and a community that still expects it does not find an answer in the record. Publishers and
+the challenges that read pre-emptive answers change together.
 
 ## Security Considerations
 
