@@ -225,8 +225,8 @@ subdomain's parent name in `.bso` form.
 2. **Ancestors.** For every subname under rule 1, each of its ancestors up to the second-level name,
    held by the account that holds that `.eth` name at `S`. An ancestor that has its own `bitsocial`
    record is already listed under rule 1; any other ancestor is listed with an empty record.
-3. **Reserved names.** A short list of top-level names that identify the project, its apps, and its
-   maintainers, with an empty record. A reserved label that is also listed under rule 1 or 2 is
+3. **Reserved names.** A short list of top-level names that identify the project, its apps, its
+   maintainers, and Bitsocial Forge, the company one maintainer runs, with an empty record. A reserved label that is also listed under rule 1 or 2 is
    dropped from the reserved list. A name in use always goes to its current holder.
 
 An entry is left out when the registry could not hold it:
@@ -282,8 +282,9 @@ Proposed reserved names:
 
 | Labels | Owner |
 | --- | --- |
-| `bitsocial`, `bitsocialnet`, `bitsocialforge`, `bsips`, `pkc`, `pkcprotocol`, `plebbit`, `5chan`, `seedit`, `mintpass`, `agoraswap` | fee recipient |
-| `tom`, `tommaso`, `tomcasaburi` | Tommaso Casaburi, address TBD |
+| `bitsocial`, `bitsocialnet`, `bitsocialchain`, `bso`, `bsips`, `pkc`, `pkcprotocol`, `plebbit`, `5chan`, `seedit`, `wetube`, `gitcommons`, `modelswarm`, `infinipedia`, `mintpass`, `agoraswap` | fee recipient |
+| `bitsocialforge`, `forge`, `forgerpc` | Bitsocial Forge, address TBD |
+| `tom`, `tommaso`, `tomcasaburi` | Tommaso Casaburi, `0x89e768DDF3696EB79112734fB0755AB27F8C5620` |
 | `rinse`, `rinse12` | Rinse, address TBD |
 | `esteban`, `estebanabaroa` | fee recipient |
 
