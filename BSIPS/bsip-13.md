@@ -463,6 +463,16 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   fee income. Names that cheap could also be held in bulk and would be imported into Bitsocial
   Chain, which a later change could not undo. If the flat price is the mistake, owners overpay by
   about a dollar a year.
+- **Fees in ETH only, with no discount for paying in BSO.** A discount for paying in the Bitsocial
+  token was considered and left out. A percentage discount needs a BSO price in ETH on chain. An
+  ownerless registry cannot replace a price source that fails, and a thinly traded pool can be moved
+  for one transaction, which would let 1- to 4-byte names be registered for almost nothing. A fixed
+  price table in BSO needs no price source, but it drifts with the token's price until paying in BSO
+  is either nearly free or never chosen, and nobody can correct it. For labels of 5 bytes or more,
+  the normal case, any discount is worth less than the gas of the extra token approval. A token
+  payment path would also add code that upstream does not run. Bitsocial Chain's registry sets its
+  own fees ([Sunset and migration](#sunset-and-migration)) and can give BSO a role without these
+  limits.
 - **Reserved names.** Squatters can use project and maintainer names to impersonate them. The list is
   kept short so the registry stays neutral, and names in use take precedence over it.
 - **Sunset freezes the registry, after notice.** The migration imports the state at `sunsetAt`. If
