@@ -94,10 +94,12 @@ The registry is the upstream `NameNFT` with these changes and no others:
    `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
-5. **Minimum length.** `reveal` and `seed` revert for a top-level label shorter than 3 characters.
-   A character is one Unicode code point of the validated label, so `ab`, `é`, a single CJK
-   character, and a single emoji are all too short. Subdomain labels have no minimum beyond
-   upstream's 1 byte.
+5. **Minimum length.** `reveal` and `seed` revert for a top-level label shorter than 3 characters,
+   and `isAvailable` returns false for one, so that a client does not commit to a name it cannot
+   reveal. A character is one Unicode code point of the validated label, so `ab`, `é`, a single
+   CJK character, and an emoji of one or two code points are all too short. An emoji sequence of
+   three or more code points, such as a keycap or a family, passes although it displays as one
+   symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
 
 Nothing else from the upstream repository is deployed: not `SubdomainRegistrar`,
 `GnsUniversalResolver`, `HumanRegistrar`, `GnsPosts`, or `GnsIntegrationVoting`.
@@ -475,8 +477,11 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   and the resale value would go to them. Reserving them for the fee recipient would avoid that but
   put the most valuable names in the maintainers' hands. Making them unregistrable does neither:
   nobody holds them, and the BSIP that specifies Bitsocial Chain's registry decides how they are
-  allocated. ENS has the same 3-character minimum for `.eth`. The count is in characters, not
-  bytes, so that a single CJK character or emoji is not a way around it. Subdomains are exempt
+  allocated. ENS has the same 3-character minimum for `.eth`. The count is in code points, not
+  bytes, so that a single CJK character or a simple emoji is not a way around it. It does not stop
+  emoji sequences of three or more code points, which display as one symbol: telling those apart
+  needs grapheme segmentation, which is too much code for an immutable contract, and the Bitsocial
+  Chain registry can treat them as it sees fit. Subdomains are exempt
   because their parent's owner controls them anyway.
 - **One price for 5 bytes and more.** A cheaper tier for labels of 10 bytes or more was considered
   and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
