@@ -113,13 +113,18 @@ A wallet proof is **valid** for a publication when all of the following hold:
 
 1. the entry has the shape in [The wallet entry](#the-wallet-entry);
 2. `signature.type` is `eip191`;
-3. `timestamp` is not later than the `timestamp` of the publication that carries the entry;
+3. `timestamp` is not later than the verifier's current time;
 4. the address recovered from `signature.signature` over the proof message, built from the author key
    address of that publication and the entry's `timestamp`, equals `address`.
 
 Verification is stateless. A verifier MUST NOT require the proof's `timestamp` to be newer than one
 it has seen before, and MUST NOT keep per-wallet or per-author state to decide validity. Recovering
 the address needs no blockchain access.
+
+Rule 3 depends on the verifier's clock, so a proof dated slightly ahead can be valid for one verifier
+and not yet valid for another whose clock is behind. A verifier MAY allow the same five-minute
+tolerance a community applies to publication timestamps
+([BSIP-4](./bsip-4.md#publication-acceptance)).
 
 Signatures from contract accounts ([ERC-1271](https://eips.ethereum.org/EIPS/eip-1271)) are not
 `eip191` proofs and are not valid under this BSIP.
@@ -183,11 +188,11 @@ Resulting wallet entry:
 }
 ```
 
-This entry is valid in a publication signed by the key above with a `timestamp` of 1790000000 or
-later. It is not valid when:
+This entry is valid in a publication signed by the key above, when verified at Unix time 1790000000
+or later. It is not valid when:
 
 - the publication is signed by any other key (the recovered address differs);
-- the publication's `timestamp` is earlier than 1790000000;
+- it is verified before Unix time 1790000000;
 - `signature.type` is anything other than `eip191`;
 - `address` is a name such as `example.eth`;
 - the proof message is built with `authorAddress` in place of `authorPublicKey`, or with a different
@@ -202,8 +207,9 @@ later. It is not valid when:
   the runtime address out of habit, which is what existing implementations did.
 - **A plain EIP-191 message.** Every wallet and hardware device can sign a text message, and the user
   can read what they sign. EIP-712 typed data displays better in some wallets but is supported less
-  widely. `signature.type` leaves room to add other schemes, including other chain families and
-  contract accounts, in later BSIPs.
+  widely. `signature.type` leaves room to add other schemes in later BSIPs. Contract accounts
+  ([ERC-1271](https://eips.ethereum.org/EIPS/eip-1271)) and other chain families are the expected
+  additions; both need more than signature recovery to verify, so they are left out here.
 - **Reject unknown types.** Accepting an entry with an unknown scheme would leave unproven addresses
   in accepted publications, and every reader would have to check the type before trusting an entry.
   Rejecting keeps one meaning for an accepted entry. The cost is that wallets on other chain families
@@ -215,10 +221,13 @@ later. It is not valid when:
   message names the author's key, a copied proof is useless to anyone who does not hold that key, so
   the state protects nothing. It also cannot be reproduced by a reader, which would make validity
   depend on which community is asked.
-- **Compare the proof's timestamp with the publication's.** "Not in the future" measured against the
-  verifier's clock gives different answers at different times and on different nodes. Measuring
-  against the publication's own `timestamp`, which a community already checks against its clock
-  ([BSIP-4](./bsip-4.md#publication-acceptance)), gives every verifier the same answer forever.
+- **Compare the proof's timestamp with the verifier's clock.** The alternative is to compare it with
+  the `timestamp` of the publication that carries it, which gives every verifier the same answer
+  regardless of its clock. That rule trusts the publication's timestamp, which the author chooses and
+  only the community holds near the truth ([BSIP-4](./bsip-4.md#publication-acceptance)). An author
+  and a community acting together could then future-date both. The clock rule does not depend on the
+  community: any verifier rejects a proof dated ahead of its own time. Its cost is a short disagreement
+  between verifiers whose clocks differ, which resolves as time passes.
 - **The community verifies; readers usually do not.** Verifying on acceptance means every reader
   benefits from one check. Requiring every reader to verify every entry would add work to every page
   load for little gain. The exception is an action that cannot be undone, where trusting the community
