@@ -99,6 +99,8 @@ Call.
 | [BSIP-18](./BSIPS/bsip-18.md) | Pubsub Voting | Standards Track | Application | Draft |
 | [BSIP-19](./BSIPS/bsip-19.md) | Directories | Standards Track | Application | Draft |
 | [BSIP-20](./BSIPS/bsip-20.md) | Protocol Overview | Informational | — | Living |
+| [BSIP-21](./BSIPS/bsip-21.md) | .bso Website Resolution | Standards Track | Application | Draft |
+| [BSIP-22](./BSIPS/bsip-22.md) | Author Wallet Proofs | Standards Track | Core | Draft |
 
 ## Contributing
 

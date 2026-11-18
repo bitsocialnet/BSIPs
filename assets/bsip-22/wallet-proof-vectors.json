@@ -1,0 +1,336 @@
+{
+  "description": "BSIP-22 author wallet proof: test vector and negative cases. Outcomes are valid, invalid (a community rejects the publication) and unknown (accepted, unproven). TEST KEYS ONLY: never use them outside tests. The signatures were produced by a deterministic test-only signer (low s, v of 27 or 28), and assets/verify-vectors.mjs re-checks every outcome with Node built-ins.",
+  "authorKey": {
+    "seedHex": "0101010101010101010101010101010101010101010101010101010101010101",
+    "publicKeyBase64Unpadded": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+    "address": "12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5"
+  },
+  "otherKey": {
+    "seedHex": "0303030303030303030303030303030303030303030303030303030303030303",
+    "publicKeyBase64Unpadded": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9E",
+    "address": "12D3KooWRndVhVZPCiQwHBBBdg769GyrPUW13zxwqQyf9r3ANaba"
+  },
+  "walletPrivateKeyHex": "0202020202020202020202020202020202020202020202020202020202020202",
+  "walletAddress": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+  "timestamp": 1790000000,
+  "proofMessage": "{\"domainSeparator\":\"bitsocial-author-wallet\",\"authorPublicKey\":\"12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5\",\"walletAddress\":\"0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c\",\"timestamp\":1790000000}",
+  "walletAddressLowercase": "0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c",
+  "validSignature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+  "cases": [
+    {
+      "name": "valid at the signed time",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "valid"
+    },
+    {
+      "name": "valid with the address in lowercase",
+      "entry": {
+        "address": "0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "valid"
+    },
+    {
+      "name": "valid at the five-minute boundary",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1789999700,
+      "outcome": "valid"
+    },
+    {
+      "name": "timestamp more than five minutes ahead of the verifier",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1789999699,
+      "outcome": "invalid"
+    },
+    {
+      "name": "unknown member on the entry and in signature",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191",
+          "publicKey": "x"
+        },
+        "label": "main"
+      },
+      "verifierTime": 1790000000,
+      "outcome": "valid"
+    },
+    {
+      "name": "carrying record signed by another key",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "authorKey": "other",
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "address is a name",
+      "entry": {
+        "address": "example.eth",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "v is 0x00 instead of the 27/28 form",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a900",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "high-s twin of the signature",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747fa6b505df17ed107a9ca25a686b2fa2a8b66755650943d794a74629294021db981c",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "proof message uses authorAddress instead of authorPublicKey",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x58efcf57b0c0f039f1d5c196c41634cb0117f4d042f88c0fd2714b610a013e28256879328cfbc5662e547c4e4b00f84e0259368969150c2b3217a921f944b0321b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "proof message has a different domainSeparator",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0xed519995b3213cf9d653d89a5060c22089e9ebb6ee0dae2c3582fec5abbf7ef96f2cc157be57066c7b323b044a154cd7a791cb8dc6f320f273f5751d7040792a1c",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "proof message does not name the wallet address",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x086c6fd7899873cbd7beaf55217849e22b3a18360cc25aee38885c0a8823eb186cf8dc9f943013a736dcba2385c8d2b5e68980409a9b38cf1493efff780610dd1b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "proof message names a different wallet address",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x3c6ce8ce2c6e6b7e23d93df7b68268c03355c92cdb21939887316fd32c3174481751342b54766ea4c061e108af9f8d5affb647eb42cf610b8e1b4419612389561b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "signature nobody made, with the address it recovers under an unbound message",
+      "entry": {
+        "address": "0x6c4881f214f801274331c193e0fd635f3f9dc47e",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x111111111111111111111111111111111111111111111111111111111111111222222222222222222222222222222222222222222222222222222222222222221b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "eip191 entry with a negative timestamp",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": -5,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "timestamp is not an integer",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000.5,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "signature.type is not a string",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": 5
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "signature.type is missing",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "eip191 signature has the wrong length",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a9",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "unknown signature type",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "erc1271"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "unknown"
+    },
+    {
+      "name": "unknown type with a non-0x address",
+      "entry": {
+        "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "AQID",
+          "type": "ed25519-solana"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "unknown"
+    },
+    {
+      "name": "unknown type with a negative timestamp",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": -5,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "erc1271"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "unknown"
+    },
+    {
+      "name": "unknown type without a timestamp",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "erc1271"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "unknown type whose signature.signature is not a string",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": {
+            "r": 1
+          },
+          "type": "erc1271"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    }
+  ]
+}

@@ -160,7 +160,8 @@ The `author` object describes the author. All of its fields are OPTIONAL:
 Other fields MAY be present and are signed as part of `author`, except names reserved for derived
 values: `address`, `publicKey`, `shortAddress`, `community`, and `nameResolved` MUST NOT appear in a
 published `author`. The proof formats inside `wallets` and `avatar` are verified independently of the
-publication signature and are not yet specified by a BSIP.
+publication signature. The `wallets` proof is specified in [BSIP-22](./bsip-22.md); the `avatar` proof
+is not yet specified by a numbered BSIP.
 
 An author's cryptographic identity is the `signature.publicKey` of their publication. Clients derive
 the **author address** as `author.name || publicKey`, where `publicKey` is the IPNS name (a libp2p
