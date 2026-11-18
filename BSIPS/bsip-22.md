@@ -17,9 +17,9 @@ An author can list blockchain wallets in `author.wallets` ([BSIP-2](./bsip-2.md#
 carries a signature that is meant to prove the author controls the wallet. This BSIP defines that
 proof: the wallet signs, with EIP-191, one exact string that names the author's signing key and a
 timestamp. A community verifies the proof before it accepts any publication that carries a wallet
-entry, and rejects the publication when the proof is invalid or uses a signature type this BSIP does
-not define. A client verifies a proof itself before it relies on the entry, for example before it
-shows the wallet as the author's or sends funds to it. A valid proof is a link between a signing key
+entry, and rejects the publication when the proof is invalid. An entry of a signature type this BSIP
+does not define is accepted as unproven. A client verifies a proof itself before it relies on the
+entry, for example before it shows the wallet as the author's or sends funds to it. A valid proof is a link between a signing key
 and an address that anyone can check from the publication alone.
 
 ## Motivation
@@ -49,8 +49,10 @@ described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
 ### Terminology
 
 - **Wallet entry** — one value of the `author.wallets` record, keyed by a chain ticker.
+- **Carrying record** — the signed record whose `author.wallets` holds the wallet entry: a publication
+  or a [BSIP-15](./bsip-15.md) list.
 - **Author key address** — the key address ([BSIP-10](./bsip-10.md#key-addresses)) derived from the
-  `signature.publicKey` of the publication that carries the wallet entry.
+  `signature.publicKey` of the carrying record.
 - **Wallet proof** — the `signature` inside a wallet entry.
 - **Proof message** — the string the wallet signs.
 
@@ -72,8 +74,10 @@ A wallet entry is the object defined in [BSIP-2](./bsip-2.md#authors):
 - `address` — REQUIRED. The wallet address: the characters `0x` followed by exactly 40 hexadecimal
   digits, in any letter case. It MUST NOT be a name (an ENS name, a `.bso` name, or any other
   indirection). Addresses are compared without regard to letter case.
-- `timestamp` — REQUIRED. Integer Unix time in seconds at which the wallet signed the proof.
-- `signature.type` — REQUIRED. The proof scheme. This BSIP defines exactly one value, `eip191`.
+- `timestamp` — REQUIRED. Non-negative integer Unix time in seconds at which the wallet signed the
+  proof.
+- `signature.type` — REQUIRED. A string naming the proof scheme. This BSIP defines exactly one value,
+  `eip191`. Any other string is an unknown type ([Verification](#verification)).
 - `signature.signature` — REQUIRED. For `eip191`, the 65-byte signature `r || s || v` as `0x`
   followed by 130 hexadecimal digits, where:
   - `v` is `27` or `28` (the bytes `0x1b` or `0x1c`). The `0`/`1` form is not valid. A client whose
@@ -119,22 +123,31 @@ For `signature.type` `eip191`, the wallet signs the UTF-8 bytes of the proof mes
 
 ### Verification
 
-A wallet proof is **valid** for a publication when all of the following hold:
+Verifying an entry has one of three outcomes:
 
-1. the entry has the four required members in [The wallet entry](#the-wallet-entry), each of the
-   stated type; members this BSIP does not define are ignored;
-2. `signature.type` is `eip191`;
-3. `timestamp` is not more than five minutes later than the verifier's current time;
-4. `signature.signature` has the encoding in [The wallet entry](#the-wallet-entry), including its
-   rules for `v` and `s`;
-5. the address recovered from `signature.signature` over the proof message, built from the author key
-   address of that publication and the entry's `timestamp`, equals `address`.
+- **Unknown.** The entry has a `signature.type` that is a string but not `eip191`. This BSIP defines
+  no check for it, so the entry is neither valid nor invalid. It is **unproven**.
+- **Valid.** `signature.type` is `eip191` and all of the following hold for the carrying record:
+  1. the entry has the four required members in [The wallet entry](#the-wallet-entry), each of the
+     stated type; members this BSIP does not define are ignored;
+  2. `timestamp` is not more than five minutes later than the verifier's current time;
+  3. `signature.signature` has the encoding in [The wallet entry](#the-wallet-entry), including its
+     rules for `v` and `s`;
+  4. the address recovered from `signature.signature` over the proof message, built from the author
+     key address of the carrying record and the entry's `timestamp`, equals `address`.
+- **Invalid.** Anything else: an entry missing a required member or with one of the wrong type
+  (including a `signature.type` that is not a string), or an `eip191` entry for which a condition above
+  fails.
+
+A proof is **proven** only when it is valid under a type the verifier implements. A verifier that
+implements a type defined by a later BSIP applies that BSIP's rules to entries of that type, and
+treats entries of every other type as unknown.
 
 Verification is stateless. A verifier MUST NOT require the proof's `timestamp` to be newer than one
 it has seen before, and MUST NOT keep per-wallet or per-author state to decide validity. Recovering
 the address needs no blockchain access.
 
-Rule 3 depends on the verifier's clock, so a proof dated ahead can be valid for one verifier and not
+Condition 2 depends on the verifier's clock, so a proof dated ahead can be valid for one verifier and not
 yet valid for another whose clock is behind. The five-minute allowance is fixed, not optional, and is
 the allowance a community applies to publication timestamps
 ([BSIP-4](./bsip-4.md#publication-acceptance)).
@@ -149,12 +162,17 @@ Signatures from contract accounts ([ERC-1271](https://eips.ethereum.org/EIPS/eip
 ### Community acceptance
 
 In addition to the rules of [BSIP-4](./bsip-4.md#publication-acceptance), a community MUST reject a
-publication of any type whose `author.wallets` contains an entry that is not valid. This includes an
-entry whose `signature.type` is a value this BSIP does not define. The `reason` in the
-`CHALLENGEVERIFICATION` SHOULD name the chain ticker of the failing entry.
+publication of any type whose `author.wallets` contains an invalid entry. It MUST NOT reject a
+publication because an entry is unknown. The `reason` in the `CHALLENGEVERIFICATION` SHOULD name the
+chain ticker of the failing entry. A community MAY limit the number of entries it accepts, and that
+limit is local policy, not a rule of this BSIP.
 
 A community cannot remove a failing entry and accept the rest, because `author` is covered by the
 author's signature ([BSIP-2](./bsip-2.md#signatures)).
+
+An accepted entry may therefore be unknown, and a community's acceptance does not make an entry
+proven. Community acceptance applies to publications; a list has none, so a list's entries are checked
+only by readers ([Clients](#clients)).
 
 A publishing client SHOULD run the same check before it starts a challenge exchange, so that an
 invalid entry fails locally with a clear error.
@@ -165,9 +183,13 @@ invalid entry fails locally with a clear error.
 - A client is not required to verify the wallet entries of publications it reads, as long as it
   does not rely on them.
 - A client MUST verify a wallet proof itself, under [Verification](#verification), before it relies on
-  the entry. Relying on an entry includes showing the address as a wallet the author controls, using
-  it to decide what the author holds, and sending funds to it.
-- A client MAY show an entry it has not verified only in a way that does not present it as proven.
+  the entry, whether the carrying record is a publication or a list. Relying on an entry includes
+  showing the address as a wallet the author controls, using it to decide what the author holds, and
+  sending funds to it.
+- An entry is proven only when it is valid under a type the client implements. A client MUST NOT rely
+  on an unknown or invalid entry, and MAY show it only in a way that does not present it as proven.
+  A client that does not yet implement a later signature type shows its entries as unproven, even if
+  the proof is valid.
 
 A community's acceptance is not something a client can rely on in place of its own check. A
 publication does not record whether its community applied this BSIP or when it began to, so a reader
@@ -212,20 +234,26 @@ Resulting wallet entry:
 
 The signature's `v` byte is `0x1c` (28) and its `s` value is in the lower half of the curve order.
 
-This entry is valid in a publication signed by the key above, when the verifier's time is 1789999700
+This entry is valid in a publication or list signed by the key above, when the verifier's time is 1789999700
 or later (the proof's `timestamp` less the five-minute allowance). It stays valid with an added
 member this BSIP does not define, such as `"label": "main"` on the entry or `"publicKey": "…"` inside
 `signature`. It is not valid when:
 
-- the publication is signed by any other key (the recovered address differs);
+- the publication or list is signed by any other key (the recovered address differs);
 - the verifier's time is earlier than 1789999700;
-- `signature.type` is anything other than `eip191`;
+- `signature.type` is not a string, or `timestamp` is negative;
 - `address` is a name such as `example.eth`;
 - the last byte of the signature is `0x01` in place of `0x1c`;
 - `s` is replaced by its high form, `n - s`, with `v` flipped to `0x1b`, which recovers the same
   address but breaks the `s` rule;
 - the proof message is built with `authorAddress` in place of `authorPublicKey`, or with a different
   `domainSeparator`.
+
+The same entry with `signature.type` set to any other string, such as `"erc1271"`, is unknown, not
+invalid: a community accepts the publication, and no verifier treats the entry as proven.
+
+The vector is also in [`assets/bsip-22/wallet-proof-vectors.json`](../assets/bsip-22/wallet-proof-vectors.json),
+which `assets/verify-vectors.mjs` checks with Node built-ins only.
 
 ## Rationale
 
@@ -239,10 +267,15 @@ member this BSIP does not define, such as `"label": "main"` on the entry or `"pu
   widely. `signature.type` leaves room to add other schemes in later BSIPs. Contract accounts
   ([ERC-1271](https://eips.ethereum.org/EIPS/eip-1271)) and other chain families are the expected
   additions; both need more than signature recovery to verify, so they are left out here.
-- **Reject unknown types.** Accepting an entry with an unknown scheme would leave unproven addresses
-  in accepted publications, and every reader would have to check the type before trusting an entry.
-  Rejecting keeps one meaning for an accepted entry. The cost is that wallets on other chain families
-  cannot be listed until a BSIP defines their scheme.
+- **Accept unknown types as unproven.** A rule that a community rejects an unknown type cannot be
+  loosened later, because communities that already enforce it keep rejecting until each one upgrades,
+  so every new signature type would fail for its authors in every community that is behind. A rule
+  that accepts unknown types as unproven can be tightened later by a BSIP that upgraded communities
+  adopt, while the others carry on. The cost is that a community can hold entries nobody has proven,
+  so acceptance means nothing about an entry's type; a reader already has to verify, as
+  [Clients](#clients) requires. Junk entries are bounded by the size limit on a publication, and a
+  community can limit entries locally. A later BSIP could let a community advertise the types it
+  supports, so a client can leave out an entry the community would not check.
 - **Literal addresses only.** A name in `address` makes verification depend on a resolver and an RPC,
   and changes what the proof means when the name is repointed.
 - **No "newest timestamp wins" rule.** Existing challenges keep a per-community record of the newest
@@ -255,7 +288,7 @@ member this BSIP does not define, such as `"label": "main"` on the entry or `"pu
   regardless of its clock. That rule trusts the publication's timestamp, which the author chooses and
   only the community holds near the truth ([BSIP-4](./bsip-4.md#publication-acceptance)). An author
   and a community acting together could then future-date both. The clock rule does not depend on the
-  community: any verifier rejects a proof dated ahead of its own time. Its cost is a short disagreement
+  community: any verifier rejects a proof dated more than five minutes ahead of its own time. Its cost is a short disagreement
   between verifiers whose clocks differ, which resolves as time passes.
 - **The community verifies, and a client verifies what it uses.** Verifying on acceptance keeps
   false entries out of a community and gives challenges one check to build on. It cannot stand in for
@@ -289,14 +322,17 @@ over one of these strings, none of which is valid here:
 {"domainSeparator":"bitsocial-author-wallet","authorAddress":"…","timestamp":…}
 ```
 
-Old proofs are not accepted and there is no transition format. Authors sign a new proof.
+Old proofs are not accepted and there is no transition format. Authors sign a new proof. Challenges
+that verify wallet proofs must adopt this BSIP before clients re-sign, or they reject the new proofs;
+the order is tracked in [pkc-js#566](https://github.com/pkcprotocol/pkc-js/issues/566).
 
 Comments accepted before a community applied this BSIP keep their old entries. This BSIP does not
 require a community to re-check or remove them. A client treats them like any other entry: it
 verifies an entry before relying on it ([Clients](#clients)), and an old entry fails.
 
-Wallet entries on chain families other than those using `0x` addresses cannot be valid under this
-BSIP and are rejected once a community enforces it.
+Wallet entries on chain families other than those using `0x` addresses cannot be proven under this
+BSIP. An entry with the `eip191` type and a non-`0x` address is invalid and is rejected once a
+community enforces it; an entry with another type is unknown and unproven.
 
 ## Security Considerations
 
@@ -330,6 +366,9 @@ BSIP and are rejected once a community enforces it.
   access. The number of entries is bounded by the 40,000-byte limit on a publication
   ([BSIP-4](./bsip-4.md#publication-acceptance)). A community MAY additionally limit the number of
   entries it accepts.
+- **Unknown entries.** A community accepts entries of types it does not know, so an author can store
+  entries that nothing proves. They cost a community only the space inside the same size limit, and a
+  client that follows [Clients](#clients) never relies on them.
 
 ## Copyright
 
