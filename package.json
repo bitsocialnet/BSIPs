@@ -23,6 +23,9 @@
     "rehype-slug": "6.0.0"
   },
   "devDependencies": {
-    "portless": "0.11.1"
+    "@adraffy/ens-normalize": "1.11.1",
+    "@openzeppelin/merkle-tree": "1.0.8",
+    "portless": "0.11.1",
+    "viem": "2.57.16"
   }
 }

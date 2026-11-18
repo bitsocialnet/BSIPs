@@ -1,0 +1,31 @@
+{
+  "description": "BSIP-13 reserved names (rule 3 of the seed list). Each label is a top-level .bso name seeded to the group's address with an empty record, unless the name is in use. An address of null is not known yet. Must match the reserved-name table in BSIPS/bsip-13.md.",
+  "feeRecipient": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+  "groups": [
+    {
+      "owner": "fee recipient",
+      "address": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "labels": ["bitsocial", "bitsocialnet", "bitsocialchain", "bso", "bsips", "pkc", "pkcprotocol", "plebbit", "5chan", "seedit", "wetube", "gitcommons", "modelswarm", "infinipedia", "mintpass", "agoraswap"]
+    },
+    {
+      "owner": "Bitsocial Forge",
+      "address": null,
+      "labels": ["bitsocialforge", "forge", "forgerpc"]
+    },
+    {
+      "owner": "Tommaso Casaburi",
+      "address": "0x89e768DDF3696EB79112734fB0755AB27F8C5620",
+      "labels": ["tom", "tommaso", "tomcasaburi"]
+    },
+    {
+      "owner": "Rinse",
+      "address": null,
+      "labels": ["rinse", "rinse12"]
+    },
+    {
+      "owner": "fee recipient",
+      "address": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "labels": ["esteban", "estebanabaroa"]
+    }
+  ]
+}
