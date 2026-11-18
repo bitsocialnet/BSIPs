@@ -1,0 +1,1473 @@
+{
+  "bsip": 13,
+  "snapshot": {
+    "block": 26444681,
+    "hash": "0x27b6c06019d189c702d6242e25e241bfdeb3c270f47fabec94246a8797a7df70",
+    "timestamp": 1795037783
+  },
+  "seedRoot": null,
+  "seedCount": 119,
+  "missingOwners": [
+    "bitsocialforge.bso",
+    "forge.bso",
+    "forgerpc.bso",
+    "rinse.bso",
+    "rinse12.bso"
+  ],
+  "leafEncoding": [
+    "string",
+    "uint256",
+    "address",
+    "string"
+  ],
+  "entries": [
+    {
+      "name": "3dcg-posting.bso",
+      "label": "3dcg-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBRCcwxWTx23tyK7Uhqs9ViE3MnSgvWSLip2ikrWaD3c2",
+      "ensName": "3dcg-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "5chan-feedback.bso",
+      "label": "5chan-feedback",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWNmuwmBDAgxBNrPRvzvCLYD9U3etN9idguXZLTpRRgqVf",
+      "ensName": "5chan-feedback.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "5chan.bso",
+      "label": "5chan",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "adult-gif.bso",
+      "label": "adult-gif",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWJP8v5VUzKUfxr38BbhQPb5yidF3WapGQ6CjLctBV6QC1",
+      "ensName": "adult-gif.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "adult-requests.bso",
+      "label": "adult-requests",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWEETWYzkaYihyE2JyLVvnTqxP9121C7SoxRwp4qGP9Y2z",
+      "ensName": "adult-requests.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "advice-posting.bso",
+      "label": "advice-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWH5UFNs9yfwJVsSUhEW5bYrtF8KmzfeJzwg84qWMoFJVY",
+      "ensName": "advice-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "agoraswap.bso",
+      "label": "agoraswap",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "animals-and-nature.bso",
+      "label": "animals-and-nature",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWSpKszPM2c17KBgbnoRrkWPCHJosGGFg3bKnzarYhHeSc",
+      "ensName": "animals-and-nature.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "anime-and-manga.bso",
+      "label": "anime-and-manga",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMDt3RMVMHrm2pEEyfraBtHP86dmkim7EVAapDj3Mchdy",
+      "ensName": "anime-and-manga.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "anime-cute.bso",
+      "label": "anime-cute",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMKVj7dzag2fcYP24kgmxDz2DSvE7yGzBW9fJEYA94aMC",
+      "ensName": "anime-cute.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "anime-wallpapers.bso",
+      "label": "anime-wallpapers",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWPpdMSMLnz5qZ6NR3jTjqmqdpbMT3tDM5RwzWSPYtd9AV",
+      "ensName": "anime-wallpapers.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "artwork-critique.bso",
+      "label": "artwork-critique",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWQZ5HkAspHUPGEVoSaAZgqachZGtxCXxAXYBDTreR4uWJ",
+      "ensName": "artwork-critique.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "askseedit.bso",
+      "label": "askseedit",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWNv5HzmkcKZkxMn1SrfMyozTdTJSr7kA1bzEKKa7PTS5N",
+      "ensName": "askseedit.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "askwise.bso",
+      "label": "askwise",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4b8054cb935d32E04527D5c0cf3d3fb8c62f876A",
+      "record": "12D3KooWA4x86KvtUD2R2SMA3P4Y4gttJKJUWq2umVMH1fgy9QY3",
+      "ensName": "askwise.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "auto-posting.bso",
+      "label": "auto-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBD4agW9pc73hBNXtXWTpZCukcFvigmkM8Z2MDKR72CCk",
+      "ensName": "auto-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "aww-posting.bso",
+      "label": "aww-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWDniAeB2eenHaA25vxk4wt2v8H39dAi42L5bfrMSxtpEs",
+      "ensName": "aww-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "bitsocial.bso",
+      "label": "bitsocial",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "",
+      "ensName": "bitsocial.eth",
+      "rules": [
+        "ancestor"
+      ]
+    },
+    {
+      "name": "bitsocialbot.bso",
+      "label": "bitsocialbot",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4b8054cb935d32E04527D5c0cf3d3fb8c62f876A",
+      "record": "12D3KooWA4x86KvtUD2R2SMA3P4Y4gttJKJUWq2umVMH1fgy9QY3",
+      "ensName": "bitsocialbot.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "bitsocialchain.bso",
+      "label": "bitsocialchain",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialforge.bso",
+      "label": "bitsocialforge",
+      "parent": "0",
+      "parentName": null,
+      "owner": null,
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialist.bso",
+      "label": "bitsocialist",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooW9sKUZiFRD8Jh4Zrz2k1paW2L4eQU3kFCGDVejC1Eu9Xw",
+      "ensName": "bitsocialist.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "bitsocialnet.bso",
+      "label": "bitsocialnet",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bizraelis.bso",
+      "label": "bizraelis",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWR7nTdKZqZ1twGWMfVsXYDGp1XAKUrnYznKP651jFrizE",
+      "ensName": "bizraelis.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "bsips.bso",
+      "label": "bsips",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bso.bso",
+      "label": "bso",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "business-and-finance.bso",
+      "label": "business-and-finance",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWNMybS8JqELi38ZBX897PrjWbCrGoMKfw3bgoqzC2n1Dh",
+      "ensName": "business-and-finance.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "cams-and-meetups.bso",
+      "label": "cams-and-meetups",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWCGnYfbrm8UZpv8YxViXgJJx9hha486LCAFFXSEYNtj1B",
+      "ensName": "cams-and-meetups.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "censorship-watch.bso",
+      "label": "censorship-watch",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWEKA6Fhp6qtyttMvNKcNCtqH2N7ZKpPy5rfCeM1otr5qU",
+      "ensName": "censorship-watch.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "comics-and-cartoons.bso",
+      "label": "comics-and-cartoons",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWRLmyg671KVYb1xekZ8eTQSMfRraB3DmQZPsKbCdMsEuc",
+      "ensName": "comics-and-cartoons.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "current-news.bso",
+      "label": "current-news",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWSdDpdxUajbj19SHhUxcNS7wG9QbQqYvj29mCwokqnFNS",
+      "ensName": "current-news.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "do-it-yourself.bso",
+      "label": "do-it-yourself",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWKKbiaFu7x2EwueN6wxw3DJRQsvCv8KVRGbTTYpsGZXVa",
+      "ensName": "do-it-yourself.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "esteban.bso",
+      "label": "esteban",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "estebanabaroa.bso",
+      "label": "estebanabaroa",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x5Bc4FF33f86E0272be53Fa25861294489AB2FE2a",
+      "record": "12D3KooWCW62hSn7ZXrFbMeW127uDbYaiZaoS4GxG9GsQKsaLajD",
+      "ensName": "estebanabaroa.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "extreme-sports.bso",
+      "label": "extreme-sports",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBwnXwtridc4b3VNnhK2KyNHsm52wDrGPYYGLNf8f34bm",
+      "ensName": "extreme-sports.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "fashion-posting.bso",
+      "label": "fashion-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMLd7K4MKPY4YJrpwV2vrjFN357x93bHs2g4gSetTLJ6t",
+      "ensName": "fashion-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "fitness-posting.bso",
+      "label": "fitness-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWHcqcJJmjAiBJA3uyhSW6ep4HFadUfteDrzU1Pn9ALkkw",
+      "ensName": "fitness-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "flash-posting.bso",
+      "label": "flash-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWPFckNTD8YHVJrjpa9hRYvuomvM9VsvQQkJqjWRtpLv1F",
+      "ensName": "flash-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "food-and-cooking.bso",
+      "label": "food-and-cooking",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFfANpSeemwvqqGsXNPHDuyDMCK6wE8cxGTuNw7xoWUp7",
+      "ensName": "food-and-cooking.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "forge.bso",
+      "label": "forge",
+      "parent": "0",
+      "parentName": null,
+      "owner": null,
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "forgerpc.bso",
+      "label": "forgerpc",
+      "parent": "0",
+      "parentName": null,
+      "owner": null,
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "funny-posting.bso",
+      "label": "funny-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFL5oGc9p9CYs25eeK5cCpPXXhibECsnqmuxinq2jbtjP",
+      "ensName": "funny-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "gaming-posting.bso",
+      "label": "gaming-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWRHbY2AS9oComoTVpMF4iF33d3GPzKCW7MSfHEJT8qeZc",
+      "ensName": "gaming-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "gitcommons.bso",
+      "label": "gitcommons",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "graphic-design.bso",
+      "label": "graphic-design",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWSrH1Kp6TvaLxGS3vtoqqFdy3gRMkTKfrYGPaDAcJRJAd",
+      "ensName": "graphic-design.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "health-nutrition-science.bso",
+      "label": "health-nutrition-science",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWHAvK1rPuc4oZvj8rpSLdFmnd7pnMtpsnH3js2rhUh2sX",
+      "ensName": "health-nutrition-science.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "history-posting.bso",
+      "label": "history-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWN7bzigSgU4rxayrPCjvq2ETJMN9Zv3cyazpRYh36QWiN",
+      "ensName": "history-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "infinipedia.bso",
+      "label": "infinipedia",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "interestingasfuck.bso",
+      "label": "interestingasfuck",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWDexsEFuP8wt4vPKjLn3ZaxEyQJv4EWMU3abnLk7NxEhd",
+      "ensName": "interestingasfuck.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "international-nsfw.bso",
+      "label": "international-nsfw",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWPuYtTzrq8gFnv6yM1r4egy1rd4cxLr1nsXTjfdYkfwcN",
+      "ensName": "international-nsfw.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "international-sfw.bso",
+      "label": "international-sfw",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMSUYcergS2BwbRzFynR5hQURc962W9iR81eTJKz89Q6n",
+      "ensName": "international-sfw.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "literature-posting.bso",
+      "label": "literature-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWKXimxiZWtgF3LoTdaW3btHhDzJN7P3qrsgHwRkow186x",
+      "ensName": "literature-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "mecha-posting.bso",
+      "label": "mecha-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWH7TCLGzDmvptLmnoxbLK2EjSuysMfj1ScN1ekFuba1Fu",
+      "ensName": "mecha-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "memes-posting.bso",
+      "label": "memes-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFkZorC92RxQAwMBYMido8xBM88ghpLWA26mrE9W9Xmxd",
+      "ensName": "memes-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "mintpass.bso",
+      "label": "mintpass",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "modelswarm.bso",
+      "label": "modelswarm",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "movies-tv-anime.bso",
+      "label": "movies-tv-anime",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWKi6ewc3hpxgJmeG72EmfDZ6aJvDoyDLVbRkenmC1ooyL",
+      "ensName": "movies-tv-anime.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "music-posting.bso",
+      "label": "music-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWQdQ6TkVA1Xe9zzaFP6vXBgsLeMAewpLpLwbsAYKivnQy",
+      "ensName": "music-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "news-posting.bso",
+      "label": "news-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMxE8DtkGLL5LBm2ENdPJJX9DnimfHDh1uvDgKF8nrwX5",
+      "ensName": "news-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "nothing-is-beyond-our-reach.bso",
+      "label": "nothing-is-beyond-our-reach",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWDpiDmJCGKbXB3RJFfATmRMzmwTkjimBvf8xKZmUx2L1P",
+      "ensName": "nothing-is-beyond-our-reach.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "oekaki-posting.bso",
+      "label": "oekaki-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWNAqMhmHi3hPSbcH27Q7cqBCuN2Mu9HNzs6fB8YX14k4o",
+      "ensName": "oekaki-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "off-topic.bso",
+      "label": "off-topic",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWREyT7yBV8tA8uSpps8vX7XS1YM4385ty2MmHFyR9GKmf",
+      "ensName": "off-topic.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "original-content.bso",
+      "label": "original-content",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWSYj8gyc4YVWLsqZ9rM3uixZ6zu5wgz99qHyZT93YLTgL",
+      "ensName": "original-content.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "otaku-culture.bso",
+      "label": "otaku-culture",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFtPbTBQ6Lit5wH2PHCvQQqj3RB5v2QHPtT1cnGeKjBaW",
+      "ensName": "otaku-culture.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "outdoors-posting.bso",
+      "label": "outdoors-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWQ2nPGxQxuSMY92kM3zKu1rBekJsXxXb5uNkHLDfSSxTm",
+      "ensName": "outdoors-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "papercraft-and-origami.bso",
+      "label": "papercraft-and-origami",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWGfhD9o9T4QRYX2RQgwXRmEmWXmaw4bAGyDHioz98g3ro",
+      "ensName": "papercraft-and-origami.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "paranormal-posting.bso",
+      "label": "paranormal-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFZn7r5gYKbq5YQMr1FYQ5eUwoZr41Tjd8KmTgQ4dxTTP",
+      "ensName": "paranormal-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "photography-posting.bso",
+      "label": "photography-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWK7qqtH32qAeZ5nUZGHBEsiaGsXGhMU9AWDKYzKCcit7w",
+      "ensName": "photography-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "pics-posting.bso",
+      "label": "pics-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWR39v9RaLHXXsJC9NSqdmWgrw5FMjJJAECEAsras4AztU",
+      "ensName": "pics-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "pkc.bso",
+      "label": "pkc",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "pkcprotocol.bso",
+      "label": "pkcprotocol",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "plebbit.bso",
+      "label": "plebbit",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "plebeius.bso",
+      "label": "plebeius",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x89e768DDF3696EB79112734fB0755AB27F8C5620",
+      "record": "12D3KooW9sKUZiFRD8Jh4Zrz2k1paW2L4eQU3kFCGDVejC1Eu9Xw",
+      "ensName": "plebeius.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "plebpiracy.bso",
+      "label": "plebpiracy",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0xAf63Ff809A43a6eCA5976140a2f115820F84295f",
+      "record": "12D3KooWJfyRZLUd8yeAubbWXJTrSrJTeBoqN6JgHDwWbH9UtUCN",
+      "ensName": "plebpiracy.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "pokemon-posting.bso",
+      "label": "pokemon-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFhrazFTHLh6sSA9qL2wTf4piBar2HXtirKNTfTwSTjN3",
+      "ensName": "pokemon-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "politically-incorrect.bso",
+      "label": "politically-incorrect",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWMVob74DQoTLGZ4B8kWgPwDfbtiWqdJE4DrGtf2rmVw36",
+      "ensName": "politically-incorrect.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "pony-posting.bso",
+      "label": "pony-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWEViZKRnJjqKDXGadQtz1547wgLTFPAaFYPBZ5NVwJ3jJ",
+      "ensName": "pony-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "professional-wrestling.bso",
+      "label": "professional-wrestling",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBMHPHSJhwKivg6KhbGScgau8xBBNqVQKZk24NZQo7beU",
+      "ensName": "professional-wrestling.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "quests-posting.bso",
+      "label": "quests-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBmh43DUBbqXAeJVxxu9qgWgMqn91UBECgP4aTuxS5uK2",
+      "ensName": "quests-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "random-nsfw.bso",
+      "label": "random-nsfw",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWJkJYkuVbJQhapcVGpo8oNmsXsKmFRrFqc1SHezZW9fX8",
+      "ensName": "random-nsfw.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "retro-games.bso",
+      "label": "retro-games",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWJfwp2WRwU3gsaNNPjZ1iHgxc1QFySr361cQarkhLp1fY",
+      "ensName": "retro-games.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "rinse.bso",
+      "label": "rinse",
+      "parent": "0",
+      "parentName": null,
+      "owner": null,
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "rinse12.bso",
+      "label": "rinse12",
+      "parent": "0",
+      "parentName": null,
+      "owner": null,
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "ripmy.bso",
+      "label": "ripmy",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x09D1Da9AFc44B15fa097ca71220704A11d66de26",
+      "record": "12D3KooWQQ4jRWKtN8Gctq43G3wGKhD6qWrNHWwtXWac7yk3i1EE",
+      "ensName": "ripmy.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "robot9002.bso",
+      "label": "robot9002",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWPXkEw8GSZcM8N97fkWJjZGV7hLccZSrf2PqHUKrp4xJQ",
+      "ensName": "robot9002.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "science-and-math.bso",
+      "label": "science-and-math",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWEtHqwtEpgHsXS8VSFcGDt2DhzeqaLm9tTCRFucXaWp62",
+      "ensName": "science-and-math.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "seedit.bso",
+      "label": "seedit",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "shit-5chan-says.bso",
+      "label": "shit-5chan-says",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWR4vHjSsTHs3MU436avk4eW1XRqY9zKfVcvvZXkLdzJo6",
+      "ensName": "shit-5chan-says.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "sports-posting.bso",
+      "label": "sports-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWGJA6zN3Q63FtSgwNhtfA26Skdzdxz5X7A9PFfE4FBMGE",
+      "ensName": "sports-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "technology-posting.bso",
+      "label": "technology-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFnLrUYHpvqki7gbL4w9JzdxjpQPKE2JBDEd23Ly6X82X",
+      "ensName": "technology-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "television-and-film.bso",
+      "label": "television-and-film",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWGSRg4crzV5vXEya1ghXD7UBTqimqXTQvNUqy9NdzZNyd",
+      "ensName": "television-and-film.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "til-posting.bso",
+      "label": "til-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWEXNQaBi1xWXW9ksm8Fa5LpAP46YsmV44oGaHrsCJ41Jt",
+      "ensName": "til-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "tom.bso",
+      "label": "tom",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x89e768DDF3696EB79112734fB0755AB27F8C5620",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "tomcasaburi.bso",
+      "label": "tomcasaburi",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x89e768DDF3696EB79112734fB0755AB27F8C5620",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "tommaso.bso",
+      "label": "tommaso",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x89e768DDF3696EB79112734fB0755AB27F8C5620",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "torrents-posting.bso",
+      "label": "torrents-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWFwieYtPDEd3UBK5qG6HFZ3Qu8cDd4B4RcY2HJ9CBkfaZ",
+      "ensName": "torrents-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "torrentz.bso",
+      "label": "torrentz",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWA3nWX92JwSSfCyo1pkQGez8Y8XpbeJrjMoBUyo991KJc",
+      "ensName": "torrentz.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "toys-posting.bso",
+      "label": "toys-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWQrRW8JHu1HagE9E3QUB7hAnSbeYHLkz5mTbSivhkoPtJ",
+      "ensName": "toys-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "traditional-games.bso",
+      "label": "traditional-games",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWK6G3EHUCkfcgX6kPDihXJAdpucrZvn4WjPwf7fF484nt",
+      "ensName": "traditional-games.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "transportation-posting.bso",
+      "label": "transportation-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBLfdUT4sbVjzsQBz6EFPGWJC5byjnG44i5HHBKk7XKc3",
+      "ensName": "transportation-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "travel-posting.bso",
+      "label": "travel-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWP9kG9qYxHoyxfDSWiNpeuGfuxwbDdfu6vtRwvVY9uU96",
+      "ensName": "travel-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "very-important-posts.bso",
+      "label": "very-important-posts",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWNMnBJ5phkBWrcjfdnzdqPwCARmXwGWeZDKNJvCVPR8GT",
+      "ensName": "very-important-posts.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogame-generals.bso",
+      "label": "videogame-generals",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMvAcJFV45CS3hSZcx7EFhwhQrXfXhVHXQJFPfKeakWfq",
+      "ensName": "videogame-generals.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogames-mobile.bso",
+      "label": "videogames-mobile",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWLSaxYpQb4Wx7KxiJaXQD9SgzmBD67W41CN6gNLTxASVg",
+      "ensName": "videogames-mobile.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogames-multiplayer.bso",
+      "label": "videogames-multiplayer",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWMW3B4R3C7z5M6zDo9Q9t3fCMuUwHbnPWARsDSqiUYybU",
+      "ensName": "videogames-multiplayer.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogames-posting.bso",
+      "label": "videogames-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWRAbo3HU5ThCAkJGQ5q7MTEJfhAX6Hu7xHyPtxHGi1Fgh",
+      "ensName": "videogames-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogames-rpg.bso",
+      "label": "videogames-rpg",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWJ4HZgaL3tPSRp5LfnFmwasxdQenPuDpPBYHHEaUMJDiF",
+      "ensName": "videogames-rpg.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videogames-strategy.bso",
+      "label": "videogames-strategy",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWBNAetYuTx5Zosf6jRVJ2GpMx3jzEQufDcP4DRTXzAgwp",
+      "ensName": "videogames-strategy.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videos-livestreams-podcasts.bso",
+      "label": "videos-livestreams-podcasts",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x4EC92589C7cB12402a930ee44c238804e6197467",
+      "record": "12D3KooWPpTDZdr3oGvNsNdjQ5FETGEywitt2WnK6QWShtVN2BN1",
+      "ensName": "videos-livestreams-podcasts.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "videos-posting.bso",
+      "label": "videos-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWQt3UJ6A3AeZxJSFJnspVmYQK1Epj8VeSzrFG1tHiZC9o",
+      "ensName": "videos-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "virtual-youtubers.bso",
+      "label": "virtual-youtubers",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWKiziqgcvVLMDThXQC4cPi5SJmFSQFoc6jv1kSRU1XXxV",
+      "ensName": "virtual-youtubers.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "wallpapers-general.bso",
+      "label": "wallpapers-general",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWJCXw8a5CKgH5248qXMDQdG5AFxP4ZvbsAmFCGfuykE3U",
+      "ensName": "wallpapers-general.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "weaponized-autism.bso",
+      "label": "weaponized-autism",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0xE5e02d9F89E9124AA0F82e77868d2Bd4FAdd9173",
+      "record": "12D3KooWJM1TaC9SF1oQq7KHwKUQE8nhCJfbePoQ8ipWiC9B5GUA",
+      "ensName": "weaponized-autism.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "weapons-posting.bso",
+      "label": "weapons-posting",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWNRSdq3aLHHCvm4zyFQfASgYzy5LGXRXnKC4uj6aUXzHq",
+      "ensName": "weapons-posting.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "wetube.bso",
+      "label": "wetube",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "worksafe-gif.bso",
+      "label": "worksafe-gif",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWAGHV9th2FN48KPvHMJwxen8h5mSM39pkaZWvvzcWMPr9",
+      "ensName": "worksafe-gif.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "worksafe-requests.bso",
+      "label": "worksafe-requests",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWKuKGqAAKQT7GY1cnXqiXcbeVPJULXPwTByfSy4Ci7eBg",
+      "ensName": "worksafe-requests.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "blog.bitsocial.bso",
+      "label": "blog",
+      "parent": "81357739580362838786999317106375839338115357412077609142369528841542343364892",
+      "parentName": "bitsocial.bso",
+      "owner": "0x13087d38B78df0345D67c8CEE73b215589ae3A1f",
+      "record": "12D3KooWSuX9mVvLCfPa1f421Le88phwhuqMHEcW4pd6Q9uEjAcQ",
+      "ensName": "blog.bitsocial.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "registry.askwise.bso",
+      "label": "registry",
+      "parent": "24852604179150763082682051004570250038221988363969438055642051304516503108133",
+      "parentName": "askwise.bso",
+      "owner": "0x4b8054cb935d32E04527D5c0cf3d3fb8c62f876A",
+      "record": "12D3KooWCWp1Jqo6BTUNyWmDHPgs65RkNfdBsejtd9kDpiR9Vhr2",
+      "ensName": "registry.askwise.eth",
+      "rules": [
+        "in use"
+      ]
+    },
+    {
+      "name": "registry.bitsocialbot.bso",
+      "label": "registry",
+      "parent": "34818919286288793826540866382405217982182733625818358321325990408626554446598",
+      "parentName": "bitsocialbot.bso",
+      "owner": "0x4b8054cb935d32E04527D5c0cf3d3fb8c62f876A",
+      "record": "12D3KooWCWp1Jqo6BTUNyWmDHPgs65RkNfdBsejtd9kDpiR9Vhr2",
+      "ensName": "registry.bitsocialbot.eth",
+      "rules": [
+        "in use"
+      ]
+    }
+  ],
+  "reservedInUse": [
+    "bitsocial",
+    "estebanabaroa"
+  ],
+  "notSeeded": [
+    {
+      "name": "reddit-screenshots.eth",
+      "reason": "not registered in ENS at S (ENSv2 reddit-screenshots.eth is not registered)",
+      "sources": [
+        "logs"
+      ]
+    }
+  ],
+  "unmappedNodes": [],
+  "inputs": {
+    "textChangedEvents": 101,
+    "eventNodes": 96,
+    "suppliedNames": 82,
+    "suppliedListsCommit": "4d8cb6f72032830db6783832922fcc4bf6bbf236"
+  }
+}
