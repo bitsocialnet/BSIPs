@@ -132,9 +132,13 @@ publication's author next to a comment. It has the shape of a publication's `aut
 part of `author`.
 
 - `author.wallets` entries follow the entry and verification rules of [BSIP-22](./bsip-22.md), with the
-  list's `signature.publicKey` as the signing key. Verifying them is not part of loading: a reader
-  does not check a wallet proof when it loads a list, so a list is never rejected over one. A client
-  verifies an entry under BSIP-22 before it relies on it.
+  list's `signature.publicKey` as the signing key. Loading checks only an entry's shape, the one in
+  [BSIP-2](./bsip-2.md#authors) that BSIP-22 checks first: a string `address`, an integer
+  `timestamp`, and a `signature` object whose `signature` and `type` are strings. An entry without
+  that shape fails step 3 of [loading](#loading-and-verifying-a-list), and the list with it. Verifying
+  the proof is not part of loading, so a list is never rejected because a proof is invalid, of an
+  unknown type, or dated ahead of the reader's clock. A client verifies an entry under BSIP-22 before
+  it relies on it.
 - `author.name`, when present, MUST be a name, that is, contain a `.`
   ([BSIP-10](./bsip-10.md#names)).
 - `author` MUST NOT carry `address`, `publicKey`, `shortAddress`, `nameResolved`, or `community`. A
@@ -259,8 +263,9 @@ A failure in steps 2 to 4, or a record over the size limit, is a property of the
 so fetching the same CID again cannot fix it. A reader SHOULD NOT retry such a failure, and SHOULD
 retry transport failures.
 
-Verifying `author.name` ([The `author` field](#the-author-field)) is not part of loading. A reader
-MAY return a list before that verification completes and report the outcome when it does.
+Verifying `author.name` and the proofs in `author.wallets` ([The `author` field](#the-author-field))
+is not part of loading. A reader MAY return a list before that verification completes and report the
+outcome when it does.
 
 ### Using entries
 
