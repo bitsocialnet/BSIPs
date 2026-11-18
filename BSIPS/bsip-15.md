@@ -131,6 +131,8 @@ publication's author next to a comment. It has the shape of a publication's `aut
 `wallets`, `avatar`, and `flairs`, with the same types. Other members MAY be present and are signed as
 part of `author`.
 
+- `author.wallets` entries follow the entry and verification rules of [BSIP-22](./bsip-22.md), with the
+  list's `signature.publicKey` as the signing key.
 - `author.name`, when present, MUST be a name, that is, contain a `.`
   ([BSIP-10](./bsip-10.md#names)).
 - `author` MUST NOT carry `address`, `publicKey`, `shortAddress`, `nameResolved`, or `community`. A

@@ -1,5 +1,5 @@
 ---
-bsip:
+bsip: 22
 title: Author Wallet Proofs
 description: The signed message that proves an author controls a wallet listed in author.wallets, and where that proof is verified.
 author: Rinse (@Rinse12)
