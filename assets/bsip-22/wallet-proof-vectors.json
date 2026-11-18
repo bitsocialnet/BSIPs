@@ -112,7 +112,7 @@
       "outcome": "invalid"
     },
     {
-      "name": "v is 0x01 instead of the 27/28 form",
+      "name": "v is 0x00 instead of the 27/28 form",
       "entry": {
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
