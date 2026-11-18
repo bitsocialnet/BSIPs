@@ -132,7 +132,9 @@ publication's author next to a comment. It has the shape of a publication's `aut
 part of `author`.
 
 - `author.wallets` entries follow the entry and verification rules of [BSIP-22](./bsip-22.md), with the
-  list's `signature.publicKey` as the signing key.
+  list's `signature.publicKey` as the signing key. Verifying them is not part of loading: a reader
+  does not check a wallet proof when it loads a list, so a list is never rejected over one. A client
+  verifies an entry under BSIP-22 before it relies on it.
 - `author.name`, when present, MUST be a name, that is, contain a `.`
   ([BSIP-10](./bsip-10.md#names)).
 - `author` MUST NOT carry `address`, `publicKey`, `shortAddress`, `nameResolved`, or `community`. A
