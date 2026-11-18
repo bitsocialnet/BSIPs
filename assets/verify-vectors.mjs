@@ -1,7 +1,8 @@
 // @ts-check
 // Check the BSIP test vectors in this directory with Node built-ins only, independently of pkc-js:
 // test keys and addresses, the CBOR signing bytes and Ed25519 signatures (BSIP-2, BSIP-4), comment
-// CIDs (BSIP-2), and the ed25519-aes-gcm encryption of a challenge request (BSIP-4). The `pkcJs`
+// CIDs (BSIP-2), the ed25519-aes-gcm encryption of a challenge request (BSIP-4), and the author wallet
+// proofs (BSIP-22: Keccak-256 and secp256k1 recovery implemented here in BigInt). The `pkcJs`
 // fields record what pkc-js returned when the vectors were generated and are not re-checked here.
 //
 // Usage: node assets/verify-vectors.mjs
@@ -324,6 +325,138 @@ for (const v of pubsub.vectors.filter((x) => x.negative)) {
   const idDerived = Buffer.from(message.challengeRequestId).equals(peerIdBytes(message.signature.publicKey));
   const signatureValid = ed25519Verify(signedBytes(message, message.signature.signedPropertyNames), message.signature.signature, message.signature.publicKey);
   check(`pubsub ${v.name}: valid = ${v.pkcJs.verifyChallengeRequest.valid}`, (idDerived && signatureValid) === v.pkcJs.verifyChallengeRequest.valid);
+}
+
+// --- BSIP-22 wallet proofs: Keccak-256 and secp256k1 recovery in BigInt (no dependencies) ---
+
+const M64 = (1n << 64n) - 1n;
+const rotl = (x, n) => ((x << BigInt(n)) | (x >> BigInt(64 - n))) & M64;
+const KECCAK_RC = [
+  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n, 0x000000000000808bn, 0x0000000080000001n,
+  0x8000000080008081n, 0x8000000000008009n, 0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
+  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n, 0x8000000000008002n, 0x8000000000000080n,
+  0x000000000000800an, 0x800000008000000an, 0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+];
+const KECCAK_ROT = [[0, 36, 3, 41, 18], [1, 44, 10, 45, 2], [62, 6, 43, 15, 61], [28, 55, 25, 21, 56], [27, 20, 39, 8, 14]];
+const keccakF = (a) => {
+  for (const rc of KECCAK_RC) {
+    const c = [0, 1, 2, 3, 4].map((x) => a[x] ^ a[x + 5] ^ a[x + 10] ^ a[x + 15] ^ a[x + 20]);
+    for (let x = 0; x < 5; x++) {
+      const d = c[(x + 4) % 5] ^ rotl(c[(x + 1) % 5], 1);
+      for (let y = 0; y < 25; y += 5) a[x + y] ^= d;
+    }
+    const b = new Array(25);
+    for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) b[y + 5 * ((2 * x + 3 * y) % 5)] = rotl(a[x + 5 * y], KECCAK_ROT[x][y]);
+    for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) a[x + 5 * y] = b[x + 5 * y] ^ (~b[((x + 1) % 5) + 5 * y] & M64 & b[((x + 2) % 5) + 5 * y]);
+    a[0] ^= rc;
+  }
+};
+// Keccak-256 (the original padding byte 0x01, not the 0x06 of NIST SHA3-256).
+const keccak256 = (data) => {
+  const rate = 136;
+  const msg = Buffer.concat([Buffer.from(data), Buffer.alloc(rate - (data.length % rate))]);
+  msg[data.length] ^= 0x01;
+  msg[msg.length - 1] ^= 0x80;
+  const state = new Array(25).fill(0n);
+  for (let off = 0; off < msg.length; off += rate) {
+    for (let i = 0; i < rate / 8; i++) state[i] ^= msg.readBigUInt64LE(off + 8 * i);
+    keccakF(state);
+  }
+  const out = Buffer.alloc(32);
+  for (let i = 0; i < 4; i++) out.writeBigUInt64LE(state[i], 8 * i);
+  return out;
+};
+
+const SECP_P = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn;
+const SECP_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+const SECP_G = [0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n, 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n];
+const mod = (a, m) => ((a % m) + m) % m;
+const modPowN = (b, e, m) => {
+  let r = 1n;
+  for (b = mod(b, m); e > 0n; e >>= 1n, b = (b * b) % m) if (e & 1n) r = (r * b) % m;
+  return r;
+};
+const inv = (a, m) => modPowN(a, m - 2n, m);
+const ecAdd = (p, q) => {
+  if (!p) return q;
+  if (!q) return p;
+  if (p[0] === q[0] && mod(p[1] + q[1], SECP_P) === 0n) return null;
+  const l = p[0] === q[0] ? mod(3n * p[0] * p[0] * inv(2n * p[1], SECP_P), SECP_P) : mod((q[1] - p[1]) * inv(q[0] - p[0], SECP_P), SECP_P);
+  const x = mod(l * l - p[0] - q[0], SECP_P);
+  return [x, mod(l * (p[0] - x) - p[1], SECP_P)];
+};
+const ecMul = (k, p) => {
+  let r = null;
+  for (; k > 0n; k >>= 1n, p = ecAdd(p, p)) if (k & 1n) r = ecAdd(r, p);
+  return r;
+};
+const big = (buf) => BigInt('0x' + Buffer.from(buf).toString('hex'));
+const be32 = (n) => Buffer.from(n.toString(16).padStart(64, '0'), 'hex');
+const ethAddressOfPoint = (q) => '0x' + keccak256(Buffer.concat([be32(q[0]), be32(q[1])])).subarray(12).toString('hex');
+const ethAddress = (privateKey) => ethAddressOfPoint(ecMul(big(privateKey), SECP_G));
+
+// EIP-191 personal_sign digest of a UTF-8 string.
+const personalDigest = (message) => {
+  const body = Buffer.from(message, 'utf8');
+  return keccak256(Buffer.concat([Buffer.from(`\x19Ethereum Signed Message:\n${body.length}`), body]));
+};
+
+// Recover the signer address from a digest and r, s and a recovery id of 0 or 1; undefined when it fails.
+const recoverAddress = (digest, r, s, recId) => {
+  if (r < 1n || r >= SECP_N || s < 1n || s >= SECP_N) return undefined;
+  const y2 = mod(r ** 3n + 7n, SECP_P);
+  let y = modPowN(y2, (SECP_P + 1n) / 4n, SECP_P);
+  if (mod(y * y, SECP_P) !== y2) return undefined;
+  if (Number(y & 1n) !== recId) y = SECP_P - y;
+  const rInv = inv(r, SECP_N);
+  const sR = ecMul(s, [r, y]);
+  const zG = ecMul(mod(-big(digest), SECP_N), SECP_G);
+  const q = ecMul(rInv, ecAdd(sR, zG));
+  return q ? ethAddressOfPoint(q) : undefined;
+};
+
+// --- BSIP-22 wallet proofs ---
+
+const walletVectors = load('./bsip-22/wallet-proof-vectors.json');
+const walletKey = (label, key) => {
+  const pub = ed25519PublicKey(fromHex(key.seedHex));
+  check(`${label}: signature.publicKey (unpadded base64)`, pub.toString('base64').replace(/=+$/, '') === key.publicKeyBase64Unpadded && !key.publicKeyBase64Unpadded.includes('='));
+  check(`${label}: author key address`, base58btc(peerIdBytes(pub)) === key.address && /^12D3KooW[1-9A-HJ-NP-Za-km-z]{44}$/.test(key.address));
+};
+walletKey('wallet vectors author key', walletVectors.authorKey);
+walletKey('wallet vectors other key', walletVectors.otherKey);
+check('wallet vectors: wallet address', ethAddress(fromHex(walletVectors.walletPrivateKeyHex)).toLowerCase() === walletVectors.walletAddress.toLowerCase());
+check('wallet vectors: Keccak-256 of the empty string', hex(keccak256(Buffer.alloc(0))) === 'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
+check(
+  'wallet vectors: proof message',
+  walletVectors.proofMessage ===
+    `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${walletVectors.authorKey.address}","timestamp":${walletVectors.timestamp}}`,
+);
+
+// The three outcomes of BSIP-22 Verification, for an entry in a record signed by the key with address `authorKeyAddress`.
+const classifyWalletEntry = (entry, authorKeyAddress, verifierTime) => {
+  const isObject = (x) => x !== null && typeof x === 'object' && !Array.isArray(x);
+  if (!isObject(entry) || !isObject(entry.signature)) return 'invalid';
+  const { address, timestamp, signature } = entry;
+  if (typeof signature.type !== 'string' || typeof address !== 'string' || typeof signature.signature !== 'string') return 'invalid';
+  if (!Number.isSafeInteger(timestamp) || timestamp < 0) return 'invalid';
+  if (signature.type !== 'eip191') return 'unknown';
+  if (!/^0x[0-9a-fA-F]{40}$/.test(address)) return 'invalid';
+  if (timestamp > verifierTime + 300) return 'invalid';
+  if (!/^0x[0-9a-fA-F]{130}$/.test(signature.signature)) return 'invalid';
+  const raw = fromHex(signature.signature.slice(2));
+  const r = BigInt('0x' + hex(raw.subarray(0, 32)));
+  const s = BigInt('0x' + hex(raw.subarray(32, 64)));
+  const v = raw[64];
+  if (v !== 27 && v !== 28) return 'invalid';
+  if (s > SECP_N / 2n) return 'invalid';
+  const message = `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${authorKeyAddress}","timestamp":${timestamp}}`;
+  const recovered = recoverAddress(personalDigest(message), r, s, v - 27);
+  return recovered && recovered.toLowerCase() === address.toLowerCase() ? 'valid' : 'invalid';
+};
+for (const v of walletVectors.cases) {
+  const authorKeyAddress = (v.authorKey === 'other' ? walletVectors.otherKey : walletVectors.authorKey).address;
+  check(`wallet proof ${v.name}: ${v.outcome}`, classifyWalletEntry(v.entry, authorKeyAddress, v.verifierTime) === v.outcome);
 }
 
 if (failures.length) {
