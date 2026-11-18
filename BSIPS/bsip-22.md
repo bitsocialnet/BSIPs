@@ -258,7 +258,10 @@ member this BSIP does not define, such as `"label": "main"` on the entry or `"pu
   address but breaks the `s` rule;
 - the proof message is built with `authorAddress` in place of `authorPublicKey`, or with a different
   `domainSeparator`;
-- the proof message omits `walletAddress`, or names a wallet address other than the entry's `address`.
+- the proof message omits `walletAddress`, or names a wallet address other than the entry's `address`;
+- the entry's `timestamp` is changed, for example to 1790000001, without signing again: the
+  proof message changes with it, so the recovered address differs even when the verifier's time
+  is 1790000001.
 
 The same entry with `signature.type` set to any other string, such as `"erc1271"`, is unknown, not
 invalid: a community accepts the publication, and no verifier treats the entry as proven. This holds

@@ -190,6 +190,19 @@
       "outcome": "invalid"
     },
     {
+      "name": "timestamp changed without signing again",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000001,
+        "signature": {
+          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000001,
+      "outcome": "invalid"
+    },
+    {
       "name": "signature nobody made, with the address it recovers under an unbound message",
       "entry": {
         "address": "0x6c4881f214f801274331c193e0fd635f3f9dc47e",
