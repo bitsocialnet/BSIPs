@@ -223,7 +223,11 @@ subdomain's parent name in `.bso` form.
    record. The entry holds the name's first label, its parent, the account that holds the `.eth`
    name at `S` (for a second-level name its registrant or the holder of the wrapped name, for a
    subname its owner in the ENS registry or the holder of the wrapped name), and the value of the
-   `bitsocial` record.
+   `bitsocial` record. A name under a second-level name that was migrated to ENSv2, or registered
+   there, is read from the ENSv2 registries instead: it is registered while its registry reports it
+   registered, and it is held by its owner there. ENSv2 stops resolving a name at its expiry, so the
+   grace period applies only to ENSv1 names. The record is read on chain from the name's own
+   resolver, through `text`, or through ENSIP-10 `resolve` for a resolver that answers only that way.
 2. **Ancestors.** For every subname under rule 1, each of its ancestors up to the second-level name,
    held by the account that holds that `.eth` name at `S`. An ancestor that has its own `bitsocial`
    record is already listed under rule 1; any other ancestor is listed with an empty record.
@@ -539,13 +543,15 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 
 ## Reference Implementation
 
+The seed-list builder, the reserved and supplied names, and the seed list it builds are in
+[`assets/bsip-13/`](../assets/bsip-13/README.md).
+
 To be written:
 
 - the registry: a fork of `lucadonnoh/gwei-names` at the upstream commit with the changes in
   [Registry contract](#registry-contract), with a test for each change, in a `bitsocialnet`
   repository. The deployed upstream `NameNFT` is 19,682 bytes, 4,894 below the 24,576-byte limit of
   [EIP-170](https://eips.ethereum.org/EIPS/eip-170), so the fork's size MUST be measured early;
-- the seed-list builder and its output, in `assets/bsip-13/`;
 - `.bso` resolution through the registry in
   [bso-resolver](https://github.com/bitsocialnet/bso-resolver).
 
