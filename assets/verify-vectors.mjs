@@ -430,18 +430,20 @@ check('wallet vectors: Keccak-256 of the empty string', hex(keccak256(Buffer.all
 check(
   'wallet vectors: proof message',
   walletVectors.proofMessage ===
-    `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${walletVectors.authorKey.address}","timestamp":${walletVectors.timestamp}}`,
+    `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${walletVectors.authorKey.address}","walletAddress":"${walletVectors.walletAddress.toLowerCase()}","timestamp":${walletVectors.timestamp}}`,
 );
+check('wallet vectors: valid signature is the one in the first valid case', walletVectors.validSignature === walletVectors.cases[0].entry.signature.signature);
 
 // The three outcomes of BSIP-22 Verification, for an entry in a record signed by the key with address `authorKeyAddress`.
 const classifyWalletEntry = (entry, authorKeyAddress, verifierTime) => {
   const isObject = (x) => x !== null && typeof x === 'object' && !Array.isArray(x);
+  // Shape of every wallet entry (BSIP-2), whatever its type.
   if (!isObject(entry) || !isObject(entry.signature)) return 'invalid';
   const { address, timestamp, signature } = entry;
-  if (typeof signature.type !== 'string' || typeof address !== 'string' || typeof signature.signature !== 'string') return 'invalid';
-  if (!Number.isSafeInteger(timestamp) || timestamp < 0) return 'invalid';
+  if (typeof address !== 'string' || !Number.isInteger(timestamp) || typeof signature.signature !== 'string' || typeof signature.type !== 'string') return 'invalid';
   if (signature.type !== 'eip191') return 'unknown';
-  if (!/^0x[0-9a-fA-F]{40}$/.test(address)) return 'invalid';
+  // eip191 rules.
+  if (!/^0x[0-9a-fA-F]{40}$/.test(address) || timestamp < 0) return 'invalid';
   if (timestamp > verifierTime + 300) return 'invalid';
   if (!/^0x[0-9a-fA-F]{130}$/.test(signature.signature)) return 'invalid';
   const raw = fromHex(signature.signature.slice(2));
@@ -450,7 +452,7 @@ const classifyWalletEntry = (entry, authorKeyAddress, verifierTime) => {
   const v = raw[64];
   if (v !== 27 && v !== 28) return 'invalid';
   if (s > SECP_N / 2n) return 'invalid';
-  const message = `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${authorKeyAddress}","timestamp":${timestamp}}`;
+  const message = `{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"${authorKeyAddress}","walletAddress":"${address.toLowerCase()}","timestamp":${timestamp}}`;
   const recovered = recoverAddress(personalDigest(message), r, s, v - 27);
   return recovered && recovered.toLowerCase() === address.toLowerCase() ? 'valid' : 'invalid';
 };

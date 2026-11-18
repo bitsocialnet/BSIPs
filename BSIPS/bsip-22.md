@@ -15,8 +15,8 @@ requires: 2, 4, 10
 
 An author can list blockchain wallets in `author.wallets` ([BSIP-2](./bsip-2.md#authors)). Each entry
 carries a signature that is meant to prove the author controls the wallet. This BSIP defines that
-proof: the wallet signs, with EIP-191, one exact string that names the author's signing key and a
-timestamp. A community verifies the proof before it accepts any publication that carries a wallet
+proof: the wallet signs, with EIP-191, one exact string that names the author's signing key, the
+wallet's own address and a timestamp. A community verifies the proof before it accepts any publication that carries a wallet
 entry, and rejects the publication when the proof is invalid. An entry of a signature type this BSIP
 does not define is accepted as unproven. A client verifies a proof itself before it relies on the
 entry, for example before it shows the wallet as the author's or sends funds to it. A valid proof is a link between a signing key
@@ -71,20 +71,23 @@ A wallet entry is the object defined in [BSIP-2](./bsip-2.md#authors):
 }
 ```
 
-- `address` — REQUIRED. The wallet address: the characters `0x` followed by exactly 40 hexadecimal
-  digits, in any letter case. It MUST NOT be a name (an ENS name, a `.bso` name, or any other
-  indirection). Addresses are compared without regard to letter case.
-- `timestamp` — REQUIRED. Non-negative integer Unix time in seconds at which the wallet signed the
-  proof.
+- `address` — REQUIRED. A string. For `eip191`, the wallet address: the characters `0x` followed by
+  exactly 40 hexadecimal digits, in any letter case. It MUST NOT be a name (an ENS name, a `.bso`
+  name, or any other indirection). Addresses are compared without regard to letter case.
+- `timestamp` — REQUIRED. An integer. For `eip191`, a non-negative integer Unix time in seconds at
+  which the wallet signed the proof.
 - `signature.type` — REQUIRED. A string naming the proof scheme. This BSIP defines exactly one value,
   `eip191`. Any other string is an unknown type ([Verification](#verification)).
-- `signature.signature` — REQUIRED. For `eip191`, the 65-byte signature `r || s || v` as `0x`
+- `signature.signature` — REQUIRED. A string. For `eip191`, the 65-byte signature `r || s || v` as `0x`
   followed by 130 hexadecimal digits, where:
   - `v` is `27` or `28` (the bytes `0x1b` or `0x1c`). The `0`/`1` form is not valid. A client whose
     signer returns `0` or `1` MUST add 27 before it stores the signature.
   - `s` is in the lower half of the curve order, that is
     `s <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0`. The high-`s` form of
     the same signature is not valid.
+
+The types above are the shape [BSIP-2](./bsip-2.md#authors) gives every wallet entry. The further
+rules marked `eip191` apply to entries of that type only; a later BSIP defines them for its own type.
 
 A wallet entry or its `signature` object MAY carry members this BSIP does not define. A verifier MUST
 ignore them: they do not make the entry invalid and are not part of the proof. A client MUST NOT
@@ -100,12 +103,15 @@ is controlled by the same key.
 The proof message is this exact string, with no whitespace and the fields in this order:
 
 ```text
-{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"<author key address>","timestamp":<timestamp>}
+{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"<author key address>","walletAddress":"<wallet address>","timestamp":<timestamp>}
 ```
 
 - `<author key address>` is the author key address, in the base58btc form of
   [BSIP-10](./bsip-10.md#key-addresses) (52 characters, starting `12D3KooW`). It MUST NOT be
   `author.name`, the runtime author address, or the base64 form of `signature.publicKey`.
+- `<wallet address>` is the entry's `address` with its hexadecimal digits in lowercase (`0x` followed
+  by 40 lowercase digits). The wallet signs its own address, so the signer must know the address
+  before it signs, and a signature cannot be made first and its address derived from it afterwards.
 - `<timestamp>` is the entry's `timestamp`, written as a decimal integer with no quotes, sign, or
   leading zeros.
 
@@ -123,21 +129,23 @@ For `signature.type` `eip191`, the wallet signs the UTF-8 bytes of the proof mes
 
 ### Verification
 
-Verifying an entry has one of three outcomes:
+Verifying an entry has one of three outcomes. First, whatever its type, the entry MUST have the shape
+in [The wallet entry](#the-wallet-entry): an object with a string `address`, an integer `timestamp`,
+and a `signature` object whose `signature` and `type` are strings. Members this BSIP does not define
+are ignored. An entry that does not have this shape is **invalid**. Then the outcome depends on
+`signature.type`:
 
-- **Unknown.** The entry has a `signature.type` that is a string but not `eip191`. This BSIP defines
-  no check for it, so the entry is neither valid nor invalid. It is **unproven**.
+- **Unknown.** `signature.type` is a string other than `eip191`. This BSIP defines no further check
+  for it, so the entry is neither valid nor invalid. It is **unproven**.
 - **Valid.** `signature.type` is `eip191` and all of the following hold for the carrying record:
-  1. the entry has the four required members in [The wallet entry](#the-wallet-entry), each of the
-     stated type; members this BSIP does not define are ignored;
+  1. `address` is `0x` followed by exactly 40 hexadecimal digits, and `timestamp` is not negative;
   2. `timestamp` is not more than five minutes later than the verifier's current time;
   3. `signature.signature` has the encoding in [The wallet entry](#the-wallet-entry), including its
      rules for `v` and `s`;
   4. the address recovered from `signature.signature` over the proof message, built from the author
-     key address of the carrying record and the entry's `timestamp`, equals `address`.
-- **Invalid.** Anything else: an entry missing a required member or with one of the wrong type
-  (including a `signature.type` that is not a string), or an `eip191` entry for which a condition above
-  fails.
+     key address of the carrying record, the entry's `address` and the entry's `timestamp`, equals
+     `address`.
+- **Invalid.** An `eip191` entry for which a condition above fails.
 
 A proof is **proven** only when it is valid under a type the verifier implements. A verifier that
 implements a type defined by a later BSIP applies that BSIP's rules to entries of that type, and
@@ -147,7 +155,7 @@ Verification is stateless. A verifier MUST NOT require the proof's `timestamp` t
 it has seen before, and MUST NOT keep per-wallet or per-author state to decide validity. Recovering
 the address needs no blockchain access.
 
-Condition 2 depends on the verifier's clock, so a proof dated ahead can be valid for one verifier and not
+Condition 2 of an `eip191` entry depends on the verifier's clock, so a proof dated ahead can be valid for one verifier and not
 yet valid for another whose clock is behind. The five-minute allowance is fixed, not optional, and is
 the allowance a community applies to publication timestamps
 ([BSIP-4](./bsip-4.md#publication-acceptance)).
@@ -216,8 +224,10 @@ address      0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c
 Proof message for `timestamp` 1790000000:
 
 ```text
-{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5","timestamp":1790000000}
+{"domainSeparator":"bitsocial-author-wallet","authorPublicKey":"12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5","walletAddress":"0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c","timestamp":1790000000}
 ```
+
+The entry's `address` is in mixed case, and the message names it in lowercase.
 
 Resulting wallet entry:
 
@@ -226,13 +236,13 @@ Resulting wallet entry:
   "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
   "timestamp": 1790000000,
   "signature": {
-    "signature": "0x689cdb0da488b458f4deb758ea77c3d205b6d17d690e9ffab497bc44eb9536a25fbc48ce7c3e6cab651efe176f94d856ebbe8fcad920dfece8cb5f0cb355d8ac1c",
+    "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
     "type": "eip191"
   }
 }
 ```
 
-The signature's `v` byte is `0x1c` (28) and its `s` value is in the lower half of the curve order.
+The signature's `v` byte is `0x1b` (27) and its `s` value is in the lower half of the curve order.
 
 This entry is valid in a publication or list signed by the key above, when the verifier's time is 1789999700
 or later (the proof's `timestamp` less the five-minute allowance). It stays valid with an added
@@ -243,14 +253,18 @@ member this BSIP does not define, such as `"label": "main"` on the entry or `"pu
 - the verifier's time is earlier than 1789999700;
 - `signature.type` is not a string, or `timestamp` is negative;
 - `address` is a name such as `example.eth`;
-- the last byte of the signature is `0x01` in place of `0x1c`;
-- `s` is replaced by its high form, `n - s`, with `v` flipped to `0x1b`, which recovers the same
+- the last byte of the signature is `0x00` in place of `0x1b`;
+- `s` is replaced by its high form, `n - s`, with `v` flipped to `0x1c`, which recovers the same
   address but breaks the `s` rule;
 - the proof message is built with `authorAddress` in place of `authorPublicKey`, or with a different
-  `domainSeparator`.
+  `domainSeparator`;
+- the proof message omits `walletAddress`, or names a wallet address other than the entry's `address`.
 
 The same entry with `signature.type` set to any other string, such as `"erc1271"`, is unknown, not
-invalid: a community accepts the publication, and no verifier treats the entry as proven.
+invalid: a community accepts the publication, and no verifier treats the entry as proven. This holds
+when `address` is not a `0x` address or `timestamp` is negative, because those rules belong to
+`eip191`. An entry that lacks the shape of [The wallet entry](#the-wallet-entry), such as one without
+a `timestamp`, is invalid whatever its type.
 
 The vector is also in [`assets/bsip-22/wallet-proof-vectors.json`](../assets/bsip-22/wallet-proof-vectors.json),
 which `assets/verify-vectors.mjs` checks with Node built-ins only.
@@ -262,6 +276,12 @@ which `assets/verify-vectors.mjs` checks with Node built-ins only.
   repointed to another key. A proof over a name would transfer to whoever holds the name next. The
   field is called `authorPublicKey` rather than `authorAddress` so that an implementer does not pass
   the runtime address out of habit, which is what existing implementations did.
+- **The wallet signs its own address.** Recovery always returns some address for any signature, so
+  comparing the recovered address with the entry's `address` shows nothing if the message does not
+  name that address: anyone could pick a signature at random, take the address it recovers, and list
+  it as a wallet nobody controls. With the address in the message, the signer has to choose it before
+  signing, and only the holder of its key can make the signature. The address is written in lowercase
+  so that the case of `address` does not change the signed bytes.
 - **A plain EIP-191 message.** Every wallet and hardware device can sign a text message, and the user
   can read what they sign. EIP-712 typed data displays better in some wallets but is supported less
   widely. `signature.type` leaves room to add other schemes in later BSIPs. Contract accounts
@@ -283,6 +303,10 @@ which `assets/verify-vectors.mjs` checks with Node built-ins only.
   message names the author's key, a copied proof is useless to anyone who does not hold that key, so
   the state protects nothing. It also cannot be reproduced by a reader, which would make validity
   depend on which community is asked.
+- **Common shape first.** The rules for `address` and `timestamp` that this BSIP states belong to
+  `eip191`, because a later type may use another kind of address or another meaning for the
+  timestamp. Only the shape BSIP-2 gives every entry is checked before the type, so that a verifier
+  that does not know a type cannot call its entry invalid for a reason that is specific to it.
 - **Compare the proof's timestamp with the verifier's clock.** The alternative is to compare it with
   the `timestamp` of the publication that carries it, which gives every verifier the same answer
   regardless of its clock. That rule trusts the publication's timestamp, which the author chooses and
@@ -341,7 +365,8 @@ community enforces it; an entry with another type is unknown and unproven.
   author's key and the recovered address will not match under any other key. The author's signature
   over the publication covers the entry, so the binding is mutual: the wallet names the key, and the
   key names the wallet. A proof is not bound to a community, so an author can reuse it everywhere; that
-  is intended.
+  is intended. The message also names the wallet address, so a signature nobody made, with whatever
+  address it happens to recover, does not verify as that address's proof.
 - **No revocation.** A proof never expires. An author stops listing a wallet by omitting it from
   later publications, but earlier publications keep the entry. An application that needs a current
   link MUST use the entry on the publication it is acting on, not one remembered from an older
