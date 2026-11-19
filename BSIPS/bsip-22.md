@@ -18,10 +18,10 @@ carries a signature that is meant to prove the author controls the wallet. This 
 proof: the wallet signs, with EIP-191, one exact string that names the author's signing key, the
 wallet's own address and a timestamp. A community verifies the proof before it accepts any publication
 that carries a wallet entry, and rejects the publication when the proof is invalid. An entry of a
-signature type this BSIP does not define is accepted as unproven. A client verifies a proof itself
-before it relies on the entry, for example before it shows the wallet as the author's or sends funds
-to it. A valid proof is a link between a signing key and an address that anyone can check from the
-publication alone.
+signature type this BSIP does not define is unproven, and this BSIP does not require a community to
+reject it. A client verifies a proof itself before it relies on the entry, for example before it shows
+the wallet as the author's or sends funds to it. A valid proof is a link between a signing key and an
+address that anyone can check from the publication alone.
 
 ## Motivation
 
