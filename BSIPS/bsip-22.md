@@ -4,7 +4,7 @@ title: Author Wallet Proofs
 description: The signed message that proves an author controls a wallet listed in author.wallets, and where that proof is verified.
 author: Rinse (@Rinse12)
 discussions-to: https://github.com/bitsocialnet/BSIPs/issues/26
-status: Draft
+status: Review
 type: Standards Track
 category: Core
 created: 2026-11-17
