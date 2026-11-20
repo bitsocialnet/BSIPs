@@ -1,5 +1,5 @@
 {
-  "description": "BSIP-22 author wallet proof: test vector and negative cases. Outcomes are valid, invalid (a community rejects the publication) and unknown (unproven; not a ground for rejection under BSIP-22, though a community's own policy may reject it). TEST KEYS ONLY: never use them outside tests. The signatures were produced with viem, which signs as a wallet does (RFC 6979 nonces, low s, v of 27 or 28), except the one nobody made, and assets/verify-vectors.mjs re-checks every outcome with Node built-ins.",
+  "description": "BSIP-22 author wallet proof: test vector and negative cases. Outcomes are valid, invalid (a community rejects the publication) and unknown (unproven; not a ground for rejection under BSIP-22, though a community's own policy may reject it). TEST KEYS ONLY: never use them outside tests. The signatures were produced with viem, which signs as a wallet does (RFC 6979 nonces with HMAC-SHA-256, low s, v of 27 or 28), except the one nobody made, and assets/verify-vectors.mjs re-checks every outcome with Node built-ins.",
   "authorKey": {
     "seedHex": "0101010101010101010101010101010101010101010101010101010101010101",
     "publicKeyBase64Unpadded": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",

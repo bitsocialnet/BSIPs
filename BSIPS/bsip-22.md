@@ -254,8 +254,9 @@ Resulting wallet entry:
 
 The signature's `v` byte is `0x1c` (28) and its `s` value is in the lower half of the curve order. It
 is the signature a wallet produces for this key and message when it picks its nonce as
-[RFC 6979](https://www.rfc-editor.org/rfc/rfc6979) describes, so an implementation that signs the
-vector can compare bytes. A verifier does not depend on how the nonce was picked.
+[RFC 6979](https://www.rfc-editor.org/rfc/rfc6979) describes, with HMAC-SHA-256 and no extra entropy,
+so an implementation that signs the vector can compare bytes. A verifier does not depend on how the
+nonce was picked.
 
 This entry is valid in a publication or list signed by the key above, when the verifier's time is
 1789999700 or later (the proof's `timestamp` less the five-minute allowance). It stays valid with an
