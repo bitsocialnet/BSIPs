@@ -1,5 +1,5 @@
 {
-  "description": "BSIP-22 author wallet proof: test vector and negative cases. Outcomes are valid, invalid (a community rejects the publication) and unknown (accepted, unproven). TEST KEYS ONLY: never use them outside tests. The signatures were produced by a deterministic test-only signer (low s, v of 27 or 28), and assets/verify-vectors.mjs re-checks every outcome with Node built-ins.",
+  "description": "BSIP-22 author wallet proof: test vector and negative cases. Outcomes are valid, invalid (a community rejects the publication) and unknown (unproven; not a ground for rejection under BSIP-22, though a community's own policy may reject it). TEST KEYS ONLY: never use them outside tests. The signatures were produced with viem, which signs as a wallet does (RFC 6979 nonces with HMAC-SHA-256, low s, v of 27 or 28), except the one nobody made, and assets/verify-vectors.mjs re-checks every outcome with Node built-ins.",
   "authorKey": {
     "seedHex": "0101010101010101010101010101010101010101010101010101010101010101",
     "publicKeyBase64Unpadded": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
@@ -15,7 +15,7 @@
   "timestamp": 1790000000,
   "proofMessage": "{\"domainSeparator\":\"bitsocial-author-wallet\",\"authorPublicKey\":\"12D3KooWK99VoVxNE7XzyBwXEzW7xhK7Gpv85r9F3V3fyKSUKPH5\",\"walletAddress\":\"0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c\",\"timestamp\":1790000000}",
   "walletAddressLowercase": "0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c",
-  "validSignature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+  "validSignature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
   "cases": [
     {
       "name": "valid at the signed time",
@@ -23,7 +23,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -36,7 +36,7 @@
         "address": "0x5050a4f4b3f9338c3472dcc01a87c76a144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -49,7 +49,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -62,7 +62,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -75,7 +75,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191",
           "publicKey": "x"
         },
@@ -90,7 +90,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -104,7 +104,7 @@
         "address": "example.eth",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -112,12 +112,12 @@
       "outcome": "invalid"
     },
     {
-      "name": "v is 0x00 instead of the 27/28 form",
+      "name": "v is 0x01 instead of the 27/28 form",
       "entry": {
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a900",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e301",
           "type": "eip191"
         }
       },
@@ -130,7 +130,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747fa6b505df17ed107a9ca25a686b2fa2a8b66755650943d794a74629294021db981c",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa13d47190a07c92ceb52e8c136844bac2748cbbdfd4a779ce15807b5ccf231e505e1b",
           "type": "eip191"
         }
       },
@@ -143,7 +143,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x58efcf57b0c0f039f1d5c196c41634cb0117f4d042f88c0fd2714b610a013e28256879328cfbc5662e547c4e4b00f84e0259368969150c2b3217a921f944b0321b",
+          "signature": "0xb61894920267c12cdac6e1e419a88cd468718b3d4a16d8b3004d9315055d245216d0f0f39923bab1e9076b26664fe234a17dd8c2e793705ae6fecbf3d4ad5e471b",
           "type": "eip191"
         }
       },
@@ -156,7 +156,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0xed519995b3213cf9d653d89a5060c22089e9ebb6ee0dae2c3582fec5abbf7ef96f2cc157be57066c7b323b044a154cd7a791cb8dc6f320f273f5751d7040792a1c",
+          "signature": "0x5c9743e5f10f1ddbe2c1288364b56a5ca80c96340f8d85299657cb812b390d4b05a0eefa4ea7e0fe54fa29b6527499b7865cb9142a1fb4f9d8d7015470c6046e1c",
           "type": "eip191"
         }
       },
@@ -169,7 +169,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x086c6fd7899873cbd7beaf55217849e22b3a18360cc25aee38885c0a8823eb186cf8dc9f943013a736dcba2385c8d2b5e68980409a9b38cf1493efff780610dd1b",
+          "signature": "0x689cdb0da488b458f4deb758ea77c3d205b6d17d690e9ffab497bc44eb9536a25fbc48ce7c3e6cab651efe176f94d856ebbe8fcad920dfece8cb5f0cb355d8ac1c",
           "type": "eip191"
         }
       },
@@ -182,11 +182,37 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x3c6ce8ce2c6e6b7e23d93df7b68268c03355c92cdb21939887316fd32c3174481751342b54766ea4c061e108af9f8d5affb647eb42cf610b8e1b4419612389561b",
+          "signature": "0x645ab91a4cc458750bfbecc6026f9a405cb2c9c501c2f5a13164e5d6b81897857bf60d024befa3e51f6df8f1b6613626ddc1f9e724877ee5245870325bfaa7171b",
           "type": "eip191"
         }
       },
       "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "proof message names the wallet address in mixed case",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000000,
+        "signature": {
+          "signature": "0xbf3425fa671c499c68b8c7038d1afcc7c38b2398ed777fb47d67f23826463c942301a6dade8466b312527529b857bc65a5487ad39660e91c05024706da4ae9621b",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000000,
+      "outcome": "invalid"
+    },
+    {
+      "name": "timestamp changed without signing again",
+      "entry": {
+        "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "timestamp": 1790000001,
+        "signature": {
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
+          "type": "eip191"
+        }
+      },
+      "verifierTime": 1790000001,
       "outcome": "invalid"
     },
     {
@@ -208,7 +234,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": -5,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -221,7 +247,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000.5,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "eip191"
         }
       },
@@ -234,7 +260,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": 5
         }
       },
@@ -247,7 +273,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b"
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c"
         }
       },
       "verifierTime": 1790000000,
@@ -259,7 +285,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a9",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e3",
           "type": "eip191"
         }
       },
@@ -272,7 +298,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": 1790000000,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "erc1271"
         }
       },
@@ -298,7 +324,7 @@
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "timestamp": -5,
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "erc1271"
         }
       },
@@ -310,7 +336,7 @@
       "entry": {
         "address": "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
         "signature": {
-          "signature": "0x97de1b5f2c9852385f6a097199460ba43524e5c89c7b2786e29f0233a535747f594afa20e812ef85635da59794d05d5604478781a604c8a7188c3563901465a91b",
+          "signature": "0xfc705f790e2744d8acbec610783ce999e253392b9699cef1c20b338648a5aa132b8e6f5f836d314ad173ec97bb453d8a2df2fd1207ced2263f5701bdad17f0e31c",
           "type": "erc1271"
         }
       },
