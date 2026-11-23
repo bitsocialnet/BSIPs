@@ -5,15 +5,9 @@
     "hash": "0x27b6c06019d189c702d6242e25e241bfdeb3c270f47fabec94246a8797a7df70",
     "timestamp": 1795037783
   },
-  "seedRoot": null,
+  "seedRoot": "0x9d9fbe57a6b7aabb9821df8af3b5b7685db9a176787d51da5da16de9003b8e8b",
   "seedCount": 119,
-  "missingOwners": [
-    "bitsocialforge.bso",
-    "forge.bso",
-    "forgerpc.bso",
-    "rinse.bso",
-    "rinse12.bso"
-  ],
+  "missingOwners": [],
   "leafEncoding": [
     "string",
     "uint256",
@@ -254,7 +248,7 @@
       "label": "bitsocialforge",
       "parent": "0",
       "parentName": null,
-      "owner": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
       "record": "",
       "ensName": null,
       "rules": [
@@ -482,7 +476,7 @@
       "label": "forge",
       "parent": "0",
       "parentName": null,
-      "owner": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
       "record": "",
       "ensName": null,
       "rules": [
@@ -494,7 +488,7 @@
       "label": "forgerpc",
       "parent": "0",
       "parentName": null,
-      "owner": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
       "record": "",
       "ensName": null,
       "rules": [
@@ -986,7 +980,7 @@
       "label": "rinse",
       "parent": "0",
       "parentName": null,
-      "owner": null,
+      "owner": "0x98BDDCd3282F95A6553373Dab10b5AEfE0128117",
       "record": "",
       "ensName": null,
       "rules": [
@@ -998,7 +992,7 @@
       "label": "rinse12",
       "parent": "0",
       "parentName": null,
-      "owner": null,
+      "owner": "0x98BDDCd3282F95A6553373Dab10b5AEfE0128117",
       "record": "",
       "ensName": null,
       "rules": [
