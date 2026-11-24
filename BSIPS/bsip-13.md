@@ -88,9 +88,11 @@ The registry is the upstream `NameNFT` with these changes and no others:
    in the registry as they do upstream. A new function `withdraw()`, callable by anyone, transfers the
    registry's entire ETH balance to `FEE_RECIPIENT`, a constant address. Apart from upstream's refunds
    of overpayment, no other code path sends ETH.
-3. **Seeding.** The constants `SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY = 1 hour`, and
-   `SEED_END = deployment time + 7 days`, a counter `seededCount`, a timestamp `openAt`, and the
-   functions `seed` and `seedBatch` ([Seeding](#seeding)). Until the opening, `reveal`,
+3. **Seeding.** The constant `OPEN_DELAY = 1 hour`, the values `SEED_ROOT`, `SEED_COUNT`, and
+   `SEED_END = deployment time + 7 days`, which are set once at deployment and cannot change
+   afterwards, a counter `seededCount`, a timestamp `openAt`, and the functions `seed` and
+   `seedBatch` ([Seeding](#seeding)). `SEED_ROOT` and `SEED_COUNT` are constructor arguments, so the
+   same source is deployed on a test network and on mainnet. Until the opening, `reveal`,
    `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
@@ -125,7 +127,11 @@ The rest of the contract is unchanged, and clients rely on it:
   not active.
 
 The registry has no owner, admin, proxy, pause, or upgrade path. Prices, `FEE_RECIPIENT`,
-`SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY`, `SEED_END`, and every period above are constants.
+`OPEN_DELAY`, and every period above are constants. `SEED_ROOT`, `SEED_COUNT`, and `SEED_END` are
+fixed at deployment and nothing can change them afterwards. The registry does not check the two
+constructor arguments, so after the mainnet deployment and before the address is announced, the
+maintainers MUST read `SEED_ROOT` and `SEED_COUNT` from the deployed registry and confirm that they
+equal the root and the number of entries of the published `assets/bsip-13/seed-tree.json`.
 
 Because the registry checks only the characters listed above, it accepts labels that are not
 ENSIP-15 normalized. Such a name never resolves: clients normalize a name before they resolve it
