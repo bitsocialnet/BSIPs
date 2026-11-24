@@ -88,9 +88,11 @@ The registry is the upstream `NameNFT` with these changes and no others:
    in the registry as they do upstream. A new function `withdraw()`, callable by anyone, transfers the
    registry's entire ETH balance to `FEE_RECIPIENT`, a constant address. Apart from upstream's refunds
    of overpayment, no other code path sends ETH.
-3. **Seeding.** The constants `SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY = 1 hour`, and
-   `SEED_END = deployment time + 7 days`, a counter `seededCount`, a timestamp `openAt`, and the
-   functions `seed` and `seedBatch` ([Seeding](#seeding)). Until the opening, `reveal`,
+3. **Seeding.** The constant `OPEN_DELAY = 1 hour`, the values `SEED_ROOT`, `SEED_COUNT`, and
+   `SEED_END = deployment time + 7 days`, which are set once at deployment and cannot change
+   afterwards, a counter `seededCount`, a timestamp `openAt`, and the functions `seed` and
+   `seedBatch` ([Seeding](#seeding)). `SEED_ROOT` and `SEED_COUNT` are constructor arguments, so the
+   same source is deployed on a test network and on mainnet. Until the opening, `reveal`,
    `registerSubdomain`, and `registerSubdomainFor` revert.
 4. **Sunset.** A function `sunset()` that freezes the registry after a notice period
    ([Sunset and migration](#sunset-and-migration)).
@@ -100,6 +102,8 @@ The registry is the upstream `NameNFT` with these changes and no others:
    CJK character, and an emoji of one or two code points are all too short. An emoji sequence of
    three or more code points after normalization, such as a family joined by zero-width joiners,
    passes although it displays as one symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
+   The fee goes by the same count: `reveal` and `renew` pass the label's length in code points to
+   `getFee`, where upstream passes its length in bytes ([Prices](#prices)).
 
 Nothing else from the upstream repository is deployed: not `SubdomainRegistrar`,
 `GnsUniversalResolver`, `HumanRegistrar`, `GnsPosts`, or `GnsIntegrationVoting`.
@@ -125,7 +129,13 @@ The rest of the contract is unchanged, and clients rely on it:
   not active.
 
 The registry has no owner, admin, proxy, pause, or upgrade path. Prices, `FEE_RECIPIENT`,
-`SEED_ROOT`, `SEED_COUNT`, `OPEN_DELAY`, `SEED_END`, and every period above are constants.
+`OPEN_DELAY`, and every period above are constants. `SEED_ROOT`, `SEED_COUNT`, and `SEED_END` are
+fixed at deployment and nothing can change them afterwards. Each is public, so anyone can read it
+by calling the getter of the same name: `SEED_ROOT()`, `SEED_COUNT()`, and `SEED_END()`. The
+registry does not check the two constructor arguments, so after the mainnet deployment and before
+the address is announced, the maintainers MUST call `SEED_ROOT()` and `SEED_COUNT()` on the deployed
+registry and confirm that they return the root and the number of entries of the published
+`assets/bsip-13/seed-tree.json`.
 
 Because the registry checks only the characters listed above, it accepts labels that are not
 ENSIP-15 normalized. Such a name never resolves: clients normalize a name before they resolve it
@@ -138,16 +148,21 @@ suggest `relationship-advice` instead.
 
 #### Prices
 
-Unchanged from upstream:
+The tiers and amounts are upstream's. The length they go by is not: upstream counts UTF-8 bytes,
+and this registry counts characters, each one Unicode code point, as for the minimum length
+(change 5).
 
-| Label length (UTF-8 bytes) | Price per 365 days |
+| Label length (characters) | Price per 365 days |
 | --- | --- |
 | 3 | 0.05 ETH |
 | 4 | 0.01 ETH |
 | 5 or more | 0.0005 ETH |
 
-Upstream also prices labels of 1 and 2 bytes, at 0.5 and 0.1 ETH. The fee function is left as it
-is, but the minimum length means no top-level label that short can be registered.
+So `日本語` and `абв` cost 0.05 ETH a year, like `abc`. Counted in bytes they would be 9 and 6 long
+and cost 0.0005 ETH. `getFee(length)` keeps upstream's signature, and a client that calls it MUST
+pass the label's length in code points, not in bytes. It also keeps upstream's tiers for lengths 1
+and 2, at 0.5 and 0.1 ETH, but the minimum length means no top-level label that short can be
+registered.
 
 Registration and renewal cost the same. Gas is paid separately to Ethereum.
 
@@ -487,8 +502,12 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   needs grapheme segmentation, which is too much code for an immutable contract, and the Bitsocial
   Chain registry can treat them as it sees fit. Subdomains are exempt
   because their parent's owner controls them anyway.
-- **One price for 5 bytes and more.** A cheaper tier for labels of 10 bytes or more was considered
-  and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
+- **Fees by characters, not bytes.** ENS prices `.eth` names by the same code-point count it uses
+  for its minimum. Counted in bytes, every name of 3 or 4 characters outside ASCII would pay the
+  lowest price: a hundredth of what `abc` pays for a 3-character name. The count is one function,
+  shared with the minimum length, and the registry's fees cannot be corrected after deployment.
+- **One price for 5 characters and more.** A cheaper tier for labels of 10 characters or more was
+  considered and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
   long descriptive name, so long names are the normal product and a cheap tier would remove most
   fee income. Names that cheap could also be held in bulk and would be imported into Bitsocial
   Chain, which a later change could not undo. If the flat price is the mistake, owners overpay by
@@ -496,9 +515,9 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Fees in ETH only, with no discount for paying in BSO.** A discount for paying in the Bitsocial
   token was considered and left out. A percentage discount needs a BSO price in ETH on chain. An
   ownerless registry cannot replace a price source that fails, and a thinly traded pool can be moved
-  for one transaction, which would let 1- to 4-byte names be registered for almost nothing. A fixed
+  for one transaction, which would let 3- and 4-character names be registered for almost nothing. A fixed
   price table in BSO needs no price source, but it drifts with the token's price until paying in BSO
-  is either nearly free or never chosen, and nobody can correct it. For labels of 5 bytes or more,
+  is either nearly free or never chosen, and nobody can correct it. For labels of 5 characters or more,
   the normal case, any discount is worth less than the gas of the extra token approval. A token
   payment path would also add code that upstream does not run. Bitsocial Chain's registry sets its
   own fees ([Sunset and migration](#sunset-and-migration)) and can give BSO a role without these
