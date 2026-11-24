@@ -130,10 +130,12 @@ The rest of the contract is unchanged, and clients rely on it:
 
 The registry has no owner, admin, proxy, pause, or upgrade path. Prices, `FEE_RECIPIENT`,
 `OPEN_DELAY`, and every period above are constants. `SEED_ROOT`, `SEED_COUNT`, and `SEED_END` are
-fixed at deployment and nothing can change them afterwards. The registry does not check the two
-constructor arguments, so after the mainnet deployment and before the address is announced, the
-maintainers MUST read `SEED_ROOT` and `SEED_COUNT` from the deployed registry and confirm that they
-equal the root and the number of entries of the published `assets/bsip-13/seed-tree.json`.
+fixed at deployment and nothing can change them afterwards. Each is public, so anyone can read it
+by calling the getter of the same name: `SEED_ROOT()`, `SEED_COUNT()`, and `SEED_END()`. The
+registry does not check the two constructor arguments, so after the mainnet deployment and before
+the address is announced, the maintainers MUST call `SEED_ROOT()` and `SEED_COUNT()` on the deployed
+registry and confirm that they return the root and the number of entries of the published
+`assets/bsip-13/seed-tree.json`.
 
 Because the registry checks only the characters listed above, it accepts labels that are not
 ENSIP-15 normalized. Such a name never resolves: clients normalize a name before they resolve it
