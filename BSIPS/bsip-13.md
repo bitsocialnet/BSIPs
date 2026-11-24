@@ -506,8 +506,8 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   for its minimum. Counted in bytes, every name of 3 or 4 characters outside ASCII would pay the
   lowest price: a hundredth of what `abc` pays for a 3-character name. The count is one function,
   shared with the minimum length, and the registry's fees cannot be corrected after deployment.
-- **One price for 5 characters and more.** A cheaper tier for labels of 10 bytes or more was considered
-  and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
+- **One price for 5 characters and more.** A cheaper tier for labels of 10 characters or more was
+  considered and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
   long descriptive name, so long names are the normal product and a cheap tier would remove most
   fee income. Names that cheap could also be held in bulk and would be imported into Bitsocial
   Chain, which a later change could not undo. If the flat price is the mistake, owners overpay by
