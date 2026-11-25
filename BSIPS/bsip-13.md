@@ -657,7 +657,9 @@ To be written:
   of such names SHOULD register their `.bso` names as soon as public registration opens. That is
   not possible for a name the registry rejects for its label or depth, and it fails when someone
   else registers `x.bso` first. Such a community has two options, and they are not equal. Using its
-  key address keeps every earlier comment, because without a name only the key is checked. Taking a
+  key address keeps the comments that carry its current identity key and those that carry no
+  `communityPublicKey`, because without a name only the key is checked. Comments signed under an
+  earlier key, before a key migration, are lost either way. Taking a
   different name drops every comment signed for `x.eth`, since the membership exception covers the
   same label under the other suffix and no other
   ([Name equivalence](#name-equivalence)). An activated reader without a `.eth` resolver cannot fall
