@@ -542,9 +542,10 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Stop defining `.eth`.** While `.bso` was an alias, resolving `x.eth` was the same lookup. With two
   registries it is a second naming system that every client would have to carry, and a second
   owner for every label: `memes.eth` and `memes.bso` can belong to different people. Bitsocial has
-  one namespace, so the BSIP defines one. Every name in use is seeded, so the cost is
-  a one-time change of spelling for communities and authors that sign as `x.eth`, and the loss of
-  the name for those the seed list misses. It is also easy to undo: no contract depends on it, and a client that
+  one namespace, so the BSIP defines one. For a seeded name the cost is a one-time
+  change of spelling for the community or author that signs as `x.eth`. For a name the seed list
+  misses the cost is the name itself, and possibly its readers
+  ([Security Considerations](#security-considerations)). It is also easy to undo: no contract depends on it, and a client that
   wants ENS names can add a resolver for them.
 - **Separate `.bso` and `.eth`.** Once the two registries can have different owners, equivalence would
   let whoever holds `bot.bso` match identity-list entries written for `bot.eth`, and the reverse. The
@@ -588,10 +589,11 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
     grant nothing. Community owners SHOULD list the `.bso` spelling.
 
   The maintainers MUST say all of this when they announce the deployment.
-- No signed record becomes invalid: existing comments stay valid, and stay members of their
-  community under the exception in [Name equivalence](#name-equivalence). Community records and
-  author names spelled with `.eth` nevertheless have to be published again with the `.bso` spelling,
-  as above.
+- No signed record becomes invalid, but membership can be lost. Once a community publishes its record
+  as `x.bso`, comments signed for `x.eth` stay members only under the exception in
+  [Name equivalence](#name-equivalence): those signed before `SEED_END` that carry the community's
+  current identity key. Other comments signed for `x.eth` lose membership. Community records and
+  author names spelled with `.eth` have to be published again with the `.bso` spelling, as above.
 
 ## Reference Implementation
 
