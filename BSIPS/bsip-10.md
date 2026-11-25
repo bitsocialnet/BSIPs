@@ -282,9 +282,10 @@ A value MAY carry metadata segments, for example
 
 `.bso` is mapped onto ENS in this BSIP because that is the registry `.bso` names live in today.
 [BSIP-13](./bsip-13.md) proposes moving `.bso` to a registry of its own. A client that adopts it
-replaces steps 2–4 for `.bso` and applies its amendment to [Name equivalence](#name-equivalence).
-Names under other TLDs MAY be supported by other resolvers; this BSIP does not define them, and they
-match only exactly.
+resolves `.bso` names from that registry, no longer resolves `.eth` names under this section, and
+applies its amendment to [Name equivalence](#name-equivalence). For that client `.eth` is a TLD like
+any other. Names under other TLDs MAY be supported by other resolvers; this BSIP does not define
+them, and they match only exactly.
 
 #### Verification outcomes
 
