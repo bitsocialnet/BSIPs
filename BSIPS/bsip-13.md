@@ -542,8 +542,9 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Stop defining `.eth`.** While `.bso` was an alias, resolving `x.eth` was the same lookup. With two
   registries it is a second naming system that every client would have to carry, and a second
   owner for every label: `memes.eth` and `memes.bso` can belong to different people. Bitsocial has
-  one namespace, so the BSIP defines one. Every name in use is seeded, which keeps the cost to names
-  the seed list misses. It is also easy to undo: no contract depends on it, and a client that
+  one namespace, so the BSIP defines one. Every name in use is seeded, so the cost is
+  a one-time change of spelling for communities and authors that sign as `x.eth`, and the loss of
+  the name for those the seed list misses. It is also easy to undo: no contract depends on it, and a client that
   wants ENS names can add a resolver for them.
 - **Separate `.bso` and `.eth`.** Once the two registries can have different owners, equivalence would
   let whoever holds `bot.bso` match identity-list entries written for `bot.eth`, and the reverse. The
@@ -638,10 +639,11 @@ To be written:
   held by the zero address, and an entry left unseeded at `SEED_END`. Someone else can register `x.bso` and set their own key, and
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
-  of such names SHOULD register their `.bso` names as soon as public registration opens. An
-  activated reader without a `.eth` resolver cannot fall back to the `.eth` name, so until the owner
-  registers the `.bso` name and publishes a record under it, the community loads there only by its
-  key address.
+  of such names SHOULD register their `.bso` names as soon as public registration opens. That is
+  not possible for a name the registry rejects for its label or depth: its community has to take
+  another name or use its key address. An activated reader without a `.eth` resolver cannot fall
+  back to the `.eth` name, so until the owner registers a `.bso` name and publishes a record under
+  it, the community loads there only by its key address.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
