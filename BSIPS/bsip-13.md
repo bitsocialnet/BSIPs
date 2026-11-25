@@ -656,15 +656,21 @@ To be written:
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
   of such names SHOULD register their `.bso` names as soon as public registration opens. That is
   not possible for a name the registry rejects for its label or depth, and it fails when someone
-  else registers `x.bso` first. Such a community has two options, and they are not equal. Using its
-  key address keeps the comments that carry its current identity key and those that carry no
-  `communityPublicKey`, because without a name only the key is checked. Comments signed under an
-  earlier key, before a key migration, are lost either way. Taking a
-  different name drops every comment signed for `x.eth`, since the membership exception covers the
-  same label under the other suffix and no other
-  ([Name equivalence](#name-equivalence)). An activated reader without a `.eth` resolver cannot fall
-  back to the `.eth` name, so until the owner registers `x.bso` and publishes a record under it, the
-  community loads there only by its key address.
+  else registers `x.bso` first. Such a community has three options, with different costs under
+  BSIP-10's [membership rules](./bsip-10.md#community-membership-of-comments):
+  - Keep the record named `x.eth`. Every comment stays a member, but in an activated client without
+    a `.eth` resolver the name is **unknown**, the community loads only by its key address, and
+    there is no name-based recovery from a key compromise.
+  - Drop the name and use the key address. Comments that carry the current identity key, or no
+    `communityPublicKey`, stay members. Comments signed under an earlier key, before a key
+    migration, do not.
+  - Take a different name. Every comment signed for `x.eth` stops being a member, since the
+    exception in [Name equivalence](#name-equivalence) covers the same label under the other suffix
+    and no other.
+
+  Where the owner can still register `x.bso`, an activated reader without a `.eth` resolver loads
+  the community only by its key address until the owner has registered it and published a record
+  under it.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
