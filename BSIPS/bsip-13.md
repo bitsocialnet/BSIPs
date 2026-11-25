@@ -655,10 +655,14 @@ To be written:
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
   of such names SHOULD register their `.bso` names as soon as public registration opens. That is
-  not possible for a name the registry rejects for its label or depth: its community has to take
-  another name or use its key address. An activated reader without a `.eth` resolver cannot fall
-  back to the `.eth` name, so until the owner registers a `.bso` name and publishes a record under
-  it, the community loads there only by its key address.
+  not possible for a name the registry rejects for its label or depth, and it fails when someone
+  else registers `x.bso` first. Such a community has two options, and they are not equal. Using its
+  key address keeps every earlier comment, because without a name only the key is checked. Taking a
+  different name drops every comment signed for `x.eth`, since the membership exception covers the
+  same label under the other suffix and no other
+  ([Name equivalence](#name-equivalence)). An activated reader without a `.eth` resolver cannot fall
+  back to the `.eth` name, so until the owner registers `x.bso` and publishes a record under it, the
+  community loads there only by its key address.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
