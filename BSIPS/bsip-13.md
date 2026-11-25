@@ -592,8 +592,12 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - No signed record becomes invalid, but membership can be lost. Once a community publishes its record
   as `x.bso`, comments signed for `x.eth` stay members only under the exception in
   [Name equivalence](#name-equivalence): those signed before `SEED_END` that carry the community's
-  current identity key. Other comments signed for `x.eth` lose membership. Community records and
-  author names spelled with `.eth` have to be published again with the `.bso` spelling, as above.
+  current identity key. Other comments signed for `x.eth` lose membership, and under BSIP-10 a page
+  that contains one is invalid as a whole for an activated client
+  ([Community membership of comments](./bsip-10.md#community-membership-of-comments)). A community
+  node that publishes its record as `x.bso` therefore has to apply the narrowed rule when it builds
+  pages and counts, and leave those comments out. Community records and author names spelled with
+  `.eth` have to be published again with the `.bso` spelling, as above.
 
 ## Reference Implementation
 
