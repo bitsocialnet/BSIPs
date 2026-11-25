@@ -24,8 +24,8 @@ included, is copied into the registry with the same owner and record, as long as
 accepts its label and its entry is seeded before public registration opens. Anyone can seed an
 entry, and the maintainers must seed them all. Names that come into use later are not copied. The registry is
 temporary: when Bitsocial Chain launches, the Ethereum registry freezes and its unexpired names are
-copied onto the chain. This BSIP replaces steps 2–4 of BSIP-10's `.bso` resolution and narrows
-BSIP-10's `.bso`/`.eth` equivalence.
+copied onto the chain. This BSIP replaces BSIP-10's `.bso` resolution, stops defining `.eth`
+resolution, and narrows BSIP-10's `.bso`/`.eth` equivalence.
 
 ## Motivation
 
@@ -380,14 +380,15 @@ owner gets ([Security Considerations](#security-considerations)).
 
 ### Resolving `.bso` names
 
-On activation, a client resolves a `.bso` name with these steps, which replace steps 2–4 of
-[Resolving `.bso` and `.eth` names](./bsip-10.md#resolving-bso-and-eth-names):
+On activation, a client resolves a `.bso` name with these steps, which replace steps 1–4 of
+[Resolving `.bso` and `.eth` names](./bsip-10.md#resolving-bso-and-eth-names). `canResolve` is true
+exactly when the name ends in `.bso` (compared case-insensitively).
 
 1. ENS-normalize the name ([ENSIP-15](https://docs.ens.domains/ensip/15)).
 2. Compute `node = namehash(name)` ([EIP-137](https://eips.ethereum.org/EIPS/eip-137)).
 3. Call `text(node, "bitsocial")` on the registry.
 
-Steps 1 and 5–7 of BSIP-10 still apply. An empty result, which includes a name that is unregistered,
+Steps 5–7 of BSIP-10 still apply. An empty result, which includes a name that is unregistered,
 expired, or in its grace period, means `none`. Example:
 
 ```text
@@ -397,8 +398,11 @@ call:   text(node, "bitsocial") on the registry
 value:  12D3KooWNsF2eMrdw3YFPycAaFEvZ9Eq3ekhNL3vrAAfN6dAwXLp
 ```
 
-`.eth` names keep resolving through ENS as BSIP-10 specifies. They are no longer reached by
-rewriting a `.bso` suffix.
+On activation this BSIP no longer defines `.eth` resolution. `.eth` is then a TLD like any other
+under BSIP-10's [Resolver interface](./bsip-10.md#resolver-interface): a client that has no resolver
+for it gets the outcome **unsupported** for a `.eth` name, and a client MAY still support `.eth`
+with a resolver of its own, in which case its names match only exactly. ENS remains the source of
+the seed list and nothing more.
 
 Each client activates when it ships a resolver that implements this section. Clients SHOULD NOT
 activate before the opening. An activated client resolves `.bso` names from the registry alone and
@@ -407,9 +411,13 @@ does not consult ENS for them.
 ### Name equivalence
 
 On activation, BSIP-10's [Name equivalence](./bsip-10.md#name-equivalence) rule 2 becomes: both
-spellings end in `.bso`, or both end in `.eth` (suffix compared case-insensitively), and they are
-identical after lowercasing. `bot.bso` and `Bot.BSO` are still the same name. `bot.bso` and `bot.eth`
-are different names, held in different registries, possibly by different owners.
+spellings end in `.bso` (suffix compared case-insensitively) and they are identical after
+lowercasing. `bot.bso` and `Bot.BSO` are still the same name. `bot.bso` and `bot.eth` are different
+names, held in different registries, possibly by different owners. A `.eth` name, like a name under
+any other TLD, matches only exactly.
+
+An identity-list entry spelled with `.eth` cannot be verified by a client that has no resolver for
+`.eth`, so it grants nothing there. It is not an error, and the rest of the list applies as before.
 
 There is one exception, for comments signed while `.bso` was still an alias. When a client checks
 whether a stored comment belongs to a community (rule 2 of
@@ -420,7 +428,8 @@ key, the comment is a member. In every other case the new rule applies. A commen
 `a.eth` before then, in a community that later renamed itself `a.bso` and kept its key, stays a
 member. A comment signed later, or under another community's key, never passes as a member of `a.bso`.
 Comments that lack `communityPublicKey`, or that were signed before a key migration, lose membership
-across the two suffixes.
+across the two suffixes. The exception compares stored spellings only. It does not need `.eth` to
+resolve, so it applies in every activated client.
 
 ### Sunset and migration
 
@@ -530,6 +539,12 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   keys. Freezing everything but `withdraw()` keeps the Ethereum state and the imported state the
   same. The 30-day notice is enforced by the contract, so a sunset is public before it takes effect,
   and owners can renew or move names before the freeze.
+- **Stop defining `.eth`.** While `.bso` was an alias, resolving `x.eth` was the same lookup. With two
+  registries it is a second naming system that every client would have to carry, and a second
+  owner for every label: `memes.eth` and `memes.bso` can belong to different people. Bitsocial has
+  one namespace, so the BSIP defines one. Every name in use is seeded, which keeps the cost to names
+  the seed list misses. It is also easy to undo: no contract depends on it, and a client that
+  wants ENS names can add a resolver for them.
 - **Separate `.bso` and `.eth`.** Once the two registries can have different owners, equivalence would
   let whoever holds `bot.bso` match identity-list entries written for `bot.eth`, and the reverse. The
   membership exception keeps pages with comments from the alias era valid. Its `SEED_END` cutoff
@@ -555,9 +570,13 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   use, and clients SHOULD activate promptly.
 - A `.bso` name that is not seeded stops resolving in activated clients until someone registers it in
   the registry.
-- `.eth` names keep resolving as before. They no longer match `.bso` spellings in identity lists or
-  when a community is loaded by name ([Name equivalence](#name-equivalence)). Community owners whose
-  identity lists rely on that match SHOULD list the `.bso` spelling.
+- An activated client that follows this BSIP no longer resolves `.eth` names
+  ([Resolving `.bso` names](#resolving-bso-names)). A community or author known only by a `.eth`
+  name stops loading or verifying by that name there, and has to use the `.bso` name: the seeded
+  one, or one registered after the opening. `.eth` spellings no longer match `.bso` spellings, and
+  identity-list entries spelled with `.eth` grant nothing ([Name equivalence](#name-equivalence)).
+  Community owners SHOULD list the `.bso` spelling. The maintainers MUST say all of this when they
+  announce the deployment.
 - No signed record becomes invalid.
 
 ## Reference Implementation
@@ -606,8 +625,9 @@ To be written:
   held by the zero address, and an entry left unseeded at `SEED_END`. Someone else can register `x.bso` and set their own key, and
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
-  of such names SHOULD register their `.bso` names as soon as public registration opens. Readers
-  that load the community by its `.eth` name are unaffected.
+  of such names SHOULD register their `.bso` names as soon as public registration opens. An
+  activated reader cannot fall back to the `.eth` name, so until the owner registers the `.bso` name
+  the community loads there only by its key address.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
