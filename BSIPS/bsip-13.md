@@ -570,14 +570,27 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   use, and clients SHOULD activate promptly.
 - A `.bso` name that is not seeded stops resolving in activated clients until someone registers it in
   the registry.
-- An activated client that follows this BSIP no longer resolves `.eth` names
-  ([Resolving `.bso` names](#resolving-bso-names)). A community or author known only by a `.eth`
-  name stops loading or verifying by that name there, and has to use the `.bso` name: the seeded
-  one, or one registered after the opening. `.eth` spellings no longer match `.bso` spellings, and
-  identity-list entries spelled with `.eth` grant nothing ([Name equivalence](#name-equivalence)).
-  Community owners SHOULD list the `.bso` spelling. The maintainers MUST say all of this when they
-  announce the deployment.
-- No signed record becomes invalid.
+- An activated client that has no resolver of its own for `.eth` no longer resolves `.eth` names
+  ([Resolving `.bso` names](#resolving-bso-names)). In such a client:
+  - A community cannot be loaded by a `.eth` name.
+  - A community whose signed record names it `x.eth` is rejected when it is loaded as `x.bso`,
+    because the two are now different names and BSIP-10 requires the record's name to be the name
+    that was loaded ([Verifying a community name](./bsip-10.md#verifying-a-community-name)). Holding
+    the seeded or registered `x.bso` is not enough: the owner has to publish a record named `x.bso`.
+    Owners SHOULD do so before `SEED_END`, because comments signed for `x.eth` after it are not
+    covered by the exception in [Name equivalence](#name-equivalence).
+  - A new publication whose `author.name` ends in `.eth` is rejected by a community node that
+    verifies author names, because the outcome is **unknown**
+    ([Verifying an author name](./bsip-10.md#verifying-an-author-name)). The author has to change
+    `author.name` to a `.bso` name.
+  - `.eth` spellings no longer match `.bso` spellings, and identity-list entries spelled with `.eth`
+    grant nothing. Community owners SHOULD list the `.bso` spelling.
+
+  The maintainers MUST say all of this when they announce the deployment.
+- No signed record becomes invalid: existing comments stay valid, and stay members of their
+  community under the exception in [Name equivalence](#name-equivalence). Community records and
+  author names spelled with `.eth` nevertheless have to be published again with the `.bso` spelling,
+  as above.
 
 ## Reference Implementation
 
@@ -626,8 +639,9 @@ To be written:
   under BSIP-10 key migration every activated reader of `x.bso` follows it. Holding `b.bso` also lets
   them create `memes.b.bso` for free. Taking block `S` close to deployment narrows the gap. Owners
   of such names SHOULD register their `.bso` names as soon as public registration opens. An
-  activated reader cannot fall back to the `.eth` name, so until the owner registers the `.bso` name
-  the community loads there only by its key address.
+  activated reader without a `.eth` resolver cannot fall back to the `.eth` name, so until the owner
+  registers the `.bso` name and publishes a record under it, the community loads there only by its
+  key address.
 - **Name hijack.** Under BSIP-10, whoever controls a name controls where its community's readers
   migrate ([Key migration](./bsip-10.md#key-migration)). A `.bso` name that passes its grace period can
   be registered by anyone, who can then move its readers to their own key. Owners SHOULD renew early.
