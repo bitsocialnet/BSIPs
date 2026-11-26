@@ -5,8 +5,8 @@
     "hash": "0x27b6c06019d189c702d6242e25e241bfdeb3c270f47fabec94246a8797a7df70",
     "timestamp": 1795037783
   },
-  "seedRoot": "0x9d9fbe57a6b7aabb9821df8af3b5b7685db9a176787d51da5da16de9003b8e8b",
-  "seedCount": 119,
+  "seedRoot": "0xab167d09136f4ee8dc77c5005235e879e63173d069baf7b48ebdbd8ff3040bee",
+  "seedCount": 138,
   "missingOwners": [],
   "leafEncoding": [
     "string",
@@ -25,6 +25,18 @@
       "ensName": "3dcg-posting.eth",
       "rules": [
         "in use"
+      ]
+    },
+    {
+      "name": "5archive.bso",
+      "label": "5archive",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
       ]
     },
     {
@@ -208,6 +220,18 @@
       ]
     },
     {
+      "name": "bitbones.bso",
+      "label": "bitbones",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "bitsocial.bso",
       "label": "bitsocial",
       "parent": "0",
@@ -217,6 +241,30 @@
       "ensName": "bitsocial.eth",
       "rules": [
         "ancestor"
+      ]
+    },
+    {
+      "name": "bitsocialalgorithms.bso",
+      "label": "bitsocialalgorithms",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialapp.bso",
+      "label": "bitsocialapp",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
       ]
     },
     {
@@ -244,11 +292,47 @@
       ]
     },
     {
+      "name": "bitsocialchat.bso",
+      "label": "bitsocialchat",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "bitsocialforge.bso",
       "label": "bitsocialforge",
       "parent": "0",
       "parentName": null,
       "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialforum.bso",
+      "label": "bitsocialforum",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialgraph.bso",
+      "label": "bitsocialgraph",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
       "record": "",
       "ensName": null,
       "rules": [
@@ -268,8 +352,56 @@
       ]
     },
     {
+      "name": "bitsocialmesh.bso",
+      "label": "bitsocialmesh",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialnames.bso",
+      "label": "bitsocialnames",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "bitsocialnet.bso",
       "label": "bitsocialnet",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialnetwork.bso",
+      "label": "bitsocialnetwork",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "bitsocialtoken.bso",
+      "label": "bitsocialtoken",
       "parent": "0",
       "parentName": null,
       "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
@@ -289,6 +421,18 @@
       "ensName": "bizraelis.eth",
       "rules": [
         "in use"
+      ]
+    },
+    {
+      "name": "bsip.bso",
+      "label": "bsip",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
       ]
     },
     {
@@ -484,6 +628,42 @@
       ]
     },
     {
+      "name": "forgegold.bso",
+      "label": "forgegold",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "forgeimages.bso",
+      "label": "forgeimages",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
+      "name": "forgepass.bso",
+      "label": "forgepass",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "forgerpc.bso",
       "label": "forgerpc",
       "parent": "0",
@@ -565,6 +745,18 @@
       "ensName": "history-posting.eth",
       "rules": [
         "in use"
+      ]
+    },
+    {
+      "name": "hopium.bso",
+      "label": "hopium",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
       ]
     },
     {
@@ -844,6 +1036,18 @@
       ]
     },
     {
+      "name": "pkcjs.bso",
+      "label": "pkcjs",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "pkcprotocol.bso",
       "label": "pkcprotocol",
       "parent": "0",
@@ -1048,6 +1252,18 @@
       ]
     },
     {
+      "name": "seeditarchive.bso",
+      "label": "seeditarchive",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
+      ]
+    },
+    {
       "name": "shit-5chan-says.bso",
       "label": "shit-5chan-says",
       "parent": "0",
@@ -1057,6 +1273,18 @@
       "ensName": "shit-5chan-says.eth",
       "rules": [
         "in use"
+      ]
+    },
+    {
+      "name": "spamblocker.bso",
+      "label": "spamblocker",
+      "parent": "0",
+      "parentName": null,
+      "owner": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
+      "record": "",
+      "ensName": null,
+      "rules": [
+        "reserved"
       ]
     },
     {

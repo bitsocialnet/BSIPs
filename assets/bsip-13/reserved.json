@@ -5,12 +5,12 @@
     {
       "owner": "fee recipient",
       "address": "0x442A54b2AFEe1db441Df5aA825059d663c96AA6E",
-      "labels": ["bitsocial", "bitsocialnet", "bitsocialchain", "bso", "bsips", "pkc", "pkcprotocol", "plebbit", "5chan", "seedit", "wetube", "gitcommons", "modelswarm", "infinipedia", "mintpass", "agoraswap"]
+      "labels": ["bitsocial", "bitsocialnet", "bitsocialchain", "bso", "bsips", "pkc", "pkcprotocol", "plebbit", "5chan", "seedit", "wetube", "gitcommons", "modelswarm", "infinipedia", "mintpass", "agoraswap", "bitsocialapp", "bitsocialchat", "bitsocialforum", "bitsocialmesh", "bitsocialnetwork", "bitsocialtoken", "bitsocialgraph", "bitsocialalgorithms", "bitsocialnames", "bitbones", "hopium", "spamblocker", "pkcjs", "bsip"]
     },
     {
       "owner": "Bitsocial Forge",
       "address": "0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7",
-      "labels": ["bitsocialforge", "forge", "forgerpc"]
+      "labels": ["bitsocialforge", "forge", "forgerpc", "forgeimages", "forgepass", "forgegold", "5archive", "seeditarchive"]
     },
     {
       "owner": "Tommaso Casaburi",
