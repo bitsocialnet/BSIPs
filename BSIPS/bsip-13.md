@@ -106,10 +106,13 @@ The registry is the upstream `NameNFT` with these changes and no others:
    `getFee`, where upstream passes its length in bytes ([Prices](#prices)).
 6. **One ETH address per name.** Upstream stores the address set by `setAddr` and the address set
    by `setAddrForCoin` with coin type 60 separately, and `addr(node, 60)` prefers the second. Here
-   both functions write the same record, so `resolve`, `addr(node)`, and `addr(node, 60)` always
-   return the same address. For coin type 60, `setAddrForCoin` accepts 20 bytes, or empty bytes to
-   clear the record, and reverts for any other length. Either function emits both `AddrChanged`
-   and `AddressChanged`. Other coin types are as upstream.
+   both functions write the same record, so for an active name `resolve`, `addr(node)`, and
+   `addr(node, 60)` always return the same address. For coin type 60, `setAddrForCoin` accepts 20
+   bytes, or empty bytes to clear the record, and reverts for any other length. Either function
+   emits both `AddrChanged` and `AddressChanged`. As upstream, a name with no record resolves to
+   its owner: after a clear the events carry the zero address and empty bytes, and all three
+   getters return the owner. For a name that is not active, `resolve` and `addr(node)` return the
+   zero address and `addr(node, 60)` returns empty bytes. Other coin types are as upstream.
 7. **ENS's `TextChanged` event.** The registry emits
    `TextChanged(bytes32 indexed node, string indexed indexedKey, string key, string value)`, the
    event of ENS's text resolver, where upstream emits
@@ -473,7 +476,7 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
 - **Fork GNS.** GNS is ownerless and immutable, prevents front-running with commit-reveal, makes names
   expire so abandoned ones return, and exposes the ENS `text(node, key)` interface. Resolvers change
   only which contract they call, and BSIP-10's record format is unchanged. The diff is limited to the
-  five changes above, so most of the deployed code is code that already runs upstream.
+  changes listed above, so most of the deployed code is code that already runs upstream.
 - **Collect fees instead of burning them.** Bitsocial has no other funding, and this registry is
   temporary. A fixed recipient is acceptable because it cannot change prices and has no special
   power over names. It is a multisig rather than one person's address so that the registry survives
