@@ -33,6 +33,22 @@ To refresh the community-list names, run `node assets/bsip-13/collect-list-names
 on a clean checkout. To add a name an owner sent, add `{ "name": "x.bso" }` to `owners` in
 `supplied-names.json` and rebuild.
 
+## Preliminary list and announcement
+
+BSIP-13 requires the maintainers to publish and announce a preliminary seed list before the final
+one, and to leave owners time to supply missing names.
+
+- The preliminary list is `seed-list.json` and `seed-tree.json` in this directory, at block
+  26444681 (2026-11-18). It has no unmapped nodes.
+- It was announced on 2026-11-26: <https://x.com/bitsocialnet/status/2125992727858823664>. The
+  announcement says the final snapshot is taken no earlier than 2026-11-29.
+- The announced list had 119 entries. On 2026-11-26, after the announcement, 19 reserved names were
+  added, which changes no name in use: the list has 138 entries since.
+- To report a missing or wrong name, open an issue on
+  [bitsocialnet/BSIPs](https://github.com/bitsocialnet/BSIPs/issues).
+
+The files are replaced by the final list once block `S` is fixed.
+
 ## How names are found
 
 Candidates are every node with a `TextChanged` event for the key `bitsocial`, from any contract, up

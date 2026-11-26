@@ -316,8 +316,8 @@ Proposed reserved names:
 
 | Labels | Owner |
 | --- | --- |
-| `bitsocial`, `bitsocialnet`, `bitsocialchain`, `bso`, `bsips`, `pkc`, `pkcprotocol`, `plebbit`, `5chan`, `seedit`, `wetube`, `gitcommons`, `modelswarm`, `infinipedia`, `mintpass`, `agoraswap` | fee recipient |
-| `bitsocialforge`, `forge`, `forgerpc` | Bitsocial Forge, `0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7` |
+| `bitsocial`, `bitsocialnet`, `bitsocialchain`, `bso`, `bsips`, `pkc`, `pkcprotocol`, `plebbit`, `5chan`, `seedit`, `wetube`, `gitcommons`, `modelswarm`, `infinipedia`, `mintpass`, `agoraswap`, `bitsocialapp`, `bitsocialchat`, `bitsocialforum`, `bitsocialmesh`, `bitsocialnetwork`, `bitsocialtoken`, `bitsocialgraph`, `bitsocialalgorithms`, `bitsocialnames`, `bitbones`, `hopium`, `spamblocker`, `pkcjs`, `bsip` | fee recipient |
+| `bitsocialforge`, `forge`, `forgerpc`, `forgeimages`, `forgepass`, `forgegold`, `5archive`, `seeditarchive` | Bitsocial Forge, `0x80F6Bf31441ff217e3aA2811c1f5FF85308e1FC7` |
 | `tom`, `tommaso`, `tomcasaburi` | Tommaso Casaburi, `0x89e768DDF3696EB79112734fB0755AB27F8C5620` |
 | `rinse`, `rinse12` | Rinse, `0x98BDDCd3282F95A6553373Dab10b5AEfE0128117` |
 | `esteban`, `estebanabaroa` | fee recipient |
@@ -556,7 +556,8 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   own fees ([Sunset and migration](#sunset-and-migration)) and can give BSO a role without these
   limits.
 - **Reserved names.** Squatters can use project and maintainer names to impersonate them. The list is
-  kept short so the registry stays neutral, and names in use take precedence over it.
+  limited to names the project, its maintainers, and Bitsocial Forge already use, so the registry
+  stays neutral: it has no generic words. Names in use take precedence over it.
 - **Sunset freezes the registry, after notice.** The migration imports the state at `sunsetAt`. If
   names could still be renewed, sold, or edited on Ethereum after that, a buyer would hold a token
   that controls nothing on Bitsocial Chain, and old and migrated clients would resolve different
