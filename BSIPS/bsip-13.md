@@ -104,6 +104,16 @@ The registry is the upstream `NameNFT` with these changes and no others:
    passes although it displays as one symbol. Subdomain labels have no minimum beyond upstream's 1 byte.
    The fee goes by the same count: `reveal` and `renew` pass the label's length in code points to
    `getFee`, where upstream passes its length in bytes ([Prices](#prices)).
+6. **One ETH address per name.** Upstream stores the address set by `setAddr` and the address set
+   by `setAddrForCoin` with coin type 60 separately, and `addr(node, 60)` prefers the second. Here
+   both functions write the same record, so `resolve`, `addr(node)`, and `addr(node, 60)` always
+   return the same address. For coin type 60, `setAddrForCoin` accepts 20 bytes, or empty bytes to
+   clear the record, and reverts for any other length. Either function emits both `AddrChanged`
+   and `AddressChanged`. Other coin types are as upstream.
+7. **ENS's `TextChanged` event.** The registry emits
+   `TextChanged(bytes32 indexed node, string indexed indexedKey, string key, string value)`, the
+   event of ENS's text resolver, where upstream emits
+   `TextChanged(bytes32 indexed node, string indexed key, string value)`.
 
 Nothing else from the upstream repository is deployed: not `SubdomainRegistrar`,
 `GnsUniversalResolver`, `HumanRegistrar`, `GnsPosts`, or `GnsIntegrationVoting`.
@@ -517,6 +527,15 @@ BSIP that specifies Bitsocial Chain's `.bso` registry has reached Last Call. Tha
   for its minimum. Counted in bytes, every name of 3 or 4 characters outside ASCII would pay the
   lowest price: a hundredth of what `abc` pays for a 3-character name. The count is one function,
   shared with the minimum length, and the registry's fees cannot be corrected after deployment.
+- **One ETH address per name, and ENS's `TextChanged`.** Both come from an automated scan of the
+  registry before deployment
+  ([bso-names#3](https://github.com/bitsocialnet/bso-names/issues/3)). With two records for the
+  ETH address, a name's seller could leave one behind: the buyer's `setAddr` changed what
+  `addr(node)` returns but not what `addr(node, 60)` returns, so clients disagreed about where a
+  payment to the name goes. Upstream's `TextChanged` has no plaintext key, and its topic is that
+  of the older [EIP-634](https://eips.ethereum.org/EIPS/eip-634) event, whose third field is the
+  key and not the value, so ENS tooling misreads it. Records are what this registry exists for,
+  and neither can be corrected after deployment.
 - **One price for 5 characters and more.** A cheaper tier for labels of 10 characters or more was
   considered and left out. With directories ([BSIP-19](./bsip-19.md)) a community competes for a slot with a
   long descriptive name, so long names are the normal product and a cheap tier would remove most
