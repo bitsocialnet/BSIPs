@@ -255,11 +255,11 @@ post sorts `hot`, `new`, `topHour`, `topDay`, `topWeek`, `topMonth`, `topYear`, 
 with `hot` preloaded, and the reply sorts `best`, `new`, `old`, `newFlat`, and `oldFlat`, with `best`
 preloaded. `newFlat` and `oldFlat` list a post's whole reply subtree flattened and exist only under
 posts. Clients MUST discover a community's sorts from the keys of `pages` and `pageCids` rather than
-from a fixed list, and MUST accept any non-empty sort name other than `__proto__`, `constructor`,
+from a fixed list, and MUST accept any non-empty sort name other than the forbidden member names of
+[BSIP-2](./bsip-2.md#reserved-names): a name that starts with `_`, or one of `constructor`,
 `prototype`, `hasOwnProperty`, `isPrototypeOf`, `propertyIsEnumerable`, `toString`,
-`toLocaleString`, `valueOf` (the names [BSIP-2](./bsip-2.md#reserved-names) forbids individually),
-`__defineGetter__`, `__defineSetter__`, `__lookupGetter__`, and `__lookupSetter__`. A sort name
-MUST NOT be one of those names.
+`toLocaleString`, and `valueOf`. A sort name MUST NOT be one of those names, and a record that uses
+one as a key of `pages` or `pageCids` is invalid.
 
 When the community configures its sorts, the record carries `pageSorts`, describing each sort by name:
 `name` (the sort implementation's registry name, if any), `description`, and `publicOptions` (a record
