@@ -68,7 +68,8 @@ A `commentModeration` is a JSON object with:
   - `reason` — string, a public explanation of the moderation.
   - `purged` — boolean. `true` purges the comment and its replies from the community.
   - `author` — object of actions on the comment's author:
-    - `banExpiresAt` — positive integer Unix time in seconds; the author is banned until then.
+    - `banExpiresAt` — non-negative integer. A Unix time in seconds bans the author until then;
+      `0` only removes the ban mark from the target comment (see [Actions](#actions)).
     - `flairs` — array of flair objects, the author's moderator-assigned flairs in this community.
 
 and the [common publication fields](./bsip-2.md#common-publication-fields): `timestamp`,
@@ -207,11 +208,14 @@ targeted comment ([BSIP-4, Publication acceptance](./bsip-4.md#publication-accep
   references them as unknown. Purging cannot be undone. The other comment actions of a purging
   moderation have no lasting effect; its `author` actions still apply, because the community records
   the target author before purging.
-- **`author.banExpiresAt`** bans the target comment's author (see
+- **`author.banExpiresAt`**, when it is not `0`, bans the target comment's author (see
   [Author standing](#author-standing)) until that time. BSIP-4's ban check rejects every
   publication from a banned author, of every type, while `banExpiresAt` is later than the current
   time. The value appears as `author.community.banExpiresAt` in the comment updates of the author's
-  comments. A ban is lifted by a later moderation that sets `banExpiresAt` to a past time.
+  comments, and it marks the target comment: `U.authorBanExpiresAt` is the `banExpiresAt` of the
+  last accepted moderation of that comment that set one ([BSIP-5](./bsip-5.md#fields)). A ban is
+  lifted by a later moderation that sets `banExpiresAt` to a past time other than `0`. The value
+  `0` removes `U.authorBanExpiresAt` from the target comment and does not lift or change the ban.
 - **`author.flairs`** sets the author's moderator-assigned flairs, which appear as
   `author.community.flairs` in the comment updates of the author's comments and take precedence over
   author-chosen flairs.
@@ -256,9 +260,9 @@ A community MUST resolve the state it publishes as follows:
   comment that carried one. It may explain a different action than the latest flag change, and
   clients SHOULD NOT assume otherwise.
 - **Author actions resolve per author**, across all of that author's comments: the ban is the
-  `banExpiresAt` of the last accepted moderation targeting the author that set one, even if it is
-  earlier than a previous ban, and the author flairs are those of the last accepted moderation
-  targeting the author that set them.
+  `banExpiresAt` of the last accepted moderation targeting the author that set a value other than
+  `0`, even if it is earlier than a previous ban, and the author flairs are those of the last
+  accepted moderation targeting the author that set them.
 - **Moderators override authors.** `U.spoiler`, `U.nsfw`, and `U.flairs` take precedence over the
   author's edit ([BSIP-7](./bsip-7.md#presentation)) whichever was published later.
 - **Removal and deletion are independent.** A comment may be removed (`U.removed`), deleted by its

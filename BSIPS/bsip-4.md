@@ -56,7 +56,8 @@ Every message in the exchange carries these fields:
   identifies the exchange and MUST be the same across all four messages of one exchange.
 - `signature` — REQUIRED. `{ signature, publicKey, type, signedPropertyNames }`, where `signature`
   (64 bytes) and `publicKey` (32 bytes) are byte strings and `type` is `"ed25519"`. Signing follows
-  [BSIP-2, Signatures](./bsip-2.md#signatures), with the byte strings encoded as CBOR byte strings.
+  [BSIP-2, Signatures](./bsip-2.md#signatures), with the byte strings encoded as CBOR byte strings,
+  and as there a receiver MUST reject a signature with any other `type`.
 - `protocolVersion` — REQUIRED. String, currently `"1.0.0"`.
 - `userAgent` — REQUIRED. The implementation's non-empty user-agent string.
 - `timestamp` — REQUIRED. Integer Unix time in seconds.
@@ -143,6 +144,11 @@ of the community's challenges MUST be ignored. A community MUST reject a request
 `challengeAnswers` is an array. A community that sends a `CHALLENGE` after a request with
 pre-emptive answers omits the challenges those answers already settled, which is why the keys of a
 `CHALLENGE` can skip indexes.
+
+Every key of `challengeAnswers`, of `challenges`, and of `challengeErrors` MUST consist only of
+decimal digits. A message that carries any other key in one of these records is invalid, and its
+receiver MUST reject it. A key of that form that is not the index of a challenge is still ignored,
+as specified above.
 
 Two shortcuts are allowed:
 

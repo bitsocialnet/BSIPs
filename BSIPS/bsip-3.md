@@ -122,9 +122,12 @@ Protocol and trust:
 - `signature` — REQUIRED. The community's signature over the record (see [Signing](#signing)).
 
 A record MUST NOT carry a name reserved for runtime use: `cid`, `shortCid`, `updateCid`,
-`shortUpdateCid`, `shortAddress`, `shortCommunityAddress`, `nameResolved`, `ipnsHops`, `raw`,
-`deleted`, `signer`, `settings`, `editable`, `state`, `clients`, `startedState`, `started`,
-`publishingState`, `updatingState`, `exports`, or `abortSignal`.
+`shortUpdateCid`, `shortAddress`, `nameResolved`, `ipnsHops`, `ipnsName`, `ipnsPubsubTopic`,
+`ipnsPubsubTopicRoutingCid`, `raw`, `shortCommunityAddress`, `deleted`, `signer`, `state`,
+`clients`, `startedState`, `settings`, `editable`, `publishingState`, `updatingState`, `started`,
+`exports`, or `abortSignal`. As with the reserved names of
+[BSIP-2](./bsip-2.md#reserved-names), these names exist for the benefit of the reference
+implementation, the list is frozen, and it is a candidate for removal in a later revision.
 
 Example (abbreviated):
 
@@ -237,28 +240,26 @@ pages object has the shape:
   ([BSIP-5](./bsip-5.md)), nested reply pages included. `nextCid` points at the next page of the same
   sort.
 - A page fetched from `pageCids` SHOULD be at most 1 MiB, and each page reached through `nextCid` at
-  most twice the size allowed for the page before it, and never more than 32 MiB. A community
-  applies these limits to the page's **DAG size**: the total size of the blocks produced by
-  importing the whole serialized page as in
-  [BSIP-2, Addressing and fetching](./bsip-2.md#addressing-and-fetching), which `ipfs add` reports
-  as the file's cumulative size. That is the page's UTF-8 byte length plus the dag-pb and UnixFS
-  framing of each 262,144-byte chunk and the links of the nodes above them, about 7,950 bytes for a
-  32 MiB page. It is not the sum of the entries' sizes taken as separate files, which counts framing
-  a page does not have and misses the framing it has.
+  most twice the size allowed for the page before it, and never more than 32 MiB. The size of a
+  page is its **UTF-8 byte length**: the bytes of the whole serialized page, which is what a reader
+  downloads. It is not the page's IPFS DAG size, which `ipfs add` reports as the file's cumulative
+  size and which adds the dag-pb and UnixFS framing of the page's chunks.
 - Readers MAY refuse a page whose bytes exceed its limit; pkc-js does, and stops downloading at the
-  limit ([BSIP-16](./bsip-16.md#verifying-what-was-fetched)). The DAG size of a page always exceeds
-  its byte length, so a page within the DAG-size limit also meets the reader's byte-size limit.
-  pkc-js reserves a 1 KiB margin when splitting entries across pages. Its single-page fast path
-  checks the limit without that margin, and an indivisible large entry may also consume the margin;
-  the completed page must still pass the full DAG-size check before publication.
+  limit ([BSIP-16](./bsip-16.md#verifying-what-was-fetched)). pkc-js reserves a 1 KiB margin when
+  splitting entries across pages. Its single-page fast path checks the limit without that margin,
+  and an indivisible large entry may also consume the margin; the completed page must still pass
+  the full size check before publication.
 
 The sorts a community generates are its operator's choice. An unconfigured community generates the
 post sorts `hot`, `new`, `topHour`, `topDay`, `topWeek`, `topMonth`, `topYear`, `topAll`, and `active`,
 with `hot` preloaded, and the reply sorts `best`, `new`, `old`, `newFlat`, and `oldFlat`, with `best`
 preloaded. `newFlat` and `oldFlat` list a post's whole reply subtree flattened and exist only under
 posts. Clients MUST discover a community's sorts from the keys of `pages` and `pageCids` rather than
-from a fixed list, and MUST accept any non-empty sort name other than `__proto__`, `constructor`, and
-`prototype`.
+from a fixed list, and MUST accept any non-empty sort name other than the forbidden member names of
+[BSIP-2](./bsip-2.md#reserved-names): a name that starts with `_`, or one of `constructor`,
+`prototype`, `hasOwnProperty`, `isPrototypeOf`, `propertyIsEnumerable`, `toString`,
+`toLocaleString`, and `valueOf`. A sort name MUST NOT be one of those names, and a record that uses
+one as a key of `pages` or `pageCids` is invalid.
 
 When the community configures its sorts, the record carries `pageSorts`, describing each sort by name:
 `name` (the sort implementation's registry name, if any), `description`, and `publicOptions` (a record
@@ -302,8 +303,13 @@ enough for a publisher to know what to expect, never the secret material. Each d
 The challenge exchange itself is specified in [BSIP-4](./bsip-4.md). Answers, passwords, private
 allowlists, and rate-limit state stay with the community node.
 
-An author skips a challenge when **any** of its exclude items matches, and an item matches when
-**all** of the conditions it sets hold:
+An author skips a challenge when **any** of its exclude items matches. The conditions of an item
+form three groups, and an item matches when **any** group it sets is satisfied: the author and
+publication conditions (`postScore`, `replyScore`, `postCount`, `replyCount`,
+`firstCommentTimestamp`, `publicationType`, `rateLimit`, `publicKeys`, `names`, and `roles`), which
+MUST **all** hold together; `challenges`; and `community`. For example,
+`{ "roles": ["moderator"], "challenges": [1] }` excuses a moderator, and also anyone who passed
+challenge 1. The conditions are:
 
 - `postScore`, `replyScore` — the author's post or reply karma in this community
   ([BSIP-5](./bsip-5.md#author-community-standing)) is at least this value.
@@ -386,15 +392,17 @@ community address as `address` instead of `name`, and older exclude items MAY ca
 that fields added by newer versions, such as `pageSorts` and `anchor`, do not break them, but such
 fields are still signed and verified.
 
-Since pkc-js 0.0.140, its communities measure pages by DAG size as [Pages](#pages) specifies.
-Earlier versions decided where a page ends by summing each entry's DAG size as if it were a separate
-file, which undercounts a page of a few hundred large entries by more than the 1 KiB margin they
-kept. They still checked the whole page's DAG size before publishing it, so such a page was never
-published: the generation failed with `ERR_PAGE_GENERATED_IS_OVER_EXPECTED_SIZE`, and the community
-kept its previous record until a later cycle packed its pages differently. A community on a version
-before 0.0.140 can therefore stop publishing new records for a while, but it does not publish pages
-over these limits. Versions before 0.0.127 did not stop doubling page sizes at 32 MiB, so their
-communities could publish larger pages, which pkc-js readers refuse since 0.0.127.
+[Pages](#pages) previously measured a page by its DAG size, as pkc-js communities have done since
+0.0.140. The DAG size of a page always exceeds its byte length, so a page within the DAG-size limit
+is also within the byte limit. Versions before 0.0.140 decided where a page ends by summing each
+entry's DAG size as if it were a separate file, which undercounts a page of a few hundred large
+entries by more than the 1 KiB margin they kept. They still checked the whole page's DAG size before
+publishing it, so such a page was never published: the generation failed with
+`ERR_PAGE_GENERATED_IS_OVER_EXPECTED_SIZE`, and the community kept its previous record until a later
+cycle packed its pages differently. A community on a version before 0.0.140 can therefore stop
+publishing new records for a while, but it does not publish pages over these limits. Versions before
+0.0.127 did not stop doubling page sizes at 32 MiB, so their communities could publish larger pages,
+which pkc-js readers refuse since 0.0.127.
 
 ## Security Considerations
 

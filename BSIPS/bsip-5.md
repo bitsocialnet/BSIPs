@@ -76,6 +76,20 @@ OPTIONAL fields:
   pending approval. A disapproved comment that is kept also has `removed: true`.
 - `reason` — string: the reason given by the most recent moderation that carried one
   ([BSIP-8](./bsip-8.md)).
+- `authorBanExpiresAt`: positive integer Unix time in seconds, set by the community. It marks the
+  comment a moderator banned the author from: it is the `author.banExpiresAt` of the most recent
+  moderation of this comment that carried one ([BSIP-8](./bsip-8.md#actions)), verbatim, and is
+  absent when that value is `0`. It stays after the ban expires or is lifted, so only its presence
+  is meaningful; whether the author is banned now is told by `author.community.banExpiresAt`.
+- `pseudonymityAuthorTag`: string of exactly 22 characters of the standard base64 alphabet (16
+  bytes, unpadded), set by the community on a comment it pseudonymized
+  ([BSIP-2](./bsip-2.md#pseudonymity)), so that the original author, and nobody else, can recognize
+  the comment as their own. The community and the author each compute the X25519 shared secret of
+  the key that signs the update and the author's original signing key, both converted as in
+  [BSIP-4, Encryption](./bsip-4.md#encryption), and derive a 32-byte key `K` from it with
+  HKDF-SHA256, an empty salt, and the info string `pkc-pseudonymity-author-tag-v1`. The tag is the
+  first 16 bytes of HMAC-SHA256 keyed with `K` over the UTF-8 bytes of the update's `cid` string. A
+  comment update whose `pseudonymityAuthorTag` does not have this format is invalid.
 - `author` — `{ "community": ... }`, the author's standing in this community (see
   [Author community standing](#author-community-standing)). No other `author` field is allowed.
 
@@ -209,8 +223,7 @@ A client MUST reject a comment update that:
 
 ## Backwards Compatibility
 
-Older updates MAY carry `author.subplebbit` instead of `author.community`; readers SHOULD treat the two
-the same. Updates published before `childCount` and `lastChildCid` existed omit them.
+Updates published before `childCount` and `lastChildCid` existed omit them.
 
 ## Security Considerations
 

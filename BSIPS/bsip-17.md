@@ -104,7 +104,9 @@ A **notification** is a message from the node with no `id`:
   its payload, always a JSON object.
 - Clients MUST route a notification by `params.subscription` and `params.event`. The `method` name is
   informational and not consistent across subscription types
-  ([Subscriptions](#subscriptions)).
+  ([Subscriptions](#subscriptions)). It follows three patterns, which are frozen as they are:
+  `<method>Notification` for most subscriptions and publications, `startCommunity` for
+  `startCommunity` and `startedCommunitySubscribe`, and `exportschange` for exports.
 - A node sends a subscription's notifications in the order their events occurred. It MAY send them
   before the response that returns the subscription id; every subscription that has a current state
   sends it that way ([Subscriptions](#subscriptions)). A client MUST therefore buffer notifications
@@ -128,12 +130,14 @@ A node classifies each WebSocket upgrade request by where it comes from and by i
   the header be a canonical serialized origin without a path, query, fragment, or credentials.
 
 A connection that is both local and from a trusted origin needs no credential. Clients SHOULD use
-the path `/` for it; the reference implementation does not restrict the path on this exempt branch.
-Every other connection, remote or local, needs the node's **auth key**: its request path MUST be
-exactly `/` followed by the auth key, for example `wss://node.example:9138/<authKey>`, with no query
-string. A node MUST NOT accept such a connection without the auth key and MUST NOT treat any origin
-not listed above as trusted; it MAY require the auth key from more connections, or from all of them.
-A node without an auth key therefore accepts only local connections from trusted origins.
+the path `/` for it; the reference implementation does not restrict the path on this exempt branch,
+but it serves methods only on `/` and `/<authKey>`, so a connection on another path gets "method not
+found" for every call. Every other connection, remote or local, needs the node's **auth key**: its
+request path MUST be exactly `/` followed by the auth key, for example
+`wss://node.example:9138/<authKey>`, with no query string. A node MUST NOT accept such a connection
+without the auth key and MUST NOT treat any origin not listed above as trusted; it MAY require the
+auth key from more connections, or from all of them. A node without an auth key therefore accepts
+only local connections from trusted origins.
 
 A node rejects an upgrade that fails these authentication checks with HTTP status 403. A client that receives 403 MUST NOT reconnect
 automatically: the credential is wrong or missing, and retrying cannot fix it. Because the auth key
@@ -639,8 +643,8 @@ The protocol carries no version number and no capability negotiation. It evolves
   reading, subscribing, `unsubscribe`, `publishChallengeAnswers`, export, and anchor methods.
 - A client MUST NOT send unknown members in the `createCommunity` parameter or in `editOptions`; the
   reference node rejects them. A client MUST NOT expect unknown top-level members of a publish
-  method's parameter object to reach the community; the reference node rejects them for
-  `publishComment` and drops them for the other publish methods. The signed publication inside is
+  method's parameter object to reach the community; the reference node accepts the call, and what
+  it does with such a member is not specified. The signed publication inside is
   carried as its BSIP allows, unknown signed members included.
 - A client MUST ignore unknown members of results and payloads, unknown events, and unknown error
   codes, and MUST accept state values it does not know.
@@ -697,9 +701,9 @@ Open questions:
   library understands, at the cost of breaking current clients.
 - **Versioning.** There is no handshake. A `rpc.discover`-style method or a version member in
   `settingschange` would let clients adapt instead of probing.
-- **Naming.** Notification `method` names follow three patterns (`startCommunity`, `exportschange`,
-  `…Notification`), and `communityUpdateSubscribe` reports started states as `updatingstatechange` on
-  a community the node runs. Both could be normalized in a breaking revision.
+- **Naming.** `communityUpdateSubscribe` reports started states as `updatingstatechange` on a
+  community the node runs, which could be normalized in a breaking revision. The three patterns of
+  notification `method` names are frozen ([Transport and framing](#transport-and-framing)).
 - **Scoped credentials.** One key grants everything. A read-only or per-community key would let
   owners share a node without sharing control of it.
 - **Trusted origins.** The set is fixed. A desktop shell that serves its pages from a custom scheme
@@ -803,6 +807,8 @@ set to a node's URL.
 - **Resource use.** Each subscription makes the node fetch, resolve, and verify on the client's
   behalf, and the reference node sets no limit per connection. A node exposed to untrusted clients
   SHOULD bound subscriptions per connection and the rate of publish calls.
+- **Operator responsibility.** The reference node implements neither of the two recommendations
+  above. Both are the responsibility of whoever operates a node for clients they do not trust.
 - **Privacy.** The node learns the client's network address, everything it reads and follows, and
   everything it publishes, with timing. In exchange, peers on the pubsub and IPFS networks see the
   node, not the client. A hosted node serving many users becomes a point where their activity can be

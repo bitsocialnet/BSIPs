@@ -219,25 +219,41 @@ bytes or the CID once stored.
 
 ### Reserved names
 
-Some names are reserved because they mean something else on another record or in implementations,
-and accepting them on the wire would let a record smuggle state into a client. A comment record, and
-a comment publication, MUST NOT carry a top-level member named:
+Some names are reserved because they mean something else on another record or in the reference
+implementation, and accepting them on the wire would let a record smuggle state into a client. A
+comment record, and a comment publication, MUST NOT carry a top-level member named:
 
 - a comment update field that is not also a comment field: `cid`, `upvoteCount`, `downvoteCount`,
   `replyCount`, `childCount`, `number`, `postNumber`, `edit`, `pinned`, `locked`, `archived`,
-  `removed`, `reason`, `approved`, `updatedAt`, `lastChildCid`, `lastReplyTimestamp`, `replies`, or
-  `pendingApproval`;
+  `removed`, `reason`, `authorBanExpiresAt`, `approved`, `updatedAt`, `lastChildCid`,
+  `lastReplyTimestamp`, `pseudonymityAuthorTag`, `replies`, or `pendingApproval`;
 - a runtime or transport name: `signer`, `challengeRequest`, `communityAddress`, `challengeAnswers`,
   `challengeCommentCids`, `comment`, `commentUpdate`, `original`, `shortCid`,
   `shortCommunityAddress`, `deleted`, `raw`, `state`, `clients`, `publishingState`, `updatingState`,
   `nameResolved`, or `abortSignal`;
-- a storage name used by the current implementation: `insertedAt`, `authorSignerAddress`,
-  `originalCommentSignatureEncoded`, `extraProps`, `challengeCommentUpdate`, `postUpdatesBucket`,
-  `publishedToPostUpdatesMFS`, or `rowid`.
+- a method of the reference implementation's comment object: `publish`,
+  `publishChallengeAnswers`, `update`, `stop`, `getType`, `setCid`, `setCommunityAddress`,
+  `startCommentUpdateCommunitySubscription`,
+  `loadCommentIpfsAndStartCommentUpdateSubscription`, `toJSONPubsubRequestToEncrypt`,
+  `setMaxListeners`, `getMaxListeners`, `emit`, `addListener`, `on`, `prependListener`, `once`,
+  `prependOnceListener`, `removeListener`, `off`, `removeAllListeners`, `listeners`, `rawListeners`,
+  `listenerCount`, or `eventNames`;
+- a storage name: `insertedAt`, `authorSignerAddress`, `originalCommentSignatureEncoded`,
+  `extraProps`, `challengeCommentUpdate`, `postUpdatesBucket`, `publishedToPostUpdatesMFS`, or
+  `rowid`.
 
 A comment publication additionally MUST NOT carry the community-set fields of
 [the comment record](#the-comment-record). The reserved names inside `author` are listed in
 [Authors](#authors). Clients MUST reject a fetched comment record that carries a reserved name.
+
+In addition, some member names are **forbidden**: any name that starts with `_`, and `__proto__`,
+`constructor`, `prototype`, `hasOwnProperty`, `isPrototypeOf`, `propertyIsEnumerable`, `toString`,
+`toLocaleString`, and `valueOf`. A publication of any type or a comment record that carries a
+forbidden name as a top-level member, or as a member of its `author` object, is invalid.
+
+The forbidden names and the runtime, method, and storage names above exist for the benefit of the
+reference implementation. They are frozen as listed: the lists will not grow, and they are
+candidates for removal in a later revision.
 
 ### Addressing and fetching
 
@@ -324,11 +340,12 @@ and challenge-exchange messages — carries a `signature` object:
 }
 ```
 
-`type` MUST be `"ed25519"`, the only signature type currently defined; verifiers SHOULD reject other
-types. Records stored on IPFS carry `signature` and `publicKey` as base64 strings in the standard
-alphabet **without** `=` padding (86 and 43 characters); since implementations compare public keys
-as strings, padded values MUST NOT be produced. Challenge-exchange messages carry them as CBOR byte
-strings ([BSIP-4](./bsip-4.md#message-envelope)).
+`type` MUST be `"ed25519"`, the only signature type currently defined; a verifier MUST reject a
+signature with any other `type`. Records stored on IPFS carry `signature` and `publicKey` as base64
+strings in the standard alphabet **without** `=` padding (86 and 43 characters); since
+implementations compare public keys as strings, padded values MUST NOT be produced.
+Challenge-exchange messages carry them as CBOR byte strings
+([BSIP-4](./bsip-4.md#message-envelope)).
 
 To sign a record, the signer first removes, at every depth, object properties whose value is `null`,
 absent, or an empty object (array elements are left as they are), and sets `signedPropertyNames` to
@@ -352,7 +369,9 @@ signer and verifier alike:
 4. Sign the bytes with Ed25519 ([RFC 8032](https://www.rfc-editor.org/rfc/rfc8032)) using the key
    whose public half is `publicKey`. Verifiers SHOULD apply the
    [ZIP-215](https://zips.z.cash/zip-0215) validation rules, as the reference implementation does, so
-   that every implementation accepts exactly the same signatures.
+   that every implementation accepts exactly the same signatures. A verifier MUST reject a signature
+   whose `publicKey`, decoded under those rules, is a small-order point (a point of order 1, 2, 4,
+   or 8): under ZIP-215 such a key verifies a forged signature over any message.
 
 The `signature` field itself is never listed in `signedPropertyNames`. Verification re-derives the
 signed bytes from the `signedPropertyNames` carried in the record — never from a hardcoded list —
