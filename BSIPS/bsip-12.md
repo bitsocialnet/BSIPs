@@ -70,8 +70,8 @@ is published and fetched, and under which it appears in pages ([BSIP-3, Pages](.
 
 ### The `crosspost` field
 
-`crosspost` is an OPTIONAL author-set field of a comment. When present it is an object with exactly
-two members:
+`crosspost` is an OPTIONAL author-set field of a comment. When present it is an object with two
+members:
 
 - `cid` — REQUIRED. String. The CID of the embedded record, in CIDv0 string form. It MUST equal
   `CID(comment)`.
@@ -80,7 +80,8 @@ two members:
   (including the REQUIRED `depth`), as defined in [BSIP-2](./bsip-2.md). It is a comment record,
   not the pubsub publication that preceded it.
 
-Publishers MUST NOT add other members to the `crosspost` object.
+Publishers MUST NOT add other members to the `crosspost` object. Readers MUST accept and ignore
+members of it they do not recognize.
 
 The following rules apply to the field:
 
@@ -90,9 +91,10 @@ The following rules apply to the field:
   `signature.signedPropertyNames` ([BSIP-2, Signatures](./bsip-2.md#signatures)). The signed bytes
   therefore cover the whole embedded record, including the embedded author's `signature` and any
   nested `crosspost`.
-- `crosspost` counts as content. A comment that sets none of `title`, `content`, or `link` is valid
-  when it carries `crosspost` (a **bare crosspost**: a repost with nothing added). A comment with
-  none of `title`, `content`, `link`, or `crosspost` remains invalid.
+- `crosspost` counts as content. A comment that sets none of `title`, `content`, `link`, or
+  `gallery` is valid when it carries `crosspost` (a **bare crosspost**: a repost with nothing
+  added). A comment with none of `title`, `content`, `link`, `gallery`, or `crosspost` remains
+  invalid.
 - `crosspost` appears wherever the comment does: in the publication sent in a `CHALLENGEREQUEST`
   ([BSIP-4](./bsip-4.md)), in the stored comment record, and in every page entry that carries the
   comment ([BSIP-3, Pages](./bsip-3.md#pages)). It is never part of a comment update
@@ -172,11 +174,12 @@ For the embedded record `E` = `crosspost.comment`, the verifier checks, in order
 1. **CID.** `CID(E)` MUST equal `crosspost.cid`.
 2. **No reserved members.** `E` MUST NOT contain a name reserved for comment records
    ([BSIP-2, Reserved names](./bsip-2.md#reserved-names)), and `E.author`, if present, MUST NOT
-   contain `community`, `publicKey`, `shortAddress`, or `nameResolved`.
+   contain `community`, `publicKey`, `shortAddress`, or `nameResolved`. Neither `E` nor `E.author`
+   may contain a forbidden name, as defined there.
 3. **Every signable member is signed.** For each author-signable member name present on `E`, that
    name MUST appear in `E.signature.signedPropertyNames`. The author-signable names are `title`,
    `content`, `link`, `linkWidth`, `linkHeight`, `linkHtmlTagName`, `flairs`, `spoiler`, `nsfw`,
-   `parentCid`, `postCid`, `quotedCids`, `crosspost`, `author`, `communityPublicKey`,
+   `parentCid`, `postCid`, `quotedCids`, `crosspost`, `gallery`, `author`, `communityPublicKey`,
    `communityName`, `timestamp`, and `protocolVersion`. Community-set members (`depth`,
    `thumbnailUrl`, `thumbnailUrlWidth`, `thumbnailUrlHeight`, `previousCid`, `pseudonymityMode`)
    and member names the verifier does not recognize are exempt.
