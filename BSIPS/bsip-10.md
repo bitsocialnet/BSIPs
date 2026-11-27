@@ -62,10 +62,12 @@ A key address is derived from a 32-byte Ed25519 public key:
 The result is 52 characters long and starts with `12D3KooW`.
 
 - Every wire field and configuration value that holds a key address, including `communityPublicKey`,
-  `anchor.publicKey`, key-form `roles` keys, `exclude.publicKeys`, and the key inside a name record,
-  MUST use this base58btc form. The base36 and base32 CID encodings of the same key (`k51…`,
-  `bafz…`) MUST NOT be used there. Key addresses are compared as exact, case-sensitive strings, so a
-  value in another encoding never matches.
+  `anchor.publicKey`, key-form `roles` keys, `exclude.publicKeys`, the `publicKey` of a community
+  list entry ([BSIP-15](./bsip-15.md#entries)), and the key inside a name record, MUST use this
+  base58btc form. The base36 and base32 CID encodings of the same key (`k51…`, `bafz…`) MUST NOT be
+  used there, and a reader MUST treat a record that carries another form in such a field as
+  invalid. Key addresses are compared as exact, case-sensitive strings, so a value in another
+  encoding never matches.
 - `signature.publicKey` and `encryption.publicKey` carry the raw key in base64
   ([BSIP-2](./bsip-2.md#signatures)), not a key address. An implementation that compares one of them
   with a key address MUST derive the key address first.
@@ -251,6 +253,9 @@ per chain provider. Resolution of a name proceeds in configured order:
 5. Otherwise every resolver errored, and the outcome is **failed**. A timeout or abort is also
    **failed**.
 
+An implementation whose resolver interface cannot express **invalid record** MAY report a malformed
+record as **failed**.
+
 #### Resolving `.bso` and `.eth` names
 
 `.bso` and `.eth` names are resolved through the Ethereum Name Service on Ethereum mainnet:
@@ -327,7 +332,8 @@ For a community with identity key K and name D, the outcome is computed from res
 | --- | --- | --- |
 | found(K) | verified | none |
 | found(M), M a non-identity key of the community's own verified delegation chain (its minter) | refuted | identity unchanged ([BSIP-11](./bsip-11.md)) |
-| found(K′), any other K′ ≠ K | verified for K′ | [key migration](#key-migration) to K′ |
+| found(K′), any other K′ ≠ K, for a reader that loaded the community by name | verified for K′ | [key migration](#key-migration) to K′ |
+| found(K′), any other K′ ≠ K, for a reader that loaded the community by key | refuted | identity and record kept |
 | no record, invalid record | refuted | identity and record kept |
 | failed, unsupported | unknown | identity and record kept |
 
@@ -371,9 +377,11 @@ A reader that detects a migration MUST:
 4. use K′ as `communityPublicKey` on every new publication; and
 5. notify the application, identifying K and K′.
 
-This applies whether the reader loaded the community by name or by key: a record that names a
-community delegates its identity to whoever controls that name. A community without a name cannot
-migrate; its identity is its key. Rotating the minter of a delegated community is not a migration
+Only a reader that loaded the community by name migrates. A reader that loaded it by key never
+does: if the record's `name` resolves to a different key, the name is **refuted** and the reader
+keeps the key, because anyone can publish a record claiming a name they do not hold. A community
+without a name cannot migrate; its identity is its key, which cannot be changed in band
+([BSIP-9](./bsip-9.md#renaming)). Rotating the minter of a delegated community is not a migration
 ([BSIP-11](./bsip-11.md)).
 
 #### Identity lists
@@ -503,8 +511,8 @@ implemented by [bso-resolver](https://github.com/bitsocialnet/bso-resolver).
   previous key; this is a resolver-trust problem and is mitigated the same way.
 - **Key compromise and migration hijack.** Key migration is a community's recovery path from key
   compromise, and it is also an attack path: whoever controls the name record controls where readers
-  migrate, including readers that loaded the community by key. An expired or transferred name can be
-  re-registered by an attacker, who can then migrate every reader to a key they hold. Community owners
+  that loaded the community by name migrate. An expired or transferred name can be re-registered by
+  an attacker, who can then migrate every such reader to a key they hold. Community owners
   SHOULD keep their names registered and their name-owner keys secure. Readers discard all data from
   the old key on migration, so an attacker holding a compromised old key cannot keep feeding
   migrated readers. Communities without a name have no recovery path short of a new address.
