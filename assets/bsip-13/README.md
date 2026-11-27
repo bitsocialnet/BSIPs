@@ -6,6 +6,7 @@ The names the interim `.bso` registry registers at launch, and the script that b
 | File | What it is |
 | --- | --- |
 | `build-seed-list.mjs` | Builds the seed list at snapshot block `S`. |
+| `ens-v2.mjs` | The builder's ENSv2 reader, with its tests in `ens-v2.test.mjs` and `ens-v2.fork.test.mjs` ([Tests](#tests)). |
 | `reserved.json` | Reserved names (rule 3). The builder fails if it differs from the table in BSIP-13. |
 | `supplied-names.json` | Supplied names: `lists`, from the maintainers' community lists, and `owners`, names that owners sent in. |
 | `collect-list-names.mjs` | Refreshes `lists` from a checkout of [bitsocialnet/lists](https://github.com/bitsocialnet/lists). |
@@ -77,6 +78,24 @@ The record is read from the name's own resolver with `text`, or with ENSIP-10 `r
 resolver that answers only that way, with offchain lookups disabled. It is then compared with the
 Universal Resolver that BSIP-10 clients use. A name with no resolver of its own, an offchain record,
 or a disagreement is not seeded. The last two are marked "needs manual review".
+
+## Tests
+
+The ENSv2 reader is in `ens-v2.mjs`, apart from the builder, so that it can be tested:
+
+```sh
+yarn test:seed-builder
+```
+
+`ens-v2.test.mjs` uses a stubbed client and runs in CI. `ens-v2.fork.test.mjs` reads the deployed
+ENSv2 contracts on a local fork of mainnet and moves the fork's clock past `bitsocial.eth`'s expiry,
+to show that `blog.bitsocial.eth` then stops counting as registered although its own registry still
+reports it registered. It is skipped unless `ANVIL_RPC_URL` is set:
+
+```sh
+anvil --fork-url <mainnet RPC> --port 18547
+ANVIL_RPC_URL=http://127.0.0.1:18547 node --test assets/bsip-13/ens-v2.fork.test.mjs
+```
 
 ## Leaves
 

@@ -1,6 +1,7 @@
 # Run on every pull request and push to master. The site build validates each BSIP's preamble against
 # BSIP-1, renders mermaid diagrams, and fails on broken links or anchors. The vectors job re-checks the
-# test vectors in assets/ with Node built-ins.
+# test vectors in assets/ with Node built-ins. The seed-builder job tests the BSIP-13 seed-list builder's
+# ENSv2 reader with a stubbed client; its fork test needs a mainnet RPC and is skipped here.
 name: Checks
 
 on:
@@ -33,3 +34,14 @@ jobs:
         with:
           node-version: 22
       - run: node assets/verify-vectors.mjs
+  seed-builder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn test:seed-builder

@@ -46,6 +46,7 @@ import {
   zeroAddress,
 } from 'viem';
 import { mainnet } from 'viem/chains';
+import { isReadFromV2, readV2, retry } from './ens-v2.mjs';
 
 const ENS_REGISTRY = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 const ENS_OLD_REGISTRY = '0x314159265dD8dbb310642f98f50C066173C1259b';
@@ -53,11 +54,6 @@ const ENS_FIRST_BLOCK = 3327417n; // the original ENS registry's deployment; no 
 const BASE_REGISTRAR = '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85';
 const NAME_WRAPPER = '0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401';
 const ENS_GRACE_PERIOD = 90n * 86400n; // v1
-// ENSv2 (live since 2026-10-28): migrated v1 names are owned by the Graveyard in the v1 registry and
-// live in the v2 registries, starting from the ETH registry.
-const GRAVEYARD = '0xDa021A2C1C2F99574D861Ef8c6fA745851BEB7F6';
-const ETH_REGISTRY_V2 = '0xf60aba43E1f7F3DAB1186Ff03B561401C9Df85E2';
-const V2_REGISTERED = 2; // IPermissionedRegistry.Status
 const ETH_NODE = namehash('eth');
 const KEY = 'bitsocial';
 const MAX_SUBDOMAIN_DEPTH = 10; // upstream NameNFT
@@ -84,11 +80,6 @@ const registrarAbi = parseAbi([
 ]);
 const resolverAbi = parseAbi(['function text(bytes32 node, string key) view returns (string)']);
 const extendedResolverAbi = parseAbi(['function resolve(bytes name, bytes data) view returns (bytes)']);
-const v2RegistryAbi = parseAbi([
-  'function getState(uint256 anyId) view returns ((uint8 status, uint64 expiry, address latestOwner, uint256 tokenId, uint256 resource))',
-  'function getResolver(string label) view returns (address)',
-  'function getSubregistry(string label) view returns (address)',
-]);
 
 const dir = new URL('./', import.meta.url);
 const read = (file) => readFileSync(new URL(file, dir), 'utf8');
@@ -504,9 +495,9 @@ async function readEnsState(names) {
   const secondLevelOf = (name) => name.split('.').slice(-2).join('.');
   const inV2 = names.filter((name) => {
     const top = state.get(secondLevelOf(name));
-    return top.inactive || isAddressEqual(top.registryOwner, GRAVEYARD);
+    return isReadFromV2(top);
   });
-  await mapLimit(inV2, 4, async (name) => state.set(name, await readV2(name)));
+  await mapLimit(inV2, 4, async (name) => state.set(name, await readV2(client, S, name)));
 
   // Records: the name's own resolver, cross-checked with the Universal Resolver that BSIP-10 clients
   // use. A name without its own resolver (unset, or a wildcard or offchain record) is not seeded, and
@@ -602,55 +593,6 @@ async function readV1(names) {
     s.holder = last ? getAddress(`0x${last.topics[2].slice(26)}`) : zeroAddress;
   }
   return state;
-}
-
-/**
- * ENSv2: walk the registries from the ETH registry down the name's labels. A name is registered when
- * its registry reports REGISTERED; v2 registries stop resolving a name at expiry, and its grace
- * period only allows renewal, so an expired v2 name does not resolve.
- */
-async function readV2(name) {
-  const labels = name.split('.').slice(0, -1).reverse();
-  const out = { ens: 'v2', node: namehash(name), resolver: zeroAddress, holder: zeroAddress, inactive: null };
-  let registry = ETH_REGISTRY_V2;
-  for (const [i, label] of labels.entries()) {
-    const read = (functionName, args) =>
-      retry(() => client.readContract({ address: registry, abi: v2RegistryAbi, functionName, args, blockNumber: S }));
-    const [st, resolver, subregistry] = await Promise.all([
-      read('getState', [hexToBigInt(labelhash(label))]),
-      read('getResolver', [label]),
-      read('getSubregistry', [label]),
-    ]);
-    if (st === undefined || resolver === undefined || subregistry === undefined) {
-      out.inactive = 'could not read its ENSv2 registry at S: needs manual review';
-      return out;
-    }
-    if (st.status !== V2_REGISTERED) {
-      out.inactive = `not registered in ENS at S (ENSv2 ${labels.slice(0, i + 1).reverse().join('.')}.eth is not registered)`;
-      return out;
-    }
-    if (i === labels.length - 1) {
-      out.holder = st.latestOwner;
-      out.resolver = resolver;
-    } else if (isAddressEqual(subregistry, zeroAddress)) {
-      out.inactive = 'not registered in ENS at S (no ENSv2 subregistry)';
-      return out;
-    }
-    registry = subregistry;
-  }
-  return out;
-}
-
-/** Call fn up to 3 times; undefined if every attempt fails. */
-async function retry(fn) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      return await fn();
-    } catch {
-      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
-    }
-  }
-  return undefined;
 }
 
 function dnsEncode(name) {
