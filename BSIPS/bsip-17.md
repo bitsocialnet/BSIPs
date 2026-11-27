@@ -643,8 +643,8 @@ The protocol carries no version number and no capability negotiation. It evolves
   reading, subscribing, `unsubscribe`, `publishChallengeAnswers`, export, and anchor methods.
 - A client MUST NOT send unknown members in the `createCommunity` parameter or in `editOptions`; the
   reference node rejects them. A client MUST NOT expect unknown top-level members of a publish
-  method's parameter object to reach the community; the reference node rejects them for
-  `publishComment` and drops them for the other publish methods. The signed publication inside is
+  method's parameter object to reach the community; the reference node accepts the call, and what
+  it does with such a member is not specified. The signed publication inside is
   carried as its BSIP allows, unknown signed members included.
 - A client MUST ignore unknown members of results and payloads, unknown events, and unknown error
   codes, and MUST accept state values it does not know.
