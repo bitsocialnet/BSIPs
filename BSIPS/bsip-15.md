@@ -103,9 +103,9 @@ Example:
 An entry describes one community. Its metadata is set by the curator, not by the community's owner,
 and nothing in it is signed by the community.
 
-- `publicKey` — REQUIRED. Non-empty string: the community's identity key as a key address
-  ([BSIP-10](./bsip-10.md#key-addresses)), the value publications carry in `communityPublicKey`
-  ([BSIP-3](./bsip-3.md#identity-and-addressing)).
+- `publicKey` — REQUIRED. The community's identity key, the value publications carry in
+  `communityPublicKey` ([BSIP-3](./bsip-3.md#identity-and-addressing)). It MUST be a key address
+  ([BSIP-10](./bsip-10.md#key-addresses)).
 - `name` — OPTIONAL. Non-empty string: the community's name ([BSIP-10](./bsip-10.md#names)), for
   example `memes.bso`.
 - `title` — OPTIONAL. String: the curator's title for the community.
@@ -120,8 +120,8 @@ and nothing in it is signed by the community.
 - `tags` — OPTIONAL. Array of strings: keywords for search.
 
 This BSIP defines no vocabulary for `languages`, `locations`, `features`, or `tags`; their values are
-free-form strings. Readers check `publicKey` and `name` only as non-empty strings: neither the
-key-address form nor the name syntax is validated when a list loads.
+free-form strings. Readers check `name` only as a non-empty string: the name syntax is not validated
+when a list loads.
 
 ### The `author` field
 
@@ -132,9 +132,8 @@ publication's author next to a comment. It has the shape of a publication's `aut
 part of `author`.
 
 - `author.wallets` entries follow the entry and verification rules of [BSIP-22](./bsip-22.md), with the
-  list's `signature.publicKey` as the signing key. Loading checks only an entry's shape, the one in
-  [BSIP-2](./bsip-2.md#authors) that BSIP-22 checks first: a string `address`, an integer
-  `timestamp`, and a `signature` object whose `signature` and `type` are strings. An entry without
+  list's `signature.publicKey` as the signing key. Loading checks only an entry's shape, which
+  [BSIP-22, The wallet entry](./bsip-22.md#the-wallet-entry) defines. An entry without
   that shape fails step 3 of [loading](#loading-and-verifying-a-list), and the list with it. Verifying
   the proof is not part of loading, so a list is never rejected because a proof is invalid, of an
   unknown type, or dated ahead of the reader's clock. A client verifies an entry under BSIP-22 before
@@ -185,7 +184,9 @@ need no separate check: `communities` and `author` are each signed as a whole.
 
 Readers MUST accept and preserve members they do not recognize, at the top level, in entries, and in
 `author`, and MUST include them when verifying the signature. A newer publisher may add and sign
-members a reader does not know; a reader that dropped them would fail to verify the list.
+members a reader does not know; a reader that dropped them would fail to verify the list. The
+exception is the forbidden names of [BSIP-2](./bsip-2.md#reserved-names): a list that carries one at
+the top level, in an entry, or in `author` is invalid.
 
 ### Addressing
 
@@ -203,17 +204,14 @@ points to another list.
 
 ### Size limit
 
-The size limit of a list is 2,097,152 bytes (2 MiB).
+The size limit of a list is 2,097,152 bytes (2 MiB). The size of a list is the UTF-8 byte length of
+the record as published, the bytes of the file, not the size of its IPFS DAG.
 
-- A publisher MUST NOT publish a list whose DAG size exceeds the limit. The DAG size is the total
-  size of the blocks produced by importing the record's bytes as in
-  [BSIP-2, Addressing and fetching](./bsip-2.md#addressing-and-fetching), which `ipfs add` reports as
-  the file's cumulative size.
+- A publisher MUST NOT publish a list whose bytes exceed the limit.
 - A reader MUST reject a list whose bytes exceed the limit, before parsing it, and SHOULD stop
   downloading once more bytes than the limit have arrived.
 
-The DAG size of a file always exceeds its byte length, so every list a conforming publisher produces
-passes the reader's check. A list is a single file; there is no pagination or chunking.
+A list is a single file; there is no pagination or chunking.
 
 ### Publishing a list
 
@@ -248,8 +246,8 @@ fails:
    [Entries](#entries), and [The `author` field](#the-author-field), keeping members it does not
    recognize ([Signing](#signing)).
 4. Check that:
-   - no [reserved name](#runtime-values-and-reserved-names) appears at the top level, in `author`, or
-     in an entry;
+   - no [reserved name](#runtime-values-and-reserved-names) and no forbidden name
+     ([Signing](#signing)) appears at the top level, in `author`, or in an entry;
    - `author.name`, if present, contains a `.`;
    - no two entries have the same `publicKey`;
    - every top-level member other than `signature` is listed in `signedPropertyNames`; and
@@ -307,9 +305,10 @@ methods. The signing key never leaves the client, and the server is not trusted 
   verifies the record as a reader would, refuses one that fails, adds the exact bytes to IPFS, pins
   them, and returns `{ "cid": string }`. The client MUST check that the returned CID is the CIDv0 of
   the bytes it sent, and MUST treat any other CID as a failed publish.
-- `fetchCommunityList`, with the parameter `{ "cid": string }`: the server fetches the bytes under the
-  size limit and returns them unparsed as `{ "communityListRawString": string }`. The client MUST
-  enforce the size limit, check that the bytes hash to the CID, and parse and verify the list itself.
+- `fetchCommunityList`, with the parameter `{ "cid": string }`: the server rejects a CIDv1
+  ([Addressing](#addressing)), fetches the bytes under the size limit, and returns them unparsed as
+  `{ "communityListRawString": string }`. The client MUST enforce the size limit, check that the
+  bytes hash to the CID, and parse and verify the list itself.
 
 ## Rationale
 
@@ -373,10 +372,6 @@ Open questions:
   uppercase ASCII letter, as BSIP-10 requires of names generally. The reference implementation
   checks only that `author.name` contains a `.` and does not check entry names.
 - Whether the order of entries carries meaning, for example a ranking.
-- How the reference implementation measures size on load. Its direct paths count the file's bytes,
-  as specified above, but its RPC client measures the DAG size. Over RPC it therefore rejects lists
-  whose byte length is within about 500 bytes of the limit, which only a non-conforming publisher
-  produces.
 
 ## Backwards Compatibility
 
@@ -405,13 +400,14 @@ The implementation notes are in
 
 The API is `pkc.createCommunityList({ signer, title, description, author, communities, timestamp })`
 followed by `publish()`, and `pkc.createCommunityList({ cid })` followed by `update()`, or the
-one-shot `pkc.getCommunityList({ cid })`. Creation rejects unknown members, so a typo is never signed
-into an immutable record; it drops the runtime values a loaded list carries, so a revision can be
-built from a loaded list. Publishing needs a kubo RPC client or a PKC RPC server; instances that use
-only gateways or libp2p-js can load lists but not publish them. `author.nameResolved` is `true` when
-the name is verified, `false` when it is refuted or when no configured resolver handles its TLD (which
-[BSIP-10](./bsip-10.md#verification-outcomes) classifies as unknown, not refuted), and absent until
-settled.
+one-shot `pkc.getCommunityList({ cid })`. Creation rejects unknown members, so a typo is never
+signed into an immutable record. A revision is built from the loaded list's raw signed record with
+`signature` and `timestamp` removed; the loaded instance itself cannot be passed back, because
+options that carry a `cid` mean "load this list". Publishing needs a kubo RPC client or a PKC RPC
+server; instances that use only gateways or libp2p-js can load lists but not publish them.
+`author.nameResolved` is `true` when the name is verified, `false` when it is refuted or when no
+configured resolver handles its TLD (which [BSIP-10](./bsip-10.md#verification-outcomes) classifies
+as unknown, not refuted), and absent until settled.
 
 Rejections and their pkc-js error codes:
 
@@ -423,7 +419,7 @@ Rejections and their pkc-js error codes:
 | Bytes do not hash to the CID | `ERR_CALCULATED_CID_DOES_NOT_MATCH` |
 | Not JSON | `ERR_INVALID_JSON` |
 | Wrong member types, or duplicate entry `publicKey` | `ERR_INVALID_COMMUNITY_LIST_SCHEMA` |
-| Reserved name, `author.name` without `.`, unsigned member, or invalid signature | `ERR_COMMUNITY_LIST_SIGNATURE_IS_INVALID`, with the specific reason |
+| Reserved or forbidden name, `author.name` without `.`, unsigned member, or invalid signature | `ERR_COMMUNITY_LIST_SIGNATURE_IS_INVALID`, with the specific reason |
 | RPC server returned another CID on publish | `ERR_ADDED_COMMUNITY_LIST_TO_IPFS_BUT_GOT_DIFFERENT_CID` |
 
 ## Security Considerations
