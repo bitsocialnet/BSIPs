@@ -188,6 +188,11 @@ and reports a failed or mismatching resolution only as a local error. Readers ve
 of every record they load ([BSIP-10](./bsip-10.md#verifying-a-community-name)), so an unverified
 name is never shown as the community's identity.
 
+A community's identity key cannot be changed in band: no community edit and no field of the
+community record replaces it. The only way to move a community to a new key is the name-based
+migration of [BSIP-10](./bsip-10.md#key-migration), and a community without a name cannot change
+its key. A mechanism for changing the key in band is left to a future BSIP.
+
 After a rename from `N` to `M`:
 
 1. The node's next record carries `"name": M`, and every new publication to the community MUST carry
