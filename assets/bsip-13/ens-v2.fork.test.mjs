@@ -1,5 +1,6 @@
 // The builder's ENSv2 reader against the deployed ENSv2 contracts, on a local fork of mainnet.
-// Skipped unless ANVIL_RPC_URL points at an anvil fork, because it moves that chain's clock:
+// Skipped unless ANVIL_RPC_URL points at an anvil fork, because it moves that chain's clock (and
+// reverts it afterwards):
 //
 //   anvil --fork-url <mainnet RPC> --port 18547
 //   ANVIL_RPC_URL=http://127.0.0.1:18547 node --test assets/bsip-13/ens-v2.fork.test.mjs
@@ -41,21 +42,27 @@ test('on a mainnet fork, a subname stops being registered when its second-level 
   assert.equal(subState.status, REGISTERED);
   assert.ok(subState.expiry > parentState.expiry, 'the subname outlives its second-level name');
 
-  // Move the fork's clock to the second-level name's expiry.
-  await client.setNextBlockTimestamp({ timestamp: parentState.expiry });
-  await client.mine({ blocks: 1 });
-  assert.ok((await client.getBlock()).timestamp >= parentState.expiry);
+  // Move the fork's clock to the second-level name's expiry, and put the fork back afterwards so
+  // that the tests can run again on it.
+  const snapshot = await client.snapshot();
+  try {
+    await client.setNextBlockTimestamp({ timestamp: parentState.expiry });
+    await client.mine({ blocks: 1 });
+    assert.ok((await client.getBlock()).timestamp >= parentState.expiry);
 
-  // The subname's own registry still reports it registered...
-  assert.equal((await state(subregistry, 'blog')).status, REGISTERED);
-  // ...but the second-level name is gone, and the reader rejects both.
-  assert.notEqual((await state(ETH_REGISTRY_V2, 'bitsocial')).status, REGISTERED);
-  const parentAfter = await readV2(client, undefined, 'bitsocial.eth');
-  const subAfter = await readV2(client, undefined, 'blog.bitsocial.eth');
-  assert.equal(parentAfter.inactive, 'not registered in ENS at S (ENSv2 bitsocial.eth is not registered)');
-  assert.equal(subAfter.inactive, 'not registered in ENS at S (ENSv2 bitsocial.eth is not registered)');
-  assert.equal(subAfter.holder, zeroAddress);
-  assert.equal(subAfter.resolver, zeroAddress);
+    // The subname's own registry still reports it registered...
+    assert.equal((await state(subregistry, 'blog')).status, REGISTERED);
+    // ...but the second-level name is gone, and the reader rejects both.
+    assert.notEqual((await state(ETH_REGISTRY_V2, 'bitsocial')).status, REGISTERED);
+    const parentAfter = await readV2(client, undefined, 'bitsocial.eth');
+    const subAfter = await readV2(client, undefined, 'blog.bitsocial.eth');
+    assert.equal(parentAfter.inactive, 'not registered in ENS at S (ENSv2 bitsocial.eth is not registered)');
+    assert.equal(subAfter.inactive, 'not registered in ENS at S (ENSv2 bitsocial.eth is not registered)');
+    assert.equal(subAfter.holder, zeroAddress);
+    assert.equal(subAfter.resolver, zeroAddress);
+  } finally {
+    await client.revert({ id: snapshot });
+  }
 });
 
 test('on a mainnet fork, a migrated locked name is read from ENSv2', { skip: !url && 'set ANVIL_RPC_URL to an anvil mainnet fork' }, async () => {
