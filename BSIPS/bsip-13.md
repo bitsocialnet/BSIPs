@@ -253,11 +253,12 @@ subdomain's parent name in `.bso` form.
    subname its owner in the ENS registry or the holder of the wrapped name), and the value of the
    `bitsocial` record. A second-level name that was migrated to ENSv2, or registered there, and
    every name under it, is read from the ENSv2 registries instead. A second-level name was migrated
-   when the ENSv1 registry lists the ENSv2 migration contract as its owner; a second-level name
-   that ENSv1 does not hold is read from ENSv2 as well. A name read from ENSv2 is registered while
-   its registry reports it registered and every name above it, up to the second-level name, is
-   registered too, and it is held by its owner there. ENSv2 stops resolving a name at its expiry,
-   so the grace period applies only to ENSv1 names. The record is read on chain from the name's own
+   when the ENSv2 migration contract is its owner in the ENSv1 registry or holds its wrapped name (a
+   locked name stays wrapped when it is migrated); a second-level name that ENSv1 does not hold is
+   read from ENSv2 as well. A name read from ENSv2 is registered while its registry reports it
+   registered and every name above it, up to the second-level name, is registered too, and it is
+   held by its owner there. ENSv2 stops resolving a name at its expiry, so the grace period applies
+   only to ENSv1 names. The record is read on chain from the name's own
    resolver, through `text`, or through ENSIP-10 `resolve` for a resolver that answers only that
    way.
 2. **Ancestors.** For every subname under rule 1, each of its ancestors up to the second-level name,
