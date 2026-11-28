@@ -487,7 +487,7 @@ function partialInfo(node) {
 
 /**
  * Read each .eth name's holder, resolver and record at S. Names under a second-level name that was
- * migrated to ENSv2 (its v1 registry owner is the migration Graveyard), or that v1 does not hold,
+ * migrated to ENSv2 (the migration Graveyard holds it in v1), or that v1 does not hold,
  * are read from the ENSv2 registries; all others from the v1 registry, BaseRegistrar and NameWrapper.
  */
 async function readEnsState(names) {

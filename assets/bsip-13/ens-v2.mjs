@@ -3,8 +3,8 @@
 
 import { hexToBigInt, isAddressEqual, labelhash, namehash, parseAbi, zeroAddress } from 'viem';
 
-// ENSv2 (live since 2026-10-28): migrated v1 names are owned by the Graveyard in the v1 registry and
-// live in the v2 registries, starting from the ETH registry.
+// ENSv2 (live since 2026-10-28): migrating a v1 name hands it to the Graveyard, and the name then
+// lives in the v2 registries, starting from the ETH registry.
 export const GRAVEYARD = '0xDa021A2C1C2F99574D861Ef8c6fA745851BEB7F6';
 export const ETH_REGISTRY_V2 = '0xf60aba43E1f7F3DAB1186Ff03B561401C9Df85E2';
 export const V2_REGISTERED = 2; // IPermissionedRegistry.Status
@@ -17,10 +17,16 @@ export const v2RegistryAbi = parseAbi([
 
 /**
  * Whether a name is read from ENSv2, given the ENSv1 state of its second-level name: when that name
- * was migrated (its v1 registry owner is the migration Graveyard), or when v1 does not hold it.
+ * was migrated, or when v1 does not hold it.
+ *
+ * A migrated name belongs to the Graveyard in v1. An unwrapped or unlocked name is handed over in
+ * the v1 registry. A locked name stays wrapped, so its registry owner is still NameWrapper and only
+ * the wrapped token moves: that shows as the v1 holder.
  */
 export function isReadFromV2(secondLevelV1State) {
-  return Boolean(secondLevelV1State.inactive) || isAddressEqual(secondLevelV1State.registryOwner, GRAVEYARD);
+  const { inactive, registryOwner, holder } = secondLevelV1State;
+  const isGraveyard = (address) => Boolean(address) && isAddressEqual(address, GRAVEYARD);
+  return Boolean(inactive) || isGraveyard(registryOwner) || isGraveyard(holder);
 }
 
 /** Call fn up to 3 times; undefined if every attempt fails. */

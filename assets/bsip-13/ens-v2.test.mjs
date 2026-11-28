@@ -11,6 +11,7 @@ import { hexToBigInt, labelhash, namehash, zeroAddress } from 'viem';
 import { ETH_REGISTRY_V2, GRAVEYARD, isReadFromV2, readV2 } from './ens-v2.mjs';
 
 const OWNER = '0x13087d38B78df0345D67c8CEE73b215589ae3A1f';
+const NAME_WRAPPER = '0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401';
 const SUB_OWNER = '0x98BDDCd3282F95A6553373Dab10b5AEfE0128117';
 const RESOLVER = '0x3d4cA730C9Ff5e3C8AABa2E928C9aED59A4bb913';
 const SUB_RESOLVER = '0x394D8EB4a4fDF599384DeAb25F31d111d755c398';
@@ -146,12 +147,19 @@ test('every call is made at the block it is given', async () => {
 });
 
 test('which registry a name is read from follows the ENSv1 state of its second-level name', () => {
-  // Migrated: the v1 registry lists the migration Graveyard as its owner.
-  assert.equal(isReadFromV2({ inactive: null, registryOwner: GRAVEYARD }), true);
-  assert.equal(isReadFromV2({ inactive: null, registryOwner: GRAVEYARD.toLowerCase() }), true);
-  // An ordinary ENSv1 name stays on v1.
-  assert.equal(isReadFromV2({ inactive: null, registryOwner: OWNER }), false);
+  // Migrated, unwrapped or unlocked: the v1 registry lists the migration Graveyard as its owner.
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: GRAVEYARD, holder: GRAVEYARD }), true);
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: GRAVEYARD.toLowerCase(), holder: GRAVEYARD }), true);
+  // An ordinary ENSv1 name stays on v1, wrapped or not.
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: OWNER, holder: OWNER }), false);
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: NAME_WRAPPER, holder: OWNER }), false);
   // A name v1 does not hold (never registered there, or past its grace period) is looked up in v2.
-  assert.equal(isReadFromV2({ inactive: 'not registered in ENS at S', registryOwner: zeroAddress }), true);
-  assert.equal(isReadFromV2({ inactive: 'expired past the ENS v1 grace period at S', registryOwner: OWNER }), true);
+  assert.equal(isReadFromV2({ inactive: 'not registered in ENS at S', registryOwner: zeroAddress, holder: zeroAddress }), true);
+  assert.equal(isReadFromV2({ inactive: 'expired past the ENS v1 grace period at S', registryOwner: OWNER, holder: zeroAddress }), true);
+});
+
+test('a migrated locked name is read from ENSv2 although NameWrapper still owns it in the v1 registry', () => {
+  // Migration does not unwrap a locked name: the wrapped token moves to the Graveyard.
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: NAME_WRAPPER, holder: GRAVEYARD }), true);
+  assert.equal(isReadFromV2({ inactive: null, registryOwner: NAME_WRAPPER, holder: GRAVEYARD.toLowerCase() }), true);
 });
