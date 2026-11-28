@@ -6,6 +6,7 @@ The names the interim `.bso` registry registers at launch, and the script that b
 | File | What it is |
 | --- | --- |
 | `build-seed-list.mjs` | Builds the seed list at snapshot block `S`. |
+| `ens-v2.mjs` | The builder's ENSv2 reader, with its tests in `ens-v2.test.mjs` and `ens-v2.fork.test.mjs` ([Tests](#tests)). |
 | `reserved.json` | Reserved names (rule 3). The builder fails if it differs from the table in BSIP-13. |
 | `supplied-names.json` | Supplied names: `lists`, from the maintainers' community lists, and `owners`, names that owners sent in. |
 | `collect-list-names.mjs` | Refreshes `lists` from a checkout of [bitsocialnet/lists](https://github.com/bitsocialnet/lists). |
@@ -66,17 +67,37 @@ A candidate must be an ENSIP-15 normalized `.eth` name.
 - **ENSv1 names** are read from the ENS registry, BaseRegistrar and NameWrapper. A second-level name
   is registered until 90 days after its expiry. Its holder is its registrant, or the holder of the
   wrapped name. A subname's holder is its registry owner, or the holder of the wrapped name.
-- **ENSv2 names**, under a second-level name that was migrated (its ENSv1 registry owner is the
-  migration Graveyard `0xDa021A2C1C2F99574D861Ef8c6fA745851BEB7F6`) or that ENSv1 does not hold, are
+- **ENSv2 names**, under a second-level name that was migrated or that ENSv1 does not hold, are
   read by walking the ENSv2 registries from the ETH registry
   `0xf60aba43E1f7F3DAB1186Ff03B561401C9Df85E2`. A name counts as registered while its registry
   reports `REGISTERED`, and its holder is that registry's owner. ENSv2 stops resolving a name at its
-  expiry, and its grace period only allows renewal.
+  expiry, and its grace period only allows renewal. A second-level name was migrated when the
+  migration Graveyard `0xDa021A2C1C2F99574D861Ef8c6fA745851BEB7F6` is its ENSv1 registry owner or
+  holds its wrapped name: a locked name stays wrapped when it migrates, so NameWrapper remains its
+  registry owner.
 
 The record is read from the name's own resolver with `text`, or with ENSIP-10 `resolve` for a
 resolver that answers only that way, with offchain lookups disabled. It is then compared with the
 Universal Resolver that BSIP-10 clients use. A name with no resolver of its own, an offchain record,
 or a disagreement is not seeded. The last two are marked "needs manual review".
+
+## Tests
+
+The ENSv2 reader is in `ens-v2.mjs`, apart from the builder, so that it can be tested:
+
+```sh
+yarn test:seed-builder
+```
+
+`ens-v2.test.mjs` uses a stubbed client and runs in CI. `ens-v2.fork.test.mjs` reads the deployed
+ENSv2 contracts on a local fork of mainnet and moves the fork's clock past `bitsocial.eth`'s expiry,
+to show that `blog.bitsocial.eth` then stops counting as registered although its own registry still
+reports it registered. It is skipped unless `ANVIL_RPC_URL` is set:
+
+```sh
+anvil --fork-url <mainnet RPC> --port 18547
+ANVIL_RPC_URL=http://127.0.0.1:18547 node --test assets/bsip-13/ens-v2.fork.test.mjs
+```
 
 ## Leaves
 
